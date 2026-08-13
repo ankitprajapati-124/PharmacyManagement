@@ -1,0 +1,64 @@
+@model Medicine
+
+@{
+    ViewData["Title"] = "Medicine Details";
+}
+
+<h1>Medicine Details</h1>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <dl class="row mb-0">
+
+            <dt class="col-sm-4">Medicine Name</dt>
+            <dd class="col-sm-8">@Model.MedicineName</dd>
+
+            <dt class="col-sm-4">Manufacturer</dt>
+            <dd class="col-sm-8">@Model.Manufacturer</dd>
+
+            <dt class="col-sm-4">Category</dt>
+            <dd class="col-sm-8">
+                @(Model.CategoryName ?? "Not assigned")
+            </dd>
+
+            <dt class="col-sm-4">Supplier</dt>
+            <dd class="col-sm-8">
+                @(Model.SupplierName ?? "Not assigned")
+            </dd>
+
+            <dt class="col-sm-4">Batch No.</dt>
+            <dd class="col-sm-8">@Model.BatchNo</dd>
+
+            <dt class="col-sm-4">Expiry Date</dt>
+            <dd class="col-sm-8">
+                @(Model.ExpiryDate?.ToString("dd-MM-yyyy") ?? "-")
+            </dd>
+
+            <dt class="col-sm-4">Purchase Price</dt>
+            <dd class="col-sm-8">
+                ₹@Model.PurchasePrice.ToString("N2")
+            </dd>
+
+            <dt class="col-sm-4">Selling Price</dt>
+            <dd class="col-sm-8">
+                ₹@Model.SellingPrice.ToString("N2")
+            </dd>
+
+            <dt class="col-sm-4">Quantity</dt>
+            <dd class="col-sm-8">@Model.Quantity</dd>
+
+        </dl>
+    </div>
+
+    <div class="card-footer bg-white">
+        <a asp-action="Edit"
+           asp-route-id="@Model.MedicineId"
+           class="btn btn-primary">
+            Edit
+        </a>
+        <a asp-action="Index"
+           class="btn btn-outline-secondary">
+            Back
+        </a>
+    </div>
+</div>

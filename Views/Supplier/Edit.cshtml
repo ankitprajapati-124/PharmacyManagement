@@ -1,0 +1,82 @@
+﻿@model PharmacyManagement.Models.Supplier
+
+@{
+    ViewData["Title"] = "Edit Supplier";
+}
+
+<div class="container mt-4">
+
+    <h1>Edit Supplier</h1>
+
+    <form asp-action="Edit" method="post">
+
+        <input type="hidden"
+               asp-for="SupplierId" />
+
+        <div class="mb-3">
+
+            <label asp-for="SupplierName"
+                   class="form-label">
+                Supplier Name
+            </label>
+
+            <input asp-for="SupplierName"
+                   class="form-control" />
+
+            <span asp-validation-for="SupplierName"
+                  class="text-danger">
+            </span>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label asp-for="Phone"
+                   class="form-label">
+                Phone
+            </label>
+
+            <input asp-for="Phone"
+                   class="form-control" />
+
+        </div>
+
+        <div class="mb-3">
+
+            <label asp-for="Email"
+                   class="form-label">
+                Email
+            </label>
+
+            <input asp-for="Email"
+                   type="email"
+                   class="form-control" />
+
+        </div>
+
+        <div class="mb-3">
+
+            <label asp-for="Address"
+                   class="form-label">
+                Address
+            </label>
+
+            <textarea asp-for="Address"
+                      class="form-control"
+                      rows="3"></textarea>
+
+        </div>
+
+        <button type="submit"
+                class="btn btn-primary">
+            Update Supplier
+        </button>
+
+        <a asp-action="Index"
+           class="btn btn-secondary">
+            Cancel
+        </a>
+
+    </form>
+
+</div>

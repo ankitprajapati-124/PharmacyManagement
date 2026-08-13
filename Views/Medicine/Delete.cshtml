@@ -1,0 +1,38 @@
+@model Medicine
+
+@{
+    ViewData["Title"] = "Delete Medicine";
+}
+
+<div class="card border-danger shadow-sm">
+    <div class="card-body">
+        <h1 class="text-danger">Delete Medicine</h1>
+
+        <p>
+            Are you sure you want to deactivate
+            <strong>@Model.MedicineName</strong>?
+        </p>
+
+        <p class="text-muted">
+            This project uses a soft delete so historical records can be
+            preserved.
+        </p>
+
+        <form asp-action="DeleteConfirmed"
+              method="post">
+            <input type="hidden"
+                   name="id"
+                   value="@Model.MedicineId" />
+
+            <button type="submit"
+                    class="btn btn-danger">
+                Yes, Delete
+            </button>
+
+            <a asp-action="Index"
+               class="btn btn-outline-secondary">
+                Cancel
+            </a>
+        </form>
+    </div>
+</div>

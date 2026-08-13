@@ -1,0 +1,20 @@
+html {
+    font-size: 14px;
+}
+
+body {
+    background: #f6f8fb;
+}
+
+.table-responsive {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card {
+    border: 0;
+}
+
+footer {
+    background: #fff;
+}
