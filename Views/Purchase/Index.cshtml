@@ -1,0 +1,133 @@
+﻿@model IReadOnlyList<PharmacyManagement.Models.Purchase>
+
+@{
+    ViewData["Title"] = "Purchases";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Purchases</h2>
+        <p class="text-muted mb-0">
+            Manage medicine purchases and stock.
+        </p>
+    </div>
+
+    <a asp-action="Create" class="btn btn-primary">
+        + New Purchase
+    </a>
+</div>
+
+@if (TempData["Success"] is string successMessage)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @successMessage
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+    </div>
+}
+
+@if (TempData["Error"] is string errorMessage)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @errorMessage
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        @if (Model.Count == 0)
+        {
+            <div class="text-center py-5">
+                <h5>No purchases found</h5>
+
+                <p class="text-muted">
+                    Create your first purchase to add stock.
+                </p>
+
+                <a asp-action="Create"
+                   class="btn btn-primary">
+                    Create Purchase
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Supplier</th>
+                            <th>Purchase Date</th>
+                            <th>Invoice No.</th>
+                            <th class="text-end">Total Amount</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var purchase in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @purchase.PurchaseId
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        @purchase.SupplierName
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    @purchase.PurchaseDate.ToString(
+                                        "dd-MM-yyyy")
+                                </td>
+
+                                <td>
+                                    @(purchase.InvoiceNo ?? "-")
+                                </td>
+
+                                <td class="text-end">
+                                    ₹@purchase.TotalAmount.ToString("N2")
+                                </td>
+
+                                <td class="text-end">
+
+                                    <a asp-action="Details"
+                                       asp-route-id="@purchase.PurchaseId"
+                                       class="btn btn-sm btn-outline-primary">
+                                        Details
+                                    </a>
+
+                                    <a asp-action="Delete"
+                                       asp-route-id="@purchase.PurchaseId"
+                                       class="btn btn-sm btn-outline-danger">
+                                        Delete
+                                    </a>
+
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+
+    </div>
+</div>

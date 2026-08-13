@@ -1,0 +1,179 @@
+﻿@model PharmacyManagement.Models.Purchase
+
+@{
+    ViewData["Title"] = "Purchase Details";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Purchase Details</h2>
+        <p class="text-muted mb-0">
+            Purchase #@Model.PurchaseId
+        </p>
+    </div>
+
+    <div>
+        <a asp-action="Index"
+           class="btn btn-outline-secondary">
+            Back
+        </a>
+
+        <a asp-action="Delete"
+           asp-route-id="@Model.PurchaseId"
+           class="btn btn-outline-danger">
+            Delete
+        </a>
+    </div>
+</div>
+
+<!-- Purchase Information -->
+
+<div class="card shadow-sm mb-4">
+
+    <div class="card-header">
+        <strong>Purchase Information</strong>
+    </div>
+
+    <div class="card-body">
+
+        <div class="row">
+
+            <div class="col-md-3">
+                <strong>Purchase ID</strong>
+                <div>
+                    @Model.PurchaseId
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <strong>Supplier</strong>
+                <div>
+                    @Model.SupplierName
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <strong>Purchase Date</strong>
+                <div>
+                    @Model.PurchaseDate.ToString("dd-MM-yyyy")
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <strong>Invoice No.</strong>
+                <div>
+                    @(Model.InvoiceNo ?? "-")
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Purchase Items -->
+
+<div class="card shadow-sm">
+
+    <div class="card-header">
+        <strong>Purchase Items</strong>
+    </div>
+
+    <div class="card-body">
+
+        @if (Model.Items.Count == 0)
+        {
+            <div class="text-center text-muted py-4">
+                No purchase items found.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th>#</th>
+
+                            <th>
+                                Medicine
+                            </th>
+
+                            <th class="text-end">
+                                Quantity
+                            </th>
+
+                            <th class="text-end">
+                                Purchase Price
+                            </th>
+
+                            <th class="text-end">
+                                Total
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+
+                                <td>
+                                    @item.PurchaseItemId
+                                </td>
+
+                                <td>
+                                    @item.MedicineName
+                                </td>
+
+                                <td class="text-end">
+                                    @item.Quantity
+                                </td>
+
+                                <td class="text-end">
+                                    ₹@item.PurchasePrice.ToString("N2")
+                                </td>
+
+                                <td class="text-end">
+                                    ₹@item.TotalPrice.ToString("N2")
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                    <tfoot>
+
+                        <tr>
+
+                            <th colspan="4"
+                                class="text-end">
+                                Grand Total
+                            </th>
+
+                            <th class="text-end">
+                                ₹@Model.TotalAmount.ToString("N2")
+                            </th>
+
+                        </tr>
+
+                    </tfoot>
+
+                </table>
+
+            </div>
+        }
+
+    </div>
+
+</div>
