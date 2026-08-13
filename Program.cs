@@ -13,6 +13,9 @@ builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 builder.Services.AddScoped<ISaleRepository, SaleRepository>();
 builder.Services.AddScoped<ISaleService, SaleService>();
 
+builder.Services.AddScoped<IDashboardRepository,DashboardRepository>();
+builder.Services.AddScoped<IDashboardService,DashboardService>();
+
 builder.Services.AddScoped<IMedicineService, MedicineService>();
 
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();

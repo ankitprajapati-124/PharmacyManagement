@@ -1,0 +1,8 @@
+﻿using PharmacyManagement.Models;
+
+namespace PharmacyManagement.Services;
+
+public interface IDashboardService
+{
+    Task<DashboardViewModel> GetDashboardAsync();
+}

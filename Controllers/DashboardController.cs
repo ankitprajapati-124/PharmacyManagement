@@ -1,11 +1,24 @@
 using Microsoft.AspNetCore.Mvc;
+using PharmacyManagement.Services;
 
 namespace PharmacyManagement.Controllers;
 
 public class DashboardController : Controller
 {
-    public IActionResult Index()
+    private readonly IDashboardService _service;
+
+    public DashboardController(
+        IDashboardService service)
     {
-        return View();
+        _service = service;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Index()
+    {
+        var dashboard =
+            await _service.GetDashboardAsync();
+
+        return View(dashboard);
     }
 }

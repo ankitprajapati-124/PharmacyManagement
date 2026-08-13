@@ -1,57 +1,669 @@
+@model PharmacyManagement.Models.DashboardViewModel
+
 @{
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="p-5 mb-4 bg-light rounded-3 shadow-sm">
-    <div class="container-fluid py-3">
-        <h1 class="display-6 fw-bold">Pharmacy Management System</h1>
-        <p class="lead">
-            ASP.NET Core MVC + C# + ADO.NET + SQL Server
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2 class="mb-1">
+            Dashboard
+        </h2>
+
+        <p class="text-muted mb-0">
+            Pharmacy Management Overview
         </p>
-        <a class="btn btn-primary btn-lg"
-           asp-controller="Medicine"
-           asp-action="Index">
-            Manage Medicines
+    </div>
+
+    <div>
+        <a asp-controller="Sale"
+           asp-action="Create"
+           class="btn btn-success me-2">
+            + New Sale
+        </a>
+
+        <a asp-controller="Purchase"
+           asp-action="Create"
+           class="btn btn-primary">
+            + New Purchase
         </a>
     </div>
+
 </div>
 
-<div class="row g-4">
-    <div class="col-md-4">
+
+<!-- Main Statistics -->
+
+<div class="row g-4 mb-4">
+
+    <!-- Total Medicines -->
+
+    <div class="col-md-6 col-xl-3">
+
         <div class="card shadow-sm h-100">
+
             <div class="card-body">
-                <h5 class="card-title">Medicines</h5>
-                <p class="card-text">
-                    Add, edit, search and manage medicine stock.
-                </p>
-                <a asp-controller="Medicine"
+
+                <div class="text-muted mb-2">
+                    Total Medicines
+                </div>
+
+                <h2 class="mb-0">
+                    @Model.TotalMedicines
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Total Stock -->
+
+    <div class="col-md-6 col-xl-3">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-body">
+
+                <div class="text-muted mb-2">
+                    Total Stock
+                </div>
+
+                <h2 class="mb-0">
+                    @Model.TotalStock
+                </h2>
+
+                <small class="text-muted">
+                    Units in stock
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Today's Sales -->
+
+    <div class="col-md-6 col-xl-3">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-body">
+
+                <div class="text-muted mb-2">
+                    Today's Sales
+                </div>
+
+                <h2 class="mb-0">
+                    @Model.TodaySalesCount
+                </h2>
+
+                <small class="text-muted">
+                    Transactions
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Today's Revenue -->
+
+    <div class="col-md-6 col-xl-3">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-body">
+
+                <div class="text-muted mb-2">
+                    Today's Revenue
+                </div>
+
+                <h2 class="mb-0">
+                    ₹@Model.TodaySalesAmount.ToString("N2")
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Purchase Statistics -->
+
+<div class="row g-4 mb-4">
+
+    <div class="col-md-6">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-header">
+                <strong>Purchases</strong>
+            </div>
+
+            <div class="card-body">
+
+                <div class="row text-center">
+
+                    <div class="col-6">
+
+                        <div class="text-muted">
+                            Total Purchases
+                        </div>
+
+                        <h3>
+                            @Model.TotalPurchases
+                        </h3>
+
+                    </div>
+
+                    <div class="col-6">
+
+                        <div class="text-muted">
+                            Purchase Amount
+                        </div>
+
+                        <h3>
+                            ₹@Model.TotalPurchaseAmount.ToString("N2")
+                        </h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Quick Actions -->
+
+    <div class="col-md-6">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-header">
+                <strong>Quick Actions</strong>
+            </div>
+
+            <div class="card-body">
+
+                <div class="d-flex flex-wrap gap-2">
+
+                    <a asp-controller="Medicine"
+                       asp-action="Create"
+                       class="btn btn-outline-primary">
+                        Add Medicine
+                    </a>
+
+                    <a asp-controller="Purchase"
+                       asp-action="Create"
+                       class="btn btn-outline-primary">
+                        New Purchase
+                    </a>
+
+                    <a asp-controller="Sale"
+                       asp-action="Create"
+                       class="btn btn-outline-success">
+                        New Sale
+                    </a>
+
+                    <a asp-controller="Medicine"
+                       asp-action="Index"
+                       class="btn btn-outline-secondary">
+                        View Medicines
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Pharmacy Alerts -->
+
+<div class="row g-4 mb-4">
+
+    <!-- Low Stock -->
+
+    <div class="col-lg-4">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-header d-flex justify-content-between align-items-center">
+
+                <strong>
+                    🔴 Low Stock
+                </strong>
+
+                <span class="badge bg-danger">
+                    @Model.LowStockMedicines.Count
+                </span>
+
+            </div>
+
+            <div class="card-body p-0">
+
+                @if (Model.LowStockMedicines.Count == 0)
+                {
+                    <div class="text-center text-muted py-4">
+                        No low-stock medicines.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+
+                        <table class="table table-sm mb-0">
+
+                            <thead>
+                                <tr>
+                                    <th>Medicine</th>
+                                    <th class="text-end">
+                                        Stock
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                @foreach (var medicine
+                                    in Model.LowStockMedicines)
+                                {
+                                    <tr>
+
+                                        <td>
+                                            @medicine.MedicineName
+                                        </td>
+
+                                        <td class="text-end">
+
+                                            <span class="badge bg-danger">
+                                                @medicine.Quantity
+                                            </span>
+
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Expiring Soon -->
+
+    <div class="col-lg-4">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-header d-flex justify-content-between align-items-center">
+
+                <strong>
+                    🟠 Expiring Soon
+                </strong>
+
+                <span class="badge bg-warning text-dark">
+                    @Model.ExpiringSoonMedicines.Count
+                </span>
+
+            </div>
+
+            <div class="card-body p-0">
+
+                @if (Model.ExpiringSoonMedicines.Count == 0)
+                {
+                    <div class="text-center text-muted py-4">
+                        No medicines expiring within 30 days.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+
+                        <table class="table table-sm mb-0">
+
+                            <thead>
+                                <tr>
+                                    <th>Medicine</th>
+                                    <th class="text-end">
+                                        Expiry
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                @foreach (var medicine
+                                    in Model.ExpiringSoonMedicines)
+                                {
+                                    <tr>
+
+                                        <td>
+                                            @medicine.MedicineName
+                                        </td>
+
+                                        <td class="text-end">
+
+                                            @medicine.ExpiryDate?
+                                            .ToString("dd-MM-yyyy")
+
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Expired -->
+
+    <div class="col-lg-4">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-header d-flex justify-content-between align-items-center">
+
+                <strong>
+                    ⛔ Expired
+                </strong>
+
+                <span class="badge bg-dark">
+                    @Model.ExpiredMedicines.Count
+                </span>
+
+            </div>
+
+            <div class="card-body p-0">
+
+                @if (Model.ExpiredMedicines.Count == 0)
+                {
+                    <div class="text-center text-muted py-4">
+                        No expired medicines.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+
+                        <table class="table table-sm mb-0">
+
+                            <thead>
+                                <tr>
+                                    <th>Medicine</th>
+                                    <th class="text-end">
+                                        Expired
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                @foreach (var medicine
+                                    in Model.ExpiredMedicines)
+                                {
+                                    <tr>
+
+                                        <td>
+                                            @medicine.MedicineName
+                                        </td>
+
+                                        <td class="text-end">
+
+                                            @medicine.ExpiryDate?
+                                            .ToString("dd-MM-yyyy")
+
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- Recent Activity -->
+
+<div class="row g-4 mb-4">
+
+    <!-- Recent Sales -->
+
+    <div class="col-lg-7">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-header d-flex justify-content-between align-items-center">
+
+                <strong>Recent Sales</strong>
+
+                <a asp-controller="Sale"
                    asp-action="Index"
-                   class="btn btn-outline-primary">
-                    Open
+                   class="btn btn-sm btn-outline-primary">
+                    View All
                 </a>
+
             </div>
+
+            <div class="card-body p-0">
+
+                @if (Model.RecentSales.Count == 0)
+                {
+                    <div class="text-center text-muted py-4">
+                        No sales found.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+
+                        <table class="table table-hover mb-0">
+
+                            <thead class="table-light">
+
+                                <tr>
+                                    <th>Invoice</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th class="text-end">
+                                        Amount
+                                    </th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                @foreach (var sale in Model.RecentSales)
+                                {
+                                    <tr>
+
+                                        <td>
+                                            @(sale.InvoiceNo ?? "-")
+                                        </td>
+
+                                        <td>
+                                            @(sale.CustomerName ?? "-")
+                                        </td>
+
+                                        <td>
+                                            @sale.SaleDate.ToString(
+                                                "dd-MM-yyyy HH:mm")
+                                        </td>
+
+                                        <td class="text-end">
+                                            <strong>
+                                                ₹@sale.TotalAmount.ToString("N2")
+                                            </strong>
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                }
+
+            </div>
+
         </div>
+
     </div>
 
-    <div class="col-md-4">
+
+    <!-- Recent Purchases -->
+
+    <div class="col-lg-5">
+
         <div class="card shadow-sm h-100">
-            <div class="card-body">
-                <h5 class="card-title">Purchases</h5>
-                <p class="card-text">
-                    Purchase and supplier modules will be added next.
-                </p>
+
+            <div class="card-header d-flex justify-content-between align-items-center">
+
+                <strong>Recent Purchases</strong>
+
+                <a asp-controller="Purchase"
+                   asp-action="Index"
+                   class="btn btn-sm btn-outline-primary">
+                    View All
+                </a>
+
             </div>
+
+            <div class="card-body p-0">
+
+                @if (Model.RecentPurchases.Count == 0)
+                {
+                    <div class="text-center text-muted py-4">
+                        No purchases found.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+
+                        <table class="table table-hover mb-0">
+
+                            <thead class="table-light">
+
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Date</th>
+                                    <th class="text-end">
+                                        Amount
+                                    </th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                @foreach (
+                                    var purchase
+                                    in Model.RecentPurchases)
+                                {
+                                    <tr>
+
+                                        <td>
+                                            #@purchase.PurchaseId
+                                        </td>
+
+                                        <td>
+                                            @purchase.PurchaseDate.ToString(
+                                                "dd-MM-yyyy")
+                                        </td>
+
+                                        <td class="text-end">
+                                            <strong>
+                                                ₹@purchase.TotalAmount.ToString(
+                                                                                                    "N2")
+                                            </strong>
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                }
+
+            </div>
+
         </div>
+
     </div>
 
-    <div class="col-md-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-body">
-                <h5 class="card-title">Sales</h5>
-                <p class="card-text">
-                    Sales, invoices and stock transactions will be added next.
-                </p>
-            </div>
-        </div>
+</div>
+
+<!-- System Information -->
+
+<div class="card shadow-sm">
+
+    <div class="card-body">
+
+        <h5 class="mb-3">
+            Pharmacy Management System
+        </h5>
+
+        <p class="text-muted mb-0">
+            Use the navigation menu to manage medicines,
+            suppliers, categories, purchases and sales.
+        </p>
+
     </div>
+
+</div>
+
 </div>
