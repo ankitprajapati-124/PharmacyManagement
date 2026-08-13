@@ -1,0 +1,638 @@
+﻿@model PharmacyManagement.Models.Sale
+
+@{
+    ViewData["Title"] = "New Sale";
+
+    var medicines = ViewBag.Medicines
+        as IEnumerable<PharmacyManagement.Models.Medicine>
+        ?? Enumerable.Empty<PharmacyManagement.Models.Medicine>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">New Sale</h2>
+        <p class="text-muted mb-0">
+            Create a customer bill and reduce medicine stock.
+        </p>
+    </div>
+
+    <a asp-action="Index"
+       class="btn btn-outline-secondary">
+        Back
+    </a>
+</div>
+
+<form asp-action="Create"
+      method="post"
+      id="saleForm">
+
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="ModelOnly"
+         class="text-danger mb-3">
+    </div>
+
+    <!-- Customer Information -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+            <strong>Customer Information</strong>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-4 mb-3">
+
+                    <label asp-for="CustomerName"
+                           class="form-label">
+                        Customer Name
+                    </label>
+
+                    <input asp-for="CustomerName"
+                           class="form-control"
+                           placeholder="Optional" />
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <label asp-for="CustomerMobile"
+                           class="form-label">
+                        Mobile Number
+                    </label>
+
+                    <input asp-for="CustomerMobile"
+                           class="form-control"
+                           placeholder="Optional" />
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <label asp-for="InvoiceNo"
+                           class="form-label">
+                        Invoice No.
+                    </label>
+
+                    <input asp-for="InvoiceNo"
+                           class="form-control"
+                           placeholder="e.g. INV-1001" />
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-4 mb-3">
+
+                    <label asp-for="SaleDate"
+                           class="form-label">
+                        Sale Date
+                    </label>
+
+                    <input asp-for="SaleDate"
+                           type="datetime-local"
+                           class="form-control" />
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Sale Items -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+
+            <strong>Sale Items</strong>
+
+            <button type="button"
+                    class="btn btn-sm btn-primary"
+                    id="addItemBtn">
+                + Add Medicine
+            </button>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered align-middle">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th style="width: 30%;">
+                                Medicine
+                            </th>
+
+                            <th style="width: 15%;">
+                                Available Stock
+                            </th>
+
+                            <th style="width: 15%;">
+                                Quantity
+                            </th>
+
+                            <th style="width: 15%;">
+                                Selling Price
+                            </th>
+
+                            <th style="width: 15%;">
+                                Total
+                            </th>
+
+                            <th style="width: 10%;">
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="itemsBody">
+                    </tbody>
+
+                    <tfoot>
+
+                        <tr>
+
+                            <th colspan="4"
+                                class="text-end">
+                                Subtotal
+                            </th>
+
+                            <th>
+                                ₹<span id="subtotal">0.00</span>
+                            </th>
+
+                            <th></th>
+
+                        </tr>
+
+                        <tr>
+
+                            <th colspan="4"
+                                class="text-end">
+                                Discount
+                            </th>
+
+                            <th>
+
+                                <input type="number"
+                                       asp-for="Discount"
+                                       id="discount"
+                                       class="form-control"
+                                       min="0"
+                                       step="0.01"
+                                       value="0" />
+
+                            </th>
+
+                            <th></th>
+
+                        </tr>
+
+                        <tr>
+
+                            <th colspan="4"
+                                class="text-end">
+                                <strong>Grand Total</strong>
+                            </th>
+
+                            <th>
+
+                                <strong>
+                                    ₹<span id="grandTotal">
+                                    0.00
+                                </span>
+                            </strong>
+
+                        </th>
+
+                        <th></th>
+
+                    </tr>
+
+                </tfoot>
+
+            </table>
+
+        </div>
+
+        <div id="emptyMessage"
+             class="text-center text-muted py-4">
+
+            No medicines added.
+
+            <br />
+
+            Click
+            <strong>+ Add Medicine</strong>
+            to add an item.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Buttons -->
+
+<div class="d-flex justify-content-end gap-2">
+
+    <a asp-action="Index"
+       class="btn btn-secondary">
+        Cancel
+    </a>
+
+    <button type="submit"
+            class="btn btn-success">
+        Complete Sale
+    </button>
+
+</div>
+
+</form>
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        // --------------------------------------------------
+        // Medicine data
+        // --------------------------------------------------
+
+        const medicines = @Html.Raw(
+                                    System.Text.Json.JsonSerializer.Serialize(
+                                            medicines.Select(m => new
+                                {
+                                    id = m.MedicineId,
+                                                    name = m.MedicineName,
+                                                    stock = m.Quantity,
+                                                    price = m.SellingPrice
+                                })
+                    )
+                    );
+
+        let itemIndex = 0;
+
+
+        // --------------------------------------------------
+        // Medicine dropdown
+        // --------------------------------------------------
+
+        function createMedicineOptions() {
+            let options =
+                '<option value="">-- Select Medicine --</option>';
+
+            medicines.forEach(function(medicine) {
+                options +=
+                    `<option value="${medicine.id}">
+                                ${medicine.name}
+                            </option>`;
+            });
+
+            return options;
+        }
+
+
+        // --------------------------------------------------
+        // Find medicine
+        // --------------------------------------------------
+
+        function getMedicine(id) {
+            return medicines.find(
+                m => m.id === Number(id)
+            );
+        }
+
+
+        // --------------------------------------------------
+        // Update stock and price
+        // --------------------------------------------------
+
+        function updateMedicineRow(row) {
+            const select =
+                row.querySelector(".medicine");
+
+            const stock =
+                row.querySelector(".available-stock");
+
+            const price =
+                row.querySelector(".selling-price");
+
+            const quantity =
+                row.querySelector(".quantity");
+
+            const medicine =
+                getMedicine(select.value);
+
+            if (!medicine) {
+                stock.textContent = "-";
+                price.value = "0";
+                quantity.max = "";
+                return;
+            }
+
+            stock.textContent =
+                medicine.stock;
+
+            price.value =
+                Number(medicine.price).toFixed(2);
+
+            quantity.max =
+                medicine.stock;
+
+            if (
+                Number(quantity.value) >
+                medicine.stock
+            ) {
+                quantity.value =
+                    medicine.stock;
+            }
+
+            updateTotals();
+        }
+
+
+        // --------------------------------------------------
+        // Calculate totals
+        // --------------------------------------------------
+
+        function updateTotals() {
+            let subtotal = 0;
+
+            document
+                .querySelectorAll(".sale-item")
+                .forEach(function(row) {
+                    const quantity =
+                        parseFloat(
+                            row.querySelector(".quantity").value
+                        ) || 0;
+
+                    const price =
+                        parseFloat(
+                            row.querySelector(".selling-price").value
+                        ) || 0;
+
+                    const total =
+                        quantity * price;
+
+                    row.querySelector(".item-total")
+                        .textContent =
+                        total.toFixed(2);
+
+                    subtotal += total;
+                });
+
+            const discount =
+                parseFloat(
+                    document.getElementById("discount").value
+                ) || 0;
+
+            let grandTotal =
+                subtotal - discount;
+
+            if (grandTotal < 0) {
+                grandTotal = 0;
+            }
+
+            document.getElementById("subtotal")
+                .textContent =
+                subtotal.toFixed(2);
+
+            document.getElementById("grandTotal")
+                .textContent =
+                grandTotal.toFixed(2);
+        }
+
+
+        // --------------------------------------------------
+        // Empty message
+        // --------------------------------------------------
+
+        function updateEmptyMessage() {
+            const rows =
+                document.querySelectorAll(".sale-item");
+
+            document.getElementById("emptyMessage")
+                .style.display =
+                rows.length === 0
+                    ? "block"
+                    : "none";
+        }
+
+
+        // --------------------------------------------------
+        // Add Sale Item
+        // --------------------------------------------------
+
+        function addItem() {
+            const tbody =
+                document.getElementById("itemsBody");
+
+            const row =
+                document.createElement("tr");
+
+            row.className =
+                "sale-item";
+
+            row.innerHTML = `
+
+                        <td>
+
+                            <select
+                                name="Items[${itemIndex}].MedicineId"
+                                class="form-select medicine"
+                                required>
+
+                                ${createMedicineOptions()}
+
+                            </select>
+
+                        </td>
+
+                        <td class="text-center">
+
+                            <span class="available-stock">
+                                -
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <input
+                                type="number"
+                                name="Items[${itemIndex}].Quantity"
+                                class="form-control quantity"
+                                min="1"
+                                value="1"
+                                required />
+
+                        </td>
+
+                        <td>
+
+                            <input
+                                type="number"
+                                name="Items[${itemIndex}].SellingPrice"
+                                class="form-control selling-price"
+                                min="0"
+                                step="0.01"
+                                value="0"
+                                required />
+
+                        </td>
+
+                        <td>
+
+                            ₹<span class="item-total">
+                                0.00
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-danger remove-item">
+
+                                Remove
+
+                            </button>
+
+                        </td>
+
+                    `;
+
+            tbody.appendChild(row);
+
+            itemIndex++;
+
+            updateEmptyMessage();
+
+            updateTotals();
+        }
+
+
+        // --------------------------------------------------
+        // Page loaded
+        // --------------------------------------------------
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+                const addButton =
+                    document.getElementById(
+                        "addItemBtn"
+                    );
+
+                addButton.addEventListener(
+                    "click",
+                    function() {
+                        addItem();
+                    }
+                );
+
+
+                // Medicine selection
+
+                document
+                    .getElementById("itemsBody")
+                    .addEventListener(
+                        "change",
+                        function(event) {
+                            if (
+                                event.target.classList.contains(
+                                    "medicine"
+                                )
+                            ) {
+                                updateMedicineRow(
+                                    event.target.closest(
+                                        ".sale-item"
+                                    )
+                                );
+                            }
+                        }
+                    );
+
+
+                // Quantity / price
+
+                document
+                    .getElementById("itemsBody")
+                    .addEventListener(
+                        "input",
+                        function() {
+                            updateTotals();
+                        }
+                    );
+
+
+                // Discount
+
+                document
+                    .getElementById("discount")
+                    .addEventListener(
+                        "input",
+                        function() {
+                            updateTotals();
+                        }
+                    );
+
+
+                // Remove
+
+                document
+                    .getElementById("itemsBody")
+                    .addEventListener(
+                        "click",
+                        function(event) {
+                            if (
+                                event.target.classList.contains(
+                                    "remove-item"
+                                )
+                            ) {
+                                const row =
+                                    event.target.closest(
+                                        ".sale-item"
+                                    );
+
+                                if (row) {
+                                    row.remove();
+
+                                    updateEmptyMessage();
+
+                                    updateTotals();
+                                }
+                            }
+                        }
+                    );
+
+
+                // First row
+
+                addItem();
+            }
+        );
+
+    </script>
+}
