@@ -27,46 +27,87 @@
                 Pharmacy Management
             </a>
 
-            <!-- Navigation -->
-            <div class="navbar-nav">
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <!-- Navigation -->
+                <div class="navbar-nav me-auto">
 
-                <a class="nav-link"
-                   asp-controller="Dashboard"
-                   asp-action="Index">
-                    Dashboard
-                </a>
+                    <a class="nav-link"
+                       asp-controller="Dashboard"
+                       asp-action="Index">
+                        Dashboard
+                    </a>
 
-                <a class="nav-link"
-                   asp-controller="Medicine"
-                   asp-action="Index">
-                    Medicines
-                </a>
+                    <a class="nav-link"
+                       asp-controller="Medicine"
+                       asp-action="Index">
+                        Medicines
+                    </a>
 
-                <a class="nav-link"
-                   asp-controller="Purchase"
-                   asp-action="Index">
-                    Purchases
-                </a>
+                    <a class="nav-link"
+                       asp-controller="Purchase"
+                       asp-action="Index">
+                        Purchases
+                    </a>
 
-                <a class="nav-link"
-                   asp-controller="Sale"
-                   asp-action="Index">
-                    Sales
-                </a>
+                    <a class="nav-link"
+                       asp-controller="Sale"
+                       asp-action="Index">
+                        Sales
+                    </a>
 
-                <a class="nav-link"
-                   asp-controller="Category"
-                   asp-action="Index">
-                    Categories
-                </a>
+                    <a class="nav-link"
+                       asp-controller="Category"
+                       asp-action="Index">
+                        Categories
+                    </a>
 
-                <a class="nav-link"
-                   asp-controller="Supplier"
-                   asp-action="Index">
-                    Suppliers
-                </a>
+                    <a class="nav-link"
+                       asp-controller="Supplier"
+                       asp-action="Index">
+                        Suppliers
+                    </a>
 
-            </div>
+                </div>
+
+                <!-- Logged-in User -->
+                <div class="d-flex align-items-center">
+
+                    <span class="navbar-text text-white me-3">
+
+                        <strong>
+                            @(User.FindFirst(
+                                System.Security.Claims.ClaimTypes.GivenName
+                            )?.Value ?? User.Identity?.Name)
+                        </strong>
+
+                        <small class="ms-1">
+                            (
+                            @(User.FindFirst(
+                                System.Security.Claims.ClaimTypes.Role
+                            )?.Value ?? "User")
+                            )
+                        </small>
+
+                    </span>
+
+                    <!-- Logout -->
+                    <form asp-controller="Account"
+                          asp-action="Logout"
+                          method="post"
+                          class="d-inline">
+
+                        @Html.AntiForgeryToken()
+
+                        <button type="submit"
+                                class="btn btn-outline-light btn-sm">
+                            Logout
+                        </button>
+
+                    </form>
+
+                </div>
+            }
 
         </div>
 
@@ -78,7 +119,8 @@
 
         @if (TempData["Success"] is string message)
         {
-            <div class="alert alert-success alert-dismissible fade show">
+            <div class="alert alert-success alert-dismissible fade show"
+                 role="alert">
 
                 @message
 
@@ -89,9 +131,11 @@
 
             </div>
         }
+
         @if (TempData["Error"] is string errorMessage)
         {
-            <div class="alert alert-danger alert-dismissible fade show">
+            <div class="alert alert-danger alert-dismissible fade show"
+                 role="alert">
 
                 @errorMessage
 

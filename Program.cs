@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using PharmacyManagement.Repositories;
 using PharmacyManagement.Services;
 
@@ -14,7 +15,11 @@ builder.Services.AddScoped<ISaleRepository, SaleRepository>();
 builder.Services.AddScoped<ISaleService, SaleService>();
 
 builder.Services.AddScoped<IDashboardRepository,DashboardRepository>();
+
+builder.Services.AddScoped<IUserRepository,UserRepository>();
+
 builder.Services.AddScoped<IDashboardService,DashboardService>();
+builder.Services.AddScoped<IAuthService,AuthService>();
 
 builder.Services.AddScoped<IMedicineService, MedicineService>();
 
@@ -23,6 +28,20 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
+
+builder.Services
+    .AddAuthentication(
+        CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+
+        options.ExpireTimeSpan =
+            TimeSpan.FromHours(8);
+
+        options.SlidingExpiration = true;
+    });
 
 var app = builder.Build();
 
@@ -35,6 +54,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

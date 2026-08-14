@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PharmacyManagement.Services;
 
 namespace PharmacyManagement.Controllers;
 
+[Authorize]
 public class DashboardController : Controller
 {
     private readonly IDashboardService _service;
