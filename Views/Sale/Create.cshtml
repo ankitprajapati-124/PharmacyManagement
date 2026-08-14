@@ -8,187 +8,305 @@
         ?? Enumerable.Empty<PharmacyManagement.Models.Medicine>();
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h2 class="mb-1">New Sale</h2>
-        <p class="text-muted mb-0">
-            Create a customer bill and reduce medicine stock.
-        </p>
-    </div>
+<div class="sale-create-page">
 
-    <a asp-action="Index"
-       class="btn btn-outline-secondary">
-        Back
-    </a>
-</div>
+    <!-- Header -->
 
-<form asp-action="Create"
-      method="post"
-      id="saleForm">
+    <div class="page-header-card mb-4">
 
-    @Html.AntiForgeryToken()
+        <div>
 
-    <div asp-validation-summary="ModelOnly"
-         class="text-danger mb-3">
-    </div>
+            <div class="d-flex align-items-center gap-2 mb-2">
 
-    <!-- Customer Information -->
+                <span class="page-header-icon">
+                    ₹
+                </span>
 
-    <div class="card shadow-sm mb-4">
+                <span class="text-success small fw-semibold">
+                    BILLING
+                </span>
 
-        <div class="card-header">
-            <strong>Customer Information</strong>
+            </div>
+
+            <h2 class="mb-1">
+                New Sale
+            </h2>
+
+            <p class="text-muted mb-0">
+                Create a customer bill and update medicine stock.
+            </p>
+
         </div>
 
-        <div class="card-body">
+        <a asp-action="Index"
+           class="btn btn-outline-secondary">
 
-            <div class="row">
+            ← Back to Sales
 
-                <div class="col-md-4 mb-3">
+        </a>
 
-                    <label asp-for="CustomerName"
-                           class="form-label">
-                        Customer Name
-                    </label>
+    </div>
 
-                    <input asp-for="CustomerName"
-                           class="form-control"
-                           placeholder="Optional" />
+
+    <form asp-action="Create"
+          method="post"
+          id="saleForm">
+
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="ModelOnly"
+             class="alert alert-danger mb-4">
+        </div>
+
+
+        <div class="row g-4">
+
+            <!-- LEFT -->
+
+            <div class="col-xl-8">
+
+                <!-- Customer -->
+
+                <div class="sale-form-card mb-4">
+
+                    <div class="sale-form-header">
+
+                        <div class="sale-form-icon blue">
+                            👤
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Customer Information
+                            </strong>
+
+                            <small>
+                                Enter customer and invoice details
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="sale-form-body">
+
+                        <div class="row g-3">
+
+                            <div class="col-md-4">
+
+                                <label asp-for="CustomerName"
+                                       class="form-label">
+                                    Customer Name
+                                </label>
+
+                                <input asp-for="CustomerName"
+                                       class="form-control"
+                                       placeholder="Walk-in customer" />
+
+                            </div>
+
+
+                            <div class="col-md-4">
+
+                                <label asp-for="CustomerMobile"
+                                       class="form-label">
+                                    Mobile Number
+                                </label>
+
+                                <input asp-for="CustomerMobile"
+                                       class="form-control"
+                                       placeholder="Optional" />
+
+                            </div>
+
+
+                            <div class="col-md-4">
+
+                                <label asp-for="InvoiceNo"
+                                       class="form-label">
+                                    Invoice Number
+                                </label>
+
+                                <input asp-for="InvoiceNo"
+                                       class="form-control"
+                                       placeholder="e.g. INV-1001" />
+
+                            </div>
+
+
+                            <div class="col-md-5">
+
+                                <label asp-for="SaleDate"
+                                       class="form-label">
+                                    Sale Date
+                                </label>
+
+                                <input asp-for="SaleDate"
+                                       type="datetime-local"
+                                       class="form-control" />
+
+                            </div>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
-                <div class="col-md-4 mb-3">
 
-                    <label asp-for="CustomerMobile"
-                           class="form-label">
-                        Mobile Number
-                    </label>
+                <!-- Items -->
 
-                    <input asp-for="CustomerMobile"
-                           class="form-control"
-                           placeholder="Optional" />
+                <div class="sale-form-card">
 
-                </div>
+                    <div class="sale-form-header sale-items-header">
 
-                <div class="col-md-4 mb-3">
+                        <div class="d-flex align-items-center gap-3">
 
-                    <label asp-for="InvoiceNo"
-                           class="form-label">
-                        Invoice No.
-                    </label>
+                            <div class="sale-form-icon green">
+                                +
+                            </div>
 
-                    <input asp-for="InvoiceNo"
-                           class="form-control"
-                           placeholder="e.g. INV-1001" />
+                            <div>
+
+                                <strong>
+                                    Sale Items
+                                </strong>
+
+                                <small>
+                                    Select medicines and quantities
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <button type="button"
+                                class="btn btn-success"
+                                id="addItemBtn">
+
+                            + Add Medicine
+
+                        </button>
+
+                    </div>
+
+
+                    <div class="sale-items-wrapper">
+
+                        <div class="table-responsive">
+
+                            <table class="table sale-create-table">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>
+                                            Medicine
+                                        </th>
+
+                                        <th>
+                                            Available
+                                        </th>
+
+                                        <th>
+                                            Quantity
+                                        </th>
+
+                                        <th>
+                                            Selling Price
+                                        </th>
+
+                                        <th>
+                                            Total
+                                        </th>
+
+                                        <th>
+                                            Action
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody id="itemsBody">
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+
+                        <div id="emptyMessage"
+                             class="sale-empty-items">
+
+                            <div>
+                                +
+                            </div>
+
+                            <strong>
+                                No medicines added
+                            </strong>
+
+                            <span>
+                                Click "Add Medicine" to add items to this bill.
+                            </span>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
             </div>
 
-            <div class="row">
 
-                <div class="col-md-4 mb-3">
+            <!-- RIGHT -->
 
-                    <label asp-for="SaleDate"
-                           class="form-label">
-                        Sale Date
-                    </label>
+            <div class="col-xl-4">
 
-                    <input asp-for="SaleDate"
-                           type="datetime-local"
-                           class="form-control" />
+                <div class="sale-summary-card">
 
-                </div>
+                    <div class="sale-summary-header">
 
-            </div>
+                        <strong>
+                            Bill Summary
+                        </strong>
 
-        </div>
+                        <span>
+                            LIVE
+                        </span>
 
-    </div>
+                    </div>
 
 
-    <!-- Sale Items -->
+                    <div class="sale-summary-body">
 
-    <div class="card shadow-sm mb-4">
+                        <div class="bill-line">
 
-        <div class="card-header d-flex justify-content-between align-items-center">
-
-            <strong>Sale Items</strong>
-
-            <button type="button"
-                    class="btn btn-sm btn-primary"
-                    id="addItemBtn">
-                + Add Medicine
-            </button>
-
-        </div>
-
-        <div class="card-body">
-
-            <div class="table-responsive">
-
-                <table class="table table-bordered align-middle">
-
-                    <thead class="table-light">
-
-                        <tr>
-
-                            <th style="width: 30%;">
-                                Medicine
-                            </th>
-
-                            <th style="width: 15%;">
-                                Available Stock
-                            </th>
-
-                            <th style="width: 15%;">
-                                Quantity
-                            </th>
-
-                            <th style="width: 15%;">
-                                Selling Price
-                            </th>
-
-                            <th style="width: 15%;">
-                                Total
-                            </th>
-
-                            <th style="width: 10%;">
-                                Action
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody id="itemsBody">
-                    </tbody>
-
-                    <tfoot>
-
-                        <tr>
-
-                            <th colspan="4"
-                                class="text-end">
+                            <span>
                                 Subtotal
-                            </th>
+                            </span>
 
-                            <th>
+                            <strong>
                                 ₹<span id="subtotal">0.00</span>
-                            </th>
+                            </strong>
 
-                            <th></th>
+                        </div>
 
-                        </tr>
 
-                        <tr>
+                        <div class="bill-line discount-line">
 
-                            <th colspan="4"
-                                class="text-end">
+                            <span>
                                 Discount
-                            </th>
+                            </span>
 
-                            <th>
+                            <div class="discount-input">
+
+                                <span>₹</span>
 
                                 <input type="number"
                                        asp-for="Discount"
@@ -198,74 +316,89 @@
                                        step="0.01"
                                        value="0" />
 
-                            </th>
+                            </div>
 
-                            <th></th>
+                        </div>
 
-                        </tr>
 
-                        <tr>
+                        <hr />
 
-                            <th colspan="4"
-                                class="text-end">
-                                <strong>Grand Total</strong>
-                            </th>
 
-                            <th>
+                        <div class="grand-total-line">
 
-                                <strong>
-                                    ₹<span id="grandTotal">
-                                    0.00
-                                </span>
+                            <span>
+                                Grand Total
+                            </span>
+
+                            <strong>
+                                ₹<span id="grandTotal">0.00</span>
                             </strong>
 
-                        </th>
+                        </div>
 
-                        <th></th>
 
-                    </tr>
+                        <div class="sale-summary-note">
 
-                </tfoot>
+                            <span>✓</span>
 
-            </table>
+                            Stock will be reduced after
+                            completing the sale.
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="sale-summary-footer">
+
+                        <a asp-action="Index"
+                           class="btn btn-outline-secondary">
+
+                            Cancel
+
+                        </a>
+
+                        <button type="submit"
+                                class="btn btn-success">
+
+                            Complete Sale
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="sale-help-card mt-3">
+
+                    <div class="sale-help-icon">
+                        i
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Billing tip
+                        </strong>
+
+                        <p>
+                            Select a medicine to automatically
+                            load its current selling price and
+                            available stock.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
 
-        <div id="emptyMessage"
-             class="text-center text-muted py-4">
-
-            No medicines added.
-
-            <br />
-
-            Click
-            <strong>+ Add Medicine</strong>
-            to add an item.
-
-        </div>
-
-    </div>
+    </form>
 
 </div>
-
-
-<!-- Buttons -->
-
-<div class="d-flex justify-content-end gap-2">
-
-    <a asp-action="Index"
-       class="btn btn-secondary">
-        Cancel
-    </a>
-
-    <button type="submit"
-            class="btn btn-success">
-        Complete Sale
-    </button>
-
-</div>
-
-</form>
 
 
 @section Scripts
@@ -274,60 +407,50 @@
 
     <script>
 
-        // --------------------------------------------------
-        // Medicine data
-        // --------------------------------------------------
-
         const medicines = @Html.Raw(
-                                    System.Text.Json.JsonSerializer.Serialize(
-                                            medicines.Select(m => new
-                                {
-                                    id = m.MedicineId,
-                                                    name = m.MedicineName,
-                                                    stock = m.Quantity,
-                                                    price = m.SellingPrice
-                                })
-                    )
-                    );
+            System.Text.Json.JsonSerializer.Serialize(
+                medicines.Select(m => new
+                {
+                    id = m.MedicineId,
+                    name = m.MedicineName,
+                    stock = m.Quantity,
+                    price = m.SellingPrice
+                })
+            )
+        );
 
         let itemIndex = 0;
 
 
-        // --------------------------------------------------
-        // Medicine dropdown
-        // --------------------------------------------------
-
         function createMedicineOptions() {
+
             let options =
                 '<option value="">-- Select Medicine --</option>';
 
-            medicines.forEach(function(medicine) {
+            medicines.forEach(function (medicine) {
+
                 options +=
                     `<option value="${medicine.id}">
-                                ${medicine.name}
-                            </option>`;
+                        ${medicine.name}
+                    </option>`;
+
             });
 
             return options;
         }
 
 
-        // --------------------------------------------------
-        // Find medicine
-        // --------------------------------------------------
-
         function getMedicine(id) {
+
             return medicines.find(
                 m => m.id === Number(id)
             );
+
         }
 
 
-        // --------------------------------------------------
-        // Update stock and price
-        // --------------------------------------------------
-
         function updateMedicineRow(row) {
+
             const select =
                 row.querySelector(".medicine");
 
@@ -343,185 +466,221 @@
             const medicine =
                 getMedicine(select.value);
 
+
             if (!medicine) {
+
                 stock.textContent = "-";
+
                 price.value = "0";
+
                 quantity.max = "";
+
+                updateTotals();
+
                 return;
             }
+
 
             stock.textContent =
                 medicine.stock;
 
+
             price.value =
                 Number(medicine.price).toFixed(2);
 
+
             quantity.max =
                 medicine.stock;
+
 
             if (
                 Number(quantity.value) >
                 medicine.stock
             ) {
+
                 quantity.value =
                     medicine.stock;
+
             }
+
 
             updateTotals();
         }
 
 
-        // --------------------------------------------------
-        // Calculate totals
-        // --------------------------------------------------
-
         function updateTotals() {
+
             let subtotal = 0;
+
 
             document
                 .querySelectorAll(".sale-item")
-                .forEach(function(row) {
+                .forEach(function (row) {
+
                     const quantity =
                         parseFloat(
                             row.querySelector(".quantity").value
                         ) || 0;
+
 
                     const price =
                         parseFloat(
                             row.querySelector(".selling-price").value
                         ) || 0;
 
+
                     const total =
                         quantity * price;
+
 
                     row.querySelector(".item-total")
                         .textContent =
                         total.toFixed(2);
 
+
                     subtotal += total;
+
                 });
+
 
             const discount =
                 parseFloat(
                     document.getElementById("discount").value
                 ) || 0;
 
+
             let grandTotal =
                 subtotal - discount;
+
 
             if (grandTotal < 0) {
                 grandTotal = 0;
             }
 
+
             document.getElementById("subtotal")
                 .textContent =
                 subtotal.toFixed(2);
 
+
             document.getElementById("grandTotal")
                 .textContent =
                 grandTotal.toFixed(2);
+
         }
 
 
-        // --------------------------------------------------
-        // Empty message
-        // --------------------------------------------------
-
         function updateEmptyMessage() {
+
             const rows =
                 document.querySelectorAll(".sale-item");
+
 
             document.getElementById("emptyMessage")
                 .style.display =
                 rows.length === 0
-                    ? "block"
+                    ? "flex"
                     : "none";
+
         }
 
 
-        // --------------------------------------------------
-        // Add Sale Item
-        // --------------------------------------------------
-
         function addItem() {
+
             const tbody =
                 document.getElementById("itemsBody");
+
 
             const row =
                 document.createElement("tr");
 
+
             row.className =
                 "sale-item";
 
+
             row.innerHTML = `
 
-                        <td>
+                <td>
 
-                            <select
-                                name="Items[${itemIndex}].MedicineId"
-                                class="form-select medicine"
-                                required>
+                    <select
+                        name="Items[${itemIndex}].MedicineId"
+                        class="form-select medicine"
+                        required>
 
-                                ${createMedicineOptions()}
+                        ${createMedicineOptions()}
 
-                            </select>
+                    </select>
 
-                        </td>
+                </td>
 
-                        <td class="text-center">
 
-                            <span class="available-stock">
-                                -
-                            </span>
+                <td>
 
-                        </td>
+                    <span class="available-stock stock-number">
+                        -
+                    </span>
 
-                        <td>
+                </td>
 
-                            <input
-                                type="number"
-                                name="Items[${itemIndex}].Quantity"
-                                class="form-control quantity"
-                                min="1"
-                                value="1"
-                                required />
 
-                        </td>
+                <td>
 
-                        <td>
+                    <input
+                        type="number"
+                        name="Items[${itemIndex}].Quantity"
+                        class="form-control quantity"
+                        min="1"
+                        value="1"
+                        required />
 
-                            <input
-                                type="number"
-                                name="Items[${itemIndex}].SellingPrice"
-                                class="form-control selling-price"
-                                min="0"
-                                step="0.01"
-                                value="0"
-                                required />
+                </td>
 
-                        </td>
 
-                        <td>
+                <td>
 
-                            ₹<span class="item-total">
-                                0.00
-                            </span>
+                    <div class="price-input">
 
-                        </td>
+                        <span>₹</span>
 
-                        <td>
+                        <input
+                            type="number"
+                            name="Items[${itemIndex}].SellingPrice"
+                            class="form-control selling-price"
+                            min="0"
+                            step="0.01"
+                            value="0"
+                            required />
 
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-outline-danger remove-item">
+                    </div>
 
-                                Remove
+                </td>
 
-                            </button>
 
-                        </td>
+                <td>
 
-                    `;
+                    <strong>
+                        ₹<span class="item-total">0.00</span>
+                    </strong>
+
+                </td>
+
+
+                <td>
+
+                    <button
+                        type="button"
+                        class="remove-item"
+                        title="Remove">
+
+                        ×
+
+                    </button>
+
+                </td>
+
+            `;
+
 
             tbody.appendChild(row);
 
@@ -530,107 +689,98 @@
             updateEmptyMessage();
 
             updateTotals();
+
         }
 
 
-        // --------------------------------------------------
-        // Page loaded
-        // --------------------------------------------------
-
         document.addEventListener(
             "DOMContentLoaded",
-            function() {
-                const addButton =
-                    document.getElementById(
-                        "addItemBtn"
+            function () {
+
+                document
+                    .getElementById("addItemBtn")
+                    .addEventListener(
+                        "click",
+                        addItem
                     );
 
-                addButton.addEventListener(
-                    "click",
-                    function() {
-                        addItem();
-                    }
-                );
-
-
-                // Medicine selection
 
                 document
                     .getElementById("itemsBody")
                     .addEventListener(
                         "change",
-                        function(event) {
+                        function (event) {
+
                             if (
                                 event.target.classList.contains(
                                     "medicine"
                                 )
                             ) {
+
                                 updateMedicineRow(
                                     event.target.closest(
                                         ".sale-item"
                                     )
                                 );
+
                             }
+
                         }
                     );
 
-
-                // Quantity / price
 
                 document
                     .getElementById("itemsBody")
                     .addEventListener(
                         "input",
-                        function() {
-                            updateTotals();
-                        }
+                        updateTotals
                     );
 
-
-                // Discount
 
                 document
                     .getElementById("discount")
                     .addEventListener(
                         "input",
-                        function() {
-                            updateTotals();
-                        }
+                        updateTotals
                     );
 
-
-                // Remove
 
                 document
                     .getElementById("itemsBody")
                     .addEventListener(
                         "click",
-                        function(event) {
+                        function (event) {
+
                             if (
                                 event.target.classList.contains(
                                     "remove-item"
                                 )
                             ) {
+
                                 const row =
                                     event.target.closest(
                                         ".sale-item"
                                     );
 
+
                                 if (row) {
+
                                     row.remove();
 
                                     updateEmptyMessage();
 
                                     updateTotals();
+
                                 }
+
                             }
+
                         }
                     );
 
 
-                // First row
-
                 addItem();
+
             }
         );
 

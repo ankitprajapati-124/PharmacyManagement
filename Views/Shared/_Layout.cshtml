@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -18,195 +19,475 @@
 
     @{
         var currentController =
-            ViewContext.RouteData.Values["controller"]?.ToString();
+            ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+
+        var currentAction =
+            ViewContext.RouteData.Values["action"]?.ToString() ?? "";
 
         var isAccountPage =
             string.Equals(
                 currentController,
                 "Account",
                 StringComparison.OrdinalIgnoreCase);
+
+        var displayName =
+            User.FindFirst(
+                System.Security.Claims.ClaimTypes.GivenName
+            )?.Value
+            ?? User.Identity?.Name
+            ?? "User";
+
+        var role =
+            User.FindFirst(
+                System.Security.Claims.ClaimTypes.Role
+            )?.Value
+            ?? "User";
     }
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
 
-        <div class="container">
+    @if (!isAccountPage && User.Identity?.IsAuthenticated == true)
+    {
+        <div class="app-shell">
 
-            <!-- Brand -->
-            @if (!isAccountPage)
-            {
-                <a class="navbar-brand fw-bold"
-                   asp-controller="Dashboard"
-                   asp-action="Index">
-                    Pharmacy Management
-                </a>
-            }
-            else
-            {
-                <span class="navbar-brand fw-bold">
-                    Pharmacy Management
-                </span>
-            }
+            <!-- ========================= -->
+            <!-- SIDEBAR -->
+            <!-- ========================= -->
 
-            @if (User.Identity?.IsAuthenticated == true &&
-                 !isAccountPage)
-            {
-                <!-- Navigation -->
-                <div class="navbar-nav me-auto">
+            <aside class="sidebar" id="sidebar">
 
-                    <!-- All logged-in users -->
-                    <a class="nav-link"
-                       asp-controller="Dashboard"
-                       asp-action="Index">
-                        Dashboard
+                <div class="sidebar-brand">
+
+                    <a asp-controller="Dashboard"
+                       asp-action="Index"
+                       class="brand-link">
+
+                        <span class="brand-icon">
+                            +
+                        </span>
+
+                        <span>
+                            <strong>Pharmacy</strong>
+                            <small>Management</small>
+                        </span>
+
                     </a>
 
-                    <a class="nav-link"
-                       asp-controller="Medicine"
-                       asp-action="Index">
-                        Medicines
+                    <button type="button"
+                            class="sidebar-close"
+                            id="sidebarClose">
+                        ×
+                    </button>
+
+                </div>
+
+
+                <!-- USER PROFILE -->
+
+                <div class="sidebar-user">
+
+                    <div class="user-avatar">
+                        @displayName.Substring(0, 1).ToUpper()
+                    </div>
+
+                    <div class="user-info">
+
+                        <strong>
+                            @displayName
+                        </strong>
+
+                        <span>
+                            @role
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- NAVIGATION -->
+
+                <div class="sidebar-section">
+                    <span>MAIN MENU</span>
+                </div>
+
+                <nav class="sidebar-nav">
+
+                    <a asp-controller="Dashboard"
+                       asp-action="Index"
+                       class="sidebar-link @(currentController == "Dashboard" ? "active" : "")">
+
+                        <span class="nav-icon">⌂</span>
+                        <span>Dashboard</span>
+
                     </a>
 
-                    <a class="nav-link"
-                       asp-controller="Sale"
-                       asp-action="Index">
-                        Sales
+
+                    <a asp-controller="Medicine"
+                       asp-action="Index"
+                       class="sidebar-link @(currentController == "Medicine" ? "active" : "")">
+
+                        <span class="nav-icon">✚</span>
+                        <span>Medicines</span>
+
                     </a>
 
-                    <!-- Admin + Pharmacist -->
+
+                    <a asp-controller="Sale"
+                       asp-action="Index"
+                       class="sidebar-link @(currentController == "Sale" ? "active" : "")">
+
+                        <span class="nav-icon">▣</span>
+                        <span>Sales</span>
+
+                    </a>
+
+
                     @if (User.IsInRole("Admin") ||
                          User.IsInRole("Pharmacist"))
                     {
-                        <a class="nav-link"
-                           asp-controller="Purchase"
-                           asp-action="Index">
-                            Purchases
+                        <a asp-controller="Purchase"
+                           asp-action="Index"
+                           class="sidebar-link @(currentController == "Purchase" ? "active" : "")">
+
+                            <span class="nav-icon">▤</span>
+                            <span>Purchases</span>
+
                         </a>
 
-                        <a class="nav-link"
-                           asp-controller="Category"
-                           asp-action="Index">
-                            Categories
+
+                        <a asp-controller="Category"
+                           asp-action="Index"
+                           class="sidebar-link @(currentController == "Category" ? "active" : "")">
+
+                            <span class="nav-icon">◈</span>
+                            <span>Categories</span>
+
                         </a>
 
-                        <a class="nav-link"
-                           asp-controller="Supplier"
-                           asp-action="Index">
-                            Suppliers
+
+                        <a asp-controller="Supplier"
+                           asp-action="Index"
+                           class="sidebar-link @(currentController == "Supplier" ? "active" : "")">
+
+                            <span class="nav-icon">♧</span>
+                            <span>Suppliers</span>
+
                         </a>
                     }
 
-                    <!-- Admin only -->
+
+                    @if (User.IsInRole("Admin") ||
+                         User.IsInRole("Pharmacist"))
+                    {
+                        <div class="sidebar-section mt-3">
+                            <span>REPORTS</span>
+                        </div>
+
+                        <a asp-controller="Reports"
+                           asp-action="Sales"
+                           class="sidebar-link @(currentController == "Reports" && currentAction == "Sales" ? "active" : "")">
+
+                            <span class="nav-icon">↗</span>
+                            <span>Sales Report</span>
+
+                        </a>
+
+
+                        <a asp-controller="Reports"
+                           asp-action="Purchases"
+                           class="sidebar-link @(currentController == "Reports" && currentAction == "Purchases" ? "active" : "")">
+
+                            <span class="nav-icon">↗</span>
+                            <span>Purchase Report</span>
+
+                        </a>
+
+
+                        <a asp-controller="Reports"
+                           asp-action="Stock"
+                           class="sidebar-link @(currentController == "Reports" && currentAction == "Stock" ? "active" : "")">
+
+                            <span class="nav-icon">▥</span>
+                            <span>Stock Report</span>
+
+                        </a>
+                    }
+
+
                     @if (User.IsInRole("Admin"))
                     {
-                        <a class="nav-link"
-                           asp-controller="Users"
-                           asp-action="Index">
-                            Users
+                        <div class="sidebar-section mt-3">
+                            <span>ADMINISTRATION</span>
+                        </div>
+
+                        <a asp-controller="Users"
+                           asp-action="Index"
+                           class="sidebar-link @(currentController == "Users" ? "active" : "")">
+
+                            <span class="nav-icon">♙</span>
+                            <span>Users</span>
+
                         </a>
 
-                        <a class="nav-link"
-                           asp-controller="AuditLogs"
-                           asp-action="Index">
-                            Audit Logs
+
+                        <a asp-controller="AuditLogs"
+                           asp-action="Index"
+                           class="sidebar-link @(currentController == "AuditLogs" ? "active" : "")">
+
+                            <span class="nav-icon">▤</span>
+                            <span>Audit Logs</span>
+
                         </a>
                     }
-                </div>
 
-                <!-- Logged-in user -->
-                <div class="d-flex align-items-center">
+                </nav>
 
-                    <span class="navbar-text text-white me-3">
 
-                        <strong>
-                            @(User.FindFirst(
-                                System.Security.Claims.ClaimTypes.GivenName
-                            )?.Value ?? User.Identity?.Name ?? "User")
-                        </strong>
+                <!-- SIDEBAR FOOTER -->
 
-                        <small class="ms-1">
-                            (
-                            @(User.FindFirst(
-                                System.Security.Claims.ClaimTypes.Role
-                            )?.Value ?? "User")
-                            )
-                        </small>
+                <div class="sidebar-footer">
 
-                    </span>
-
-                    <!-- Logout -->
                     <form asp-controller="Account"
                           asp-action="Logout"
-                          method="post"
-                          class="d-inline">
+                          method="post">
 
                         @Html.AntiForgeryToken()
 
                         <button type="submit"
-                                class="btn btn-outline-light btn-sm">
-                            Logout
+                                class="logout-link">
+
+                            <span class="nav-icon">←</span>
+
+                            <span>
+                                Logout
+                            </span>
+
                         </button>
 
                     </form>
 
                 </div>
+
+            </aside>
+
+
+            <!-- ========================= -->
+            <!-- MAIN AREA -->
+            <!-- ========================= -->
+
+            <div class="main-area">
+
+                <!-- TOPBAR -->
+
+                <header class="topbar">
+
+                    <button type="button"
+                            class="sidebar-toggle"
+                            id="sidebarToggle">
+                        ☰
+                    </button>
+
+                    <div class="topbar-title">
+
+                        <span>
+                            @ViewData["Title"]
+                        </span>
+
+                    </div>
+
+
+                    <div class="topbar-user">
+
+                        <div class="topbar-avatar">
+                            @displayName.Substring(0, 1).ToUpper()
+                        </div>
+
+                        <div class="topbar-user-info">
+
+                            <strong>
+                                @displayName
+                            </strong>
+
+                            <small>
+                                @role
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </header>
+
+
+                <!-- PAGE -->
+
+                <main class="page-content">
+
+                    @if (TempData["Success"] is string message)
+                    {
+                        <div class="alert alert-success custom-alert alert-dismissible fade show"
+                             role="alert">
+
+                            <span class="alert-icon">✓</span>
+
+                            <span>
+                                @message
+                            </span>
+
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="alert">
+                            </button>
+
+                        </div>
+                    }
+
+
+                    @if (TempData["Error"] is string errorMessage)
+                    {
+                        <div class="alert alert-danger custom-alert alert-dismissible fade show"
+                             role="alert">
+
+                            <span class="alert-icon">!</span>
+
+                            <span>
+                                @errorMessage
+                            </span>
+
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="alert">
+                            </button>
+
+                        </div>
+                    }
+
+
+                    @RenderBody()
+
+                </main>
+
+
+                <footer class="app-footer">
+
+                    <span>
+                        © @DateTime.Now.Year Pharmacy Management System
+                    </span>
+
+                    <span>
+                        Pharmacy Administration
+                    </span>
+
+                </footer>
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <!-- ACCOUNT PAGES -->
+
+        <main class="account-layout">
+
+            @if (TempData["Success"] is string message)
+            {
+                <div class="alert alert-success alert-dismissible fade show"
+                     role="alert">
+
+                    @message
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert">
+                    </button>
+
+                </div>
             }
 
-        </div>
+            @if (TempData["Error"] is string errorMessage)
+            {
+                <div class="alert alert-danger alert-dismissible fade show"
+                     role="alert">
 
-    </nav>
+                    @errorMessage
 
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert">
+                    </button>
 
-    <!-- Main Content -->
-    <main class="container py-4">
+                </div>
+            }
 
-        @if (TempData["Success"] is string message)
-        {
-            <div class="alert alert-success alert-dismissible fade show"
-                 role="alert">
+            @RenderBody()
 
-                @message
-
-                <button type="button"
-                        class="btn-close"
-                        data-bs-dismiss="alert">
-                </button>
-
-            </div>
-        }
-
-        @if (TempData["Error"] is string errorMessage)
-        {
-            <div class="alert alert-danger alert-dismissible fade show"
-                 role="alert">
-
-                @errorMessage
-
-                <button type="button"
-                        class="btn-close"
-                        data-bs-dismiss="alert">
-                </button>
-
-            </div>
-        }
-
-        @RenderBody()
-
-    </main>
+        </main>
+    }
 
 
-    <!-- Footer -->
-    <footer class="border-top text-muted py-3">
-
-        <div class="container">
-            Pharmacy Management System
-        </div>
-
-    </footer>
-
-
-    <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
     </script>
+
+
+    <script>
+
+            const sidebar =
+                document.getElementById("sidebar");
+
+            const sidebarToggle =
+                document.getElementById("sidebarToggle");
+
+            const sidebarClose =
+                document.getElementById("sidebarClose");
+
+
+            if (sidebarToggle) {
+
+                sidebarToggle.addEventListener(
+                    "click",
+                    function() {
+
+                        sidebar.classList.add("show");
+
+                    });
+
+            }
+
+
+            if (sidebarClose) {
+
+                sidebarClose.addEventListener(
+                    "click",
+                    function() {
+
+                        sidebar.classList.remove("show");
+
+                    });
+
+            }
+
+
+            document.addEventListener(
+                "click",
+                function(event) {
+
+                    if (
+                        window.innerWidth <= 992 &&
+                        sidebar &&
+                        sidebar.classList.contains("show") &&
+                        !sidebar.contains(event.target) &&
+                        event.target !== sidebarToggle
+                    ) {
+
+                        sidebar.classList.remove("show");
+
+                    }
+
+                });
+
+    </script>
+
 
     @await RenderSectionAsync("Scripts", required: false)
 

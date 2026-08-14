@@ -4,136 +4,422 @@
     ViewData["Title"] = "Add Medicine";
 }
 
-<h1>Add Medicine</h1>
-<p class="text-muted">Enter the medicine and stock information.</p>
+<div class="medicine-form-page">
 
-<form asp-action="Create" method="post" class="card shadow-sm">
-    <div class="card-body">
-        <div asp-validation-summary="ModelOnly"
-             class="text-danger mb-3"></div>
+    <div class="page-header-card mb-4">
 
-        <div class="row g-3">
-            <div class="col-md-6">
-                <label asp-for="MedicineName" class="form-label"></label>
-                <input asp-for="MedicineName" class="form-control" />
-                <span asp-validation-for="MedicineName"
-                      class="text-danger"></span>
-            </div>
+        <div>
 
-            <div class="col-md-6">
-                <label asp-for="Manufacturer" class="form-label"></label>
-                <input asp-for="Manufacturer" class="form-control" />
-                <span asp-validation-for="Manufacturer"
-                      class="text-danger"></span>
-            </div>
+            <div class="d-flex align-items-center gap-2 mb-2">
 
-            <div class="mb-3">
-                <label asp-for="CategoryId" class="form-label">
-                    Category
-                </label>
-
-                <select asp-for="CategoryId" class="form-select">
-
-                    <option value="">
-                        -- Select Category --
-                    </option>
-
-                    @foreach (var category in ViewBag.Categories)
-                    {
-                        <option value="@category.CategoryId">
-                            @category.CategoryName
-                        </option>
-                    }
-
-                </select>
-
-                <span asp-validation-for="CategoryId"
-                      class="text-danger">
+                <span class="page-header-icon">
+                    +
                 </span>
-            </div>
 
-            <div class="mb-3">
-                <label asp-for="SupplierId" class="form-label">
-                    Supplier
-                </label>
-
-                <select asp-for="SupplierId" class="form-select">
-
-                    <option value="">
-                        -- Select Supplier --
-                    </option>
-
-                    @foreach (var supplier in ViewBag.Suppliers)
-                    {
-                        <option value="@supplier.SupplierId">
-                            @supplier.SupplierName
-                        </option>
-                    }
-
-                </select>
-
-                <span asp-validation-for="SupplierId"
-                      class="text-danger">
+                <span class="text-primary small fw-semibold">
+                    INVENTORY
                 </span>
+
             </div>
 
-            <div class="col-md-4">
-                <label asp-for="BatchNo" class="form-label"></label>
-                <input asp-for="BatchNo" class="form-control" />
-            </div>
+            <h2 class="mb-1">
+                Add Medicine
+            </h2>
 
-            <div class="col-md-4">
-                <label asp-for="ExpiryDate" class="form-label"></label>
-                <input asp-for="ExpiryDate"
-                       type="date"
-                       class="form-control" />
-            </div>
+            <p class="text-muted mb-0">
+                Add a new medicine to your pharmacy inventory.
+            </p>
 
-            <div class="col-md-4">
-                <label asp-for="Quantity" class="form-label"></label>
-                <input asp-for="Quantity"
-                       type="number"
-                       min="0"
-                       class="form-control" />
-                <span asp-validation-for="Quantity"
-                      class="text-danger"></span>
-            </div>
-
-            <div class="col-md-6">
-                <label asp-for="PurchasePrice" class="form-label"></label>
-                <input asp-for="PurchasePrice"
-                       type="number"
-                       step="0.01"
-                       min="0"
-                       class="form-control" />
-                <span asp-validation-for="PurchasePrice"
-                      class="text-danger"></span>
-            </div>
-
-            <div class="col-md-6">
-                <label asp-for="SellingPrice" class="form-label"></label>
-                <input asp-for="SellingPrice"
-                       type="number"
-                       step="0.01"
-                       min="0"
-                       class="form-control" />
-                <span asp-validation-for="SellingPrice"
-                      class="text-danger"></span>
-            </div>
         </div>
-    </div>
 
-    <div class="card-footer bg-white">
-        <button type="submit" class="btn btn-primary">
-            Save Medicine
-        </button>
         <a asp-action="Index"
            class="btn btn-outline-secondary">
-            Cancel
+
+            ← Back to Medicines
+
         </a>
+
     </div>
-</form>
+
+
+    <form asp-action="Create"
+          method="post">
+
+        <div asp-validation-summary="ModelOnly"
+             class="alert alert-danger"
+             role="alert">
+        </div>
+
+
+        <div class="row g-4">
+
+            <!-- =====================================
+                 BASIC INFORMATION
+                 ===================================== -->
+
+            <div class="col-lg-8">
+
+                <div class="form-section-card">
+
+                    <div class="form-section-header">
+
+                        <div class="form-section-icon blue">
+                            ✚
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Medicine Information
+                            </strong>
+
+                            <small>
+                                Basic details about the medicine
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-section-body">
+
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+
+                                <label asp-for="MedicineName"
+                                       class="form-label">
+                                </label>
+
+                                <input asp-for="MedicineName"
+                                       class="form-control"
+                                       placeholder="Enter medicine name" />
+
+                                <span asp-validation-for="MedicineName"
+                                      class="field-validation">
+                                </span>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label asp-for="Manufacturer"
+                                       class="form-label">
+                                </label>
+
+                                <input asp-for="Manufacturer"
+                                       class="form-control"
+                                       placeholder="Enter manufacturer" />
+
+                                <span asp-validation-for="Manufacturer"
+                                      class="field-validation">
+                                </span>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label asp-for="CategoryId"
+                                       class="form-label">
+                                    Category
+                                </label>
+
+                                <select asp-for="CategoryId"
+                                        class="form-select">
+
+                                    <option value="">
+                                        -- Select Category --
+                                    </option>
+
+                                    @foreach (var category
+                                        in ViewBag.Categories)
+                                    {
+                                        <option value="@category.CategoryId">
+
+                                            @category.CategoryName
+
+                                        </option>
+                                    }
+
+                                </select>
+
+                                <span asp-validation-for="CategoryId"
+                                      class="field-validation">
+                                </span>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label asp-for="SupplierId"
+                                       class="form-label">
+                                    Supplier
+                                </label>
+
+                                <select asp-for="SupplierId"
+                                        class="form-select">
+
+                                    <option value="">
+                                        -- Select Supplier --
+                                    </option>
+
+                                    @foreach (var supplier
+                                        in ViewBag.Suppliers)
+                                    {
+                                        <option value="@supplier.SupplierId">
+
+                                            @supplier.SupplierName
+
+                                        </option>
+                                    }
+
+                                </select>
+
+                                <span asp-validation-for="SupplierId"
+                                      class="field-validation">
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================
+                 INVENTORY SUMMARY
+                 ===================================== -->
+
+            <div class="col-lg-4">
+
+                <div class="form-info-card">
+
+                    <div class="form-info-icon">
+                        ▦
+                    </div>
+
+                    <h5>
+                        Inventory Setup
+                    </h5>
+
+                    <p>
+                        Enter batch, expiry and stock information
+                        for this medicine.
+                    </p>
+
+                    <div class="info-line">
+                        <span>Batch</span>
+                        <strong>Required</strong>
+                    </div>
+
+                    <div class="info-line">
+                        <span>Expiry</span>
+                        <strong>Recommended</strong>
+                    </div>
+
+                    <div class="info-line">
+                        <span>Stock</span>
+                        <strong>Units</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================
+                 STOCK INFORMATION
+                 ===================================== -->
+
+            <div class="col-12">
+
+                <div class="form-section-card">
+
+                    <div class="form-section-header">
+
+                        <div class="form-section-icon green">
+                            ▦
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Stock & Pricing
+                            </strong>
+
+                            <small>
+                                Batch, expiry and medicine pricing
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-section-body">
+
+                        <div class="row g-3">
+
+                            <div class="col-md-4">
+
+                                <label asp-for="BatchNo"
+                                       class="form-label">
+                                </label>
+
+                                <input asp-for="BatchNo"
+                                       class="form-control"
+                                       placeholder="e.g. BATCH-001" />
+
+                                <span asp-validation-for="BatchNo"
+                                      class="field-validation">
+                                </span>
+
+                            </div>
+
+
+                            <div class="col-md-4">
+
+                                <label asp-for="ExpiryDate"
+                                       class="form-label">
+                                </label>
+
+                                <input asp-for="ExpiryDate"
+                                       type="date"
+                                       class="form-control" />
+
+                                <span asp-validation-for="ExpiryDate"
+                                      class="field-validation">
+                                </span>
+
+                            </div>
+
+
+                            <div class="col-md-4">
+
+                                <label asp-for="Quantity"
+                                       class="form-label">
+                                </label>
+
+                                <div class="input-group">
+
+                                    <input asp-for="Quantity"
+                                           type="number"
+                                           min="0"
+                                           class="form-control"
+                                           placeholder="0" />
+
+                                    <span class="input-group-text">
+                                        Units
+                                    </span>
+
+                                </div>
+
+                                <span asp-validation-for="Quantity"
+                                      class="field-validation">
+                                </span>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label asp-for="PurchasePrice"
+                                       class="form-label">
+                                </label>
+
+                                <div class="input-group">
+
+                                    <span class="input-group-text">
+                                        ₹
+                                    </span>
+
+                                    <input asp-for="PurchasePrice"
+                                           type="number"
+                                           step="0.01"
+                                           min="0"
+                                           class="form-control"
+                                           placeholder="0.00" />
+
+                                </div>
+
+                                <span asp-validation-for="PurchasePrice"
+                                      class="field-validation">
+                                </span>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label asp-for="SellingPrice"
+                                       class="form-label">
+                                </label>
+
+                                <div class="input-group">
+
+                                    <span class="input-group-text">
+                                        ₹
+                                    </span>
+
+                                    <input asp-for="SellingPrice"
+                                           type="number"
+                                           step="0.01"
+                                           min="0"
+                                           class="form-control"
+                                           placeholder="0.00" />
+
+                                </div>
+
+                                <span asp-validation-for="SellingPrice"
+                                      class="field-validation">
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-section-footer">
+
+                        <a asp-action="Index"
+                           class="btn btn-outline-secondary">
+
+                            Cancel
+
+                        </a>
+
+                        <button type="submit"
+                                class="btn btn-primary">
+
+                            Save Medicine
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
 
 @section Scripts {
+
     <partial name="_ValidationScriptsPartial" />
+
 }

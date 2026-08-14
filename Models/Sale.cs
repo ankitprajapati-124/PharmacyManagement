@@ -1,10 +1,10 @@
-﻿using System.Net.ServerSentEvents;
-
-namespace PharmacyManagement.Models;
+﻿namespace PharmacyManagement.Models;
 
 public class Sale
 {
     public int SaleId { get; set; }
+
+    public int UserId { get; set; }
 
     public string? CustomerName { get; set; }
 

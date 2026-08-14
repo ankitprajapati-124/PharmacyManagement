@@ -2,63 +2,355 @@
 
 @{
     ViewData["Title"] = "Medicine Details";
+
+    var isExpired =
+        Model.ExpiryDate.HasValue &&
+        Model.ExpiryDate.Value.Date < DateTime.Today;
+
+    var isExpiringSoon =
+        Model.ExpiryDate.HasValue &&
+        Model.ExpiryDate.Value.Date >= DateTime.Today &&
+        Model.ExpiryDate.Value.Date <= DateTime.Today.AddDays(30);
 }
 
-<h1>Medicine Details</h1>
+<div class="medicine-details-page">
 
-<div class="card shadow-sm">
-    <div class="card-body">
-        <dl class="row mb-0">
+    <div class="page-header-card mb-4">
 
-            <dt class="col-sm-4">Medicine Name</dt>
-            <dd class="col-sm-8">@Model.MedicineName</dd>
+        <div>
 
-            <dt class="col-sm-4">Manufacturer</dt>
-            <dd class="col-sm-8">@Model.Manufacturer</dd>
+            <div class="d-flex align-items-center gap-2 mb-2">
 
-            <dt class="col-sm-4">Category</dt>
-            <dd class="col-sm-8">
-                @(Model.CategoryName ?? "Not assigned")
-            </dd>
+                <span class="page-header-icon">
+                    ◉
+                </span>
 
-            <dt class="col-sm-4">Supplier</dt>
-            <dd class="col-sm-8">
-                @(Model.SupplierName ?? "Not assigned")
-            </dd>
+                <span class="text-primary small fw-semibold">
+                    MEDICINE DETAILS
+                </span>
 
-            <dt class="col-sm-4">Batch No.</dt>
-            <dd class="col-sm-8">@Model.BatchNo</dd>
+            </div>
 
-            <dt class="col-sm-4">Expiry Date</dt>
-            <dd class="col-sm-8">
-                @(Model.ExpiryDate?.ToString("dd-MM-yyyy") ?? "-")
-            </dd>
+            <h2 class="mb-1">
+                @Model.MedicineName
+            </h2>
 
-            <dt class="col-sm-4">Purchase Price</dt>
-            <dd class="col-sm-8">
-                ₹@Model.PurchasePrice.ToString("N2")
-            </dd>
+            <p class="text-muted mb-0">
+                Medicine ID #@Model.MedicineId
+            </p>
 
-            <dt class="col-sm-4">Selling Price</dt>
-            <dd class="col-sm-8">
-                ₹@Model.SellingPrice.ToString("N2")
-            </dd>
+        </div>
 
-            <dt class="col-sm-4">Quantity</dt>
-            <dd class="col-sm-8">@Model.Quantity</dd>
+        <div class="d-flex gap-2">
 
-        </dl>
+            <a asp-action="Edit"
+               asp-route-id="@Model.MedicineId"
+               class="btn btn-primary">
+
+                Edit
+
+            </a>
+
+            <a asp-action="Index"
+               class="btn btn-outline-secondary">
+
+                ← Back
+
+            </a>
+
+        </div>
+
     </div>
 
-    <div class="card-footer bg-white">
-        <a asp-action="Edit"
-           asp-route-id="@Model.MedicineId"
-           class="btn btn-primary">
-            Edit
-        </a>
-        <a asp-action="Index"
-           class="btn btn-outline-secondary">
-            Back
-        </a>
+
+    <!-- =========================================
+         STATUS
+         ========================================= -->
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-4">
+
+            <div class="detail-stat-card">
+
+                <div class="summary-icon summary-blue">
+                    ▦
+                </div>
+
+                <div>
+
+                    <span>Current Stock</span>
+
+                    <strong>
+                        @Model.Quantity
+                    </strong>
+
+                    @if (Model.Quantity == 0)
+                    {
+                        <small class="text-danger">
+                            Out of stock
+                        </small>
+                    }
+                    else if (Model.Quantity < 10)
+                    {
+                        <small class="text-warning">
+                            Low stock
+                        </small>
+                    }
+                    else
+                    {
+                        <small class="text-success">
+                            Healthy stock
+                        </small>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="detail-stat-card">
+
+                <div class="summary-icon summary-green">
+                    ₹
+                </div>
+
+                <div>
+
+                    <span>Selling Price</span>
+
+                    <strong>
+                        ₹@Model.SellingPrice.ToString("N2")
+                    </strong>
+
+                    <small>
+                        Retail price
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="detail-stat-card">
+
+                <div class="summary-icon summary-orange">
+                    !
+                </div>
+
+                <div>
+
+                    <span>Expiry</span>
+
+                    <strong>
+
+                        @(Model.ExpiryDate?
+                            .ToString("dd-MM-yyyy")
+                            ?? "-")
+
+                    </strong>
+
+                    @if (isExpired)
+                    {
+                        <small class="text-danger">
+                            Expired
+                        </small>
+                    }
+                    else if (isExpiringSoon)
+                    {
+                        <small class="text-warning">
+                            Expiring soon
+                        </small>
+                    }
+                    else
+                    {
+                        <small class="text-success">
+                            Valid
+                        </small>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
+
+
+    <!-- =========================================
+         DETAILS
+         ========================================= -->
+
+    <div class="detail-section-card">
+
+        <div class="detail-section-header">
+
+            <strong>
+                Medicine Information
+            </strong>
+
+        </div>
+
+
+        <div class="detail-grid">
+
+            <div class="detail-item">
+
+                <span>
+                    Medicine Name
+                </span>
+
+                <strong>
+                    @Model.MedicineName
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>
+                    Manufacturer
+                </span>
+
+                <strong>
+                    @(Model.Manufacturer ?? "-")
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>
+                    Category
+                </span>
+
+                <strong>
+                    @(Model.CategoryName ?? "Not assigned")
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>
+                    Supplier
+                </span>
+
+                <strong>
+                    @(Model.SupplierName ?? "Not assigned")
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>
+                    Batch Number
+                </span>
+
+                <strong>
+                    @(Model.BatchNo ?? "-")
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>
+                    Expiry Date
+                </span>
+
+                <strong>
+                    @(Model.ExpiryDate?
+                        .ToString("dd-MM-yyyy")
+                        ?? "-")
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>
+                    Purchase Price
+                </span>
+
+                <strong>
+                    ₹@Model.PurchasePrice.ToString("N2")
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>
+                    Selling Price
+                </span>
+
+                <strong>
+                    ₹@Model.SellingPrice.ToString("N2")
+                </strong>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span>
+                    Quantity
+                </span>
+
+                <strong>
+                    @Model.Quantity
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="detail-footer">
+
+            <a asp-action="Edit"
+               asp-route-id="@Model.MedicineId"
+               class="btn btn-primary">
+
+                Edit Medicine
+
+            </a>
+
+            <a asp-action="Delete"
+               asp-route-id="@Model.MedicineId"
+               class="btn btn-outline-danger">
+
+                Delete Medicine
+
+            </a>
+
+            <a asp-action="Index"
+               class="btn btn-outline-secondary">
+
+                Back to Medicines
+
+            </a>
+
+        </div>
+
+    </div>
+
 </div>

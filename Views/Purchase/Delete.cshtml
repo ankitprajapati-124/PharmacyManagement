@@ -4,160 +4,166 @@
     ViewData["Title"] = "Delete Purchase";
 }
 
-<div class="mb-4">
-    <h2>Delete Purchase</h2>
-    <p class="text-muted">
-        Review the purchase before deleting it.
-    </p>
-</div>
+<div class="purchase-delete-page">
 
-<div class="alert alert-warning">
-    <strong>Warning:</strong>
-    Deleting this purchase will also reverse the stock quantities
-    that were added by this purchase.
-</div>
+    <div class="delete-card">
 
-<div class="card shadow-sm mb-4">
+        <div class="purchase-delete-icon">
+            !
+        </div>
 
-    <div class="card-header">
-        <strong>Purchase Information</strong>
-    </div>
+        <span class="delete-label">
+            STOCK REVERSAL
+        </span>
 
-    <div class="card-body">
+        <h2>
+            Delete This Purchase?
+        </h2>
 
-        <dl class="row mb-0">
-
-            <dt class="col-sm-4">
-                Purchase ID
-            </dt>
-
-            <dd class="col-sm-8">
-                @Model.PurchaseId
-            </dd>
+        <p>
+            Deleting this purchase will remove the transaction
+            and reverse the stock quantities that were added.
+        </p>
 
 
-            <dt class="col-sm-4">
-                Supplier
-            </dt>
+        <div class="purchase-delete-summary">
 
-            <dd class="col-sm-8">
-                @Model.SupplierName
-            </dd>
+            <div>
 
+                <span>
+                    Purchase ID
+                </span>
 
-            <dt class="col-sm-4">
-                Purchase Date
-            </dt>
+                <strong>
+                    #@Model.PurchaseId
+                </strong>
 
-            <dd class="col-sm-8">
-                @Model.PurchaseDate.ToString("dd-MM-yyyy")
-            </dd>
+            </div>
 
 
-            <dt class="col-sm-4">
-                Invoice No.
-            </dt>
+            <div>
 
-            <dd class="col-sm-8">
-                @(Model.InvoiceNo ?? "-")
-            </dd>
+                <span>
+                    Supplier
+                </span>
 
+                <strong>
+                    @Model.SupplierName
+                </strong>
 
-            <dt class="col-sm-4">
-                Total Amount
-            </dt>
-
-            <dd class="col-sm-8">
-                ₹@Model.TotalAmount.ToString("N2")
-            </dd>
-
-        </dl>
-
-    </div>
-
-</div>
+            </div>
 
 
-<div class="card shadow-sm mb-4">
+            <div>
 
-    <div class="card-header">
-        <strong>Purchase Items</strong>
-    </div>
+                <span>
+                    Invoice
+                </span>
 
-    <div class="card-body">
+                <strong>
+                    @(Model.InvoiceNo ?? "-")
+                </strong>
 
-        <div class="table-responsive">
+            </div>
 
-            <table class="table table-bordered">
 
-                <thead class="table-light">
+            <div>
 
-                    <tr>
-                        <th>Medicine</th>
-                        <th class="text-end">Quantity</th>
-                        <th class="text-end">Purchase Price</th>
-                        <th class="text-end">Total</th>
-                    </tr>
+                <span>
+                    Total
+                </span>
 
-                </thead>
+                <strong class="delete-total">
+                    ₹@Model.TotalAmount.ToString("N2")
+                </strong>
 
-                <tbody>
-
-                    @foreach (var item in Model.Items)
-                    {
-                        <tr>
-
-                            <td>
-                                @item.MedicineName
-                            </td>
-
-                            <td class="text-end">
-                                @item.Quantity
-                            </td>
-
-                            <td class="text-end">
-                                ₹@item.PurchasePrice.ToString("N2")
-                            </td>
-
-                            <td class="text-end">
-                                ₹@item.TotalPrice.ToString("N2")
-                            </td>
-
-                        </tr>
-                    }
-
-                </tbody>
-
-            </table>
+            </div>
 
         </div>
 
+
+        <div class="delete-warning">
+
+            <div class="delete-warning-icon">
+                !
+            </div>
+
+            <div>
+
+                <strong>
+                    Stock will be reduced
+                </strong>
+
+                <p>
+                    The quantities added by this purchase
+                    will be removed from the medicine inventory.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        @if (Model.Items.Count > 0)
+        {
+            <div class="delete-items">
+
+                <strong>
+                    Medicines affected
+                </strong>
+
+                <div class="delete-item-list">
+
+                    @foreach (var item in Model.Items)
+                    {
+                        <div class="delete-item">
+
+                            <span>
+                                @item.MedicineName
+                            </span>
+
+                            <strong>
+                                -@item.Quantity
+                            </strong>
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+        }
+
+
+        <form asp-action="DeleteConfirmed"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden"
+                   name="id"
+                   value="@Model.PurchaseId" />
+
+            <div class="delete-actions">
+
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary">
+
+                    Cancel
+
+                </a>
+
+                <button type="submit"
+                        class="btn btn-danger">
+
+                    Delete & Reverse Stock
+
+                </button>
+
+            </div>
+
+        </form>
+
     </div>
 
 </div>
-
-
-<form asp-action="DeleteConfirmed"
-      method="post">
-
-    @Html.AntiForgeryToken()
-
-    <input type="hidden"
-           name="id"
-           value="@Model.PurchaseId" />
-
-    <div class="d-flex justify-content-end gap-2">
-
-        <a asp-action="Index"
-           class="btn btn-secondary">
-            Cancel
-        </a>
-
-        <button type="submit"
-                class="btn btn-danger">
-            Delete Purchase
-        </button>
-
-    </div>
-
-</form>

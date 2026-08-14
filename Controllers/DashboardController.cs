@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PharmacyManagement.Services;
@@ -18,8 +19,29 @@ public class DashboardController : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
+        var userIdValue =
+            User.FindFirst(
+                ClaimTypes.NameIdentifier)?.Value;
+
+        if (!int.TryParse(
+                userIdValue,
+                out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var isAdmin =
+            User.IsInRole("Admin");
+
+        var canViewPurchases =
+            User.IsInRole("Admin") ||
+            User.IsInRole("Pharmacist");
+
         var dashboard =
-            await _service.GetDashboardAsync();
+            await _service.GetDashboardAsync(
+                userId,
+                isAdmin,
+                canViewPurchases);
 
         return View(dashboard);
     }

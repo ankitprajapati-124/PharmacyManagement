@@ -4,6 +4,8 @@ public class Purchase
 {
     public int PurchaseId { get; set; }
 
+    public int UserId { get; set; }
+
     public int SupplierId { get; set; }
 
     public string? SupplierName { get; set; }

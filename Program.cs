@@ -27,6 +27,9 @@ builder.Services.AddScoped<IAuditLogService,AuditLogService>();
 builder.Services.AddScoped<IDashboardService,DashboardService>();
 builder.Services.AddScoped<IAuthService,AuthService>();
 
+builder.Services.AddScoped<IReportRepository,ReportRepository>();
+builder.Services.AddScoped<IReportService,ReportService>();
+
 builder.Services.AddScoped<IMedicineService, MedicineService>();
 
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();

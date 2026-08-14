@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PharmacyManagement.Models;
 using PharmacyManagement.Services;
@@ -28,20 +29,67 @@ public class PurchaseController : Controller
         _logger = logger;
     }
 
+    // =========================================================
+    // CURRENT USER
+    // =========================================================
+
+    private int GetCurrentUserId()
+    {
+        var userIdValue =
+            User.FindFirst(
+                ClaimTypes.NameIdentifier)?.Value;
+
+        if (!int.TryParse(
+                userIdValue,
+                out var userId))
+        {
+            throw new InvalidOperationException(
+                "Unable to determine the logged-in user.");
+        }
+
+        return userId;
+    }
+
+    // =========================================================
+    // INDEX
+    // =========================================================
+
     [HttpGet]
     public async Task<IActionResult> Index()
     {
+        var userId =
+            GetCurrentUserId();
+
+        var isAdmin =
+            User.IsInRole("Admin");
+
         var purchases =
-            await _service.GetAllAsync();
+            await _service.GetAllAsync(
+                userId,
+                isAdmin);
 
         return View(purchases);
     }
 
+    // =========================================================
+    // DETAILS
+    // =========================================================
+
     [HttpGet]
-    public async Task<IActionResult> Details(int id)
+    public async Task<IActionResult> Details(
+        int id)
     {
+        var userId =
+            GetCurrentUserId();
+
+        var isAdmin =
+            User.IsInRole("Admin");
+
         var purchase =
-            await _service.GetByIdAsync(id);
+            await _service.GetByIdAsync(
+                id,
+                userId,
+                isAdmin);
 
         if (purchase is null)
             return NotFound();
@@ -49,19 +97,21 @@ public class PurchaseController : Controller
         return View(purchase);
     }
 
-    // ============================
+    // =========================================================
     // CREATE
-    // ============================
+    // =========================================================
 
     [HttpGet]
     public async Task<IActionResult> Create()
     {
         await LoadDropdownsAsync();
 
-        return View(new Purchase
-        {
-            PurchaseDate = DateTime.Today
-        });
+        return View(
+            new Purchase
+            {
+                PurchaseDate =
+                    DateTime.Today
+            });
     }
 
     [HttpPost]
@@ -78,8 +128,15 @@ public class PurchaseController : Controller
 
         try
         {
+            // UserId is taken from authentication,
+            // NOT from the submitted form.
+            var userId =
+                GetCurrentUserId();
+
             var id =
-                await _service.AddAsync(purchase);
+                await _service.AddAsync(
+                    purchase,
+                    userId);
 
             await _auditLogService.LogAsync(
                 "Create",
@@ -88,13 +145,15 @@ public class PurchaseController : Controller
                 $"Purchase #{id} was created and medicine stock was updated.");
 
             _logger.LogInformation(
-                "Purchase {PurchaseId} created.",
-                id);
+                "Purchase {PurchaseId} created by User {UserId}.",
+                id,
+                userId);
 
             TempData["Success"] =
                 "Purchase added successfully and medicine stock updated.";
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(
+                nameof(Index));
         }
         catch (Exception ex)
         {
@@ -112,21 +171,35 @@ public class PurchaseController : Controller
         }
     }
 
-    // ============================
-    // DELETE
-    // ============================
+    // =========================================================
+    // DELETE - GET
+    // =========================================================
 
     [HttpGet]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(
+        int id)
     {
+        var userId =
+            GetCurrentUserId();
+
+        var isAdmin =
+            User.IsInRole("Admin");
+
         var purchase =
-            await _service.GetByIdAsync(id);
+            await _service.GetByIdAsync(
+                id,
+                userId,
+                isAdmin);
 
         if (purchase is null)
             return NotFound();
 
         return View(purchase);
     }
+
+    // =========================================================
+    // DELETE - POST
+    // =========================================================
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -135,14 +208,27 @@ public class PurchaseController : Controller
     {
         try
         {
+            var userId =
+                GetCurrentUserId();
+
+            var isAdmin =
+                User.IsInRole("Admin");
+
+            // Verify ownership/access first.
             var purchase =
-                await _service.GetByIdAsync(id);
+                await _service.GetByIdAsync(
+                    id,
+                    userId,
+                    isAdmin);
 
             if (purchase is null)
                 return NotFound();
 
             var deleted =
-                await _service.DeleteAsync(id);
+                await _service.DeleteAsync(
+                    id,
+                    userId,
+                    isAdmin);
 
             if (!deleted)
                 return NotFound();
@@ -154,13 +240,15 @@ public class PurchaseController : Controller
                 $"Purchase #{id} was deleted and medicine stock was reversed.");
 
             _logger.LogInformation(
-                "Purchase {PurchaseId} deleted.",
-                id);
+                "Purchase {PurchaseId} deleted by User {UserId}.",
+                id,
+                userId);
 
             TempData["Success"] =
                 "Purchase deleted and medicine stock reversed.";
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(
+                nameof(Index));
         }
         catch (Exception ex)
         {
@@ -172,13 +260,14 @@ public class PurchaseController : Controller
             TempData["Error"] =
                 ex.Message;
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(
+                nameof(Index));
         }
     }
 
-    // ============================
-    // DROPDOWN DATA
-    // ============================
+    // =========================================================
+    // DROPDOWNS
+    // =========================================================
 
     private async Task LoadDropdownsAsync()
     {
@@ -188,7 +277,10 @@ public class PurchaseController : Controller
         var medicines =
             await _medicineService.GetAllAsync();
 
-        ViewBag.Suppliers = suppliers;
-        ViewBag.Medicines = medicines;
-   }
+        ViewBag.Suppliers =
+            suppliers;
+
+        ViewBag.Medicines =
+            medicines;
+    }
 }

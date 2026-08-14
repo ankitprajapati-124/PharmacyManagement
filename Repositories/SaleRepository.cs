@@ -16,13 +16,22 @@ public class SaleRepository : ISaleRepository
                 "DefaultConnection is not configured.");
     }
 
-    public async Task<IReadOnlyList<Sale>> GetAllAsync()
+    // =========================================================
+    // GET ALL
+    // Admin = all sales
+    // Other users = only their own sales
+    // =========================================================
+
+    public async Task<IReadOnlyList<Sale>> GetAllAsync(
+        int currentUserId,
+        bool isAdmin)
     {
         var sales = new List<Sale>();
 
         const string sql = """
             SELECT
                 SaleId,
+                UserId,
                 CustomerName,
                 CustomerMobile,
                 SaleDate,
@@ -31,6 +40,8 @@ public class SaleRepository : ISaleRepository
                 TotalAmount,
                 CreatedAt
             FROM Sales
+            WHERE @IsAdmin = 1
+               OR UserId = @UserId
             ORDER BY SaleId DESC;
             """;
 
@@ -41,6 +52,14 @@ public class SaleRepository : ISaleRepository
 
         await using var command =
             new SqlCommand(sql, connection);
+
+        command.Parameters.Add(
+            "@UserId",
+            SqlDbType.Int).Value = currentUserId;
+
+        command.Parameters.Add(
+            "@IsAdmin",
+            SqlDbType.Bit).Value = isAdmin;
 
         await using var reader =
             await command.ExecuteReaderAsync();
@@ -53,11 +72,20 @@ public class SaleRepository : ISaleRepository
         return sales;
     }
 
-    public async Task<Sale?> GetByIdAsync(int id)
+    // =========================================================
+    // GET BY ID
+    // Prevent User A from opening User B's sale
+    // =========================================================
+
+    public async Task<Sale?> GetByIdAsync(
+        int id,
+        int currentUserId,
+        bool isAdmin)
     {
         const string saleSql = """
             SELECT
                 SaleId,
+                UserId,
                 CustomerName,
                 CustomerMobile,
                 SaleDate,
@@ -66,7 +94,11 @@ public class SaleRepository : ISaleRepository
                 TotalAmount,
                 CreatedAt
             FROM Sales
-            WHERE SaleId = @SaleId;
+            WHERE SaleId = @SaleId
+              AND (
+                    @IsAdmin = 1
+                    OR UserId = @UserId
+                  );
             """;
 
         const string itemsSql = """
@@ -92,12 +124,24 @@ public class SaleRepository : ISaleRepository
 
         Sale? sale;
 
+        // =====================================================
+        // Sale
+        // =====================================================
+
         await using (var command =
             new SqlCommand(saleSql, connection))
         {
             command.Parameters.Add(
                 "@SaleId",
                 SqlDbType.Int).Value = id;
+
+            command.Parameters.Add(
+                "@UserId",
+                SqlDbType.Int).Value = currentUserId;
+
+            command.Parameters.Add(
+                "@IsAdmin",
+                SqlDbType.Bit).Value = isAdmin;
 
             await using var reader =
                 await command.ExecuteReaderAsync();
@@ -107,6 +151,10 @@ public class SaleRepository : ISaleRepository
 
             sale = MapSale(reader);
         }
+
+        // =====================================================
+        // Sale Items
+        // =====================================================
 
         await using (var command =
             new SqlCommand(itemsSql, connection))
@@ -128,11 +176,20 @@ public class SaleRepository : ISaleRepository
         return sale;
     }
 
-    public async Task<int> AddAsync(Sale sale)
+    // =========================================================
+    // CREATE SALE
+    // UserId comes from authenticated user
+    // NOT from browser/form
+    // =========================================================
+
+    public async Task<int> AddAsync(
+        Sale sale,
+        int currentUserId)
     {
         const string saleSql = """
             INSERT INTO Sales
             (
+                UserId,
                 CustomerName,
                 CustomerMobile,
                 SaleDate,
@@ -142,6 +199,7 @@ public class SaleRepository : ISaleRepository
             )
             VALUES
             (
+                @UserId,
                 @CustomerName,
                 @CustomerMobile,
                 @SaleDate,
@@ -195,13 +253,21 @@ public class SaleRepository : ISaleRepository
         {
             int saleId;
 
-            // 1. Create Sale
+            // =================================================
+            // 1. CREATE SALE
+            // =================================================
+
             await using (var command =
                 new SqlCommand(
                     saleSql,
                     connection,
                     (SqlTransaction)transaction))
             {
+                command.Parameters.Add(
+                    "@UserId",
+                    SqlDbType.Int).Value =
+                    currentUserId;
+
                 command.Parameters.Add(
                     "@CustomerName",
                     SqlDbType.NVarChar,
@@ -251,7 +317,10 @@ public class SaleRepository : ISaleRepository
                         await command.ExecuteScalarAsync());
             }
 
-            // 2. Process Sale Items
+            // =================================================
+            // 2. PROCESS SALE ITEMS
+            // =================================================
+
             foreach (var item in sale.Items)
             {
                 if (item.Quantity <= 0)
@@ -266,7 +335,10 @@ public class SaleRepository : ISaleRepository
                         "Selling price cannot be negative.");
                 }
 
-                // Check available stock
+                // =============================================
+                // Check stock
+                // =============================================
+
                 int availableStock;
 
                 await using (var command =
@@ -296,10 +368,14 @@ public class SaleRepository : ISaleRepository
                 if (availableStock < item.Quantity)
                 {
                     throw new InvalidOperationException(
-                        $"Insufficient stock for medicine ID {item.MedicineId}. Available stock: {availableStock}.");
+                        $"Insufficient stock for medicine ID {item.MedicineId}. " +
+                        $"Available stock: {availableStock}.");
                 }
 
-                // Insert Sale Item
+                // =============================================
+                // Insert sale item
+                // =============================================
+
                 await using (var command =
                     new SqlCommand(
                         itemSql,
@@ -333,7 +409,10 @@ public class SaleRepository : ISaleRepository
                     await command.ExecuteNonQueryAsync();
                 }
 
+                // =============================================
                 // Decrease stock
+                // =============================================
+
                 await using (var command =
                     new SqlCommand(
                         stockUpdateSql,
@@ -372,14 +451,30 @@ public class SaleRepository : ISaleRepository
         }
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    // =========================================================
+    // DELETE SALE
+    //
+    // Admin = can delete any sale
+    // User  = can delete only own sale
+    // =========================================================
+
+    public async Task<bool> DeleteAsync(
+        int id,
+        int currentUserId,
+        bool isAdmin)
     {
         const string getItemsSql = """
             SELECT
-                MedicineId,
-                Quantity
-            FROM SaleItems
-            WHERE SaleId = @SaleId;
+                si.MedicineId,
+                si.Quantity
+            FROM SaleItems si
+            INNER JOIN Sales s
+                ON si.SaleId = s.SaleId
+            WHERE si.SaleId = @SaleId
+              AND (
+                    @IsAdmin = 1
+                    OR s.UserId = @UserId
+                  );
             """;
 
         const string restoreStockSql = """
@@ -395,7 +490,11 @@ public class SaleRepository : ISaleRepository
 
         const string deleteSaleSql = """
             DELETE FROM Sales
-            WHERE SaleId = @SaleId;
+            WHERE SaleId = @SaleId
+              AND (
+                    @IsAdmin = 1
+                    OR UserId = @UserId
+                  );
             """;
 
         await using var connection =
@@ -411,7 +510,10 @@ public class SaleRepository : ISaleRepository
             var items =
                 new List<(int MedicineId, int Quantity)>();
 
-            // Get sale items
+            // =================================================
+            // Get sale items only if user owns sale
+            // =================================================
+
             await using (var command =
                 new SqlCommand(
                     getItemsSql,
@@ -421,6 +523,16 @@ public class SaleRepository : ISaleRepository
                 command.Parameters.Add(
                     "@SaleId",
                     SqlDbType.Int).Value = id;
+
+                command.Parameters.Add(
+                    "@UserId",
+                    SqlDbType.Int).Value =
+                    currentUserId;
+
+                command.Parameters.Add(
+                    "@IsAdmin",
+                    SqlDbType.Bit).Value =
+                    isAdmin;
 
                 await using var reader =
                     await command.ExecuteReaderAsync();
@@ -439,9 +551,15 @@ public class SaleRepository : ISaleRepository
             }
 
             if (items.Count == 0)
+            {
+                await transaction.RollbackAsync();
                 return false;
+            }
 
+            // =================================================
             // Restore stock
+            // =================================================
+
             foreach (var item in items)
             {
                 await using var command =
@@ -463,7 +581,10 @@ public class SaleRepository : ISaleRepository
                 await command.ExecuteNonQueryAsync();
             }
 
+            // =================================================
             // Delete sale items
+            // =================================================
+
             await using (var command =
                 new SqlCommand(
                     deleteItemsSql,
@@ -477,7 +598,10 @@ public class SaleRepository : ISaleRepository
                 await command.ExecuteNonQueryAsync();
             }
 
+            // =================================================
             // Delete sale
+            // =================================================
+
             await using (var command =
                 new SqlCommand(
                     deleteSaleSql,
@@ -488,13 +612,23 @@ public class SaleRepository : ISaleRepository
                     "@SaleId",
                     SqlDbType.Int).Value = id;
 
+                command.Parameters.Add(
+                    "@UserId",
+                    SqlDbType.Int).Value =
+                    currentUserId;
+
+                command.Parameters.Add(
+                    "@IsAdmin",
+                    SqlDbType.Bit).Value =
+                    isAdmin;
+
                 var affectedRows =
                     await command.ExecuteNonQueryAsync();
 
                 if (affectedRows == 0)
                 {
-                    throw new InvalidOperationException(
-                        "Sale was not found.");
+                    await transaction.RollbackAsync();
+                    return false;
                 }
             }
 
@@ -509,6 +643,10 @@ public class SaleRepository : ISaleRepository
         }
     }
 
+    // =========================================================
+    // MAP SALE
+    // =========================================================
+
     private static Sale MapSale(
         SqlDataReader reader)
     {
@@ -517,6 +655,10 @@ public class SaleRepository : ISaleRepository
             SaleId =
                 reader.GetInt32(
                     reader.GetOrdinal("SaleId")),
+
+            UserId =
+                reader.GetInt32(
+                    reader.GetOrdinal("UserId")),
 
             CustomerName =
                 reader.IsDBNull(
@@ -556,6 +698,10 @@ public class SaleRepository : ISaleRepository
                     reader.GetOrdinal("CreatedAt"))
         };
     }
+
+    // =========================================================
+    // MAP SALE ITEM
+    // =========================================================
 
     private static SaleItem MapSaleItem(
         SqlDataReader reader)

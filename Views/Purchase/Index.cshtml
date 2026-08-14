@@ -2,78 +2,246 @@
 
 @{
     ViewData["Title"] = "Purchases";
+
+    var totalPurchases = Model.Count;
+    var totalAmount = Model.Sum(x => x.TotalAmount);
+    var averagePurchase = totalPurchases > 0
+        ? totalAmount / totalPurchases
+        : 0;
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h2 class="mb-1">Purchases</h2>
-        <p class="text-muted mb-0">
-            Manage medicine purchases and stock.
-        </p>
+<div class="purchase-page">
+
+    <!-- Header -->
+    <div class="page-header-card mb-4">
+
+        <div>
+
+            <div class="d-flex align-items-center gap-2 mb-2">
+
+                <span class="page-header-icon">
+                    +
+                </span>
+
+                <span class="text-primary small fw-semibold">
+                    INVENTORY
+                </span>
+
+            </div>
+
+            <h2 class="mb-1">
+                Purchases
+            </h2>
+
+            <p class="text-muted mb-0">
+                Manage supplier purchases and medicine stock.
+            </p>
+
+        </div>
+
+        <a asp-action="Create"
+           class="btn btn-primary px-4">
+
+            + New Purchase
+
+        </a>
+
     </div>
 
-    <a asp-action="Create" class="btn btn-primary">
-        + New Purchase
-    </a>
-</div>
 
-@if (TempData["Success"] is string successMessage)
-{
-    <div class="alert alert-success alert-dismissible fade show">
-        @successMessage
+    <!-- Alerts -->
+    @if (TempData["Success"] is string successMessage)
+    {
+        <div class="alert alert-success alert-dismissible fade show mb-4">
 
-        <button type="button"
-                class="btn-close"
-                data-bs-dismiss="alert">
-        </button>
+            <strong>Success:</strong>
+            @successMessage
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+    @if (TempData["Error"] is string errorMessage)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mb-4">
+
+            <strong>Error:</strong>
+            @errorMessage
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+
+    <!-- Summary -->
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-xl-4 col-md-6">
+
+            <div class="purchase-summary-card">
+
+                <div class="purchase-summary-icon blue">
+                    #
+                </div>
+
+                <div>
+
+                    <span>Total Purchases</span>
+
+                    <strong>
+                        @totalPurchases
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-xl-4 col-md-6">
+
+            <div class="purchase-summary-card">
+
+                <div class="purchase-summary-icon green">
+                    ₹
+                </div>
+
+                <div>
+
+                    <span>Total Purchase Amount</span>
+
+                    <strong class="purchase-total">
+                        ₹@totalAmount.ToString("N2")
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-xl-4 col-md-12">
+
+            <div class="purchase-summary-card">
+
+                <div class="purchase-summary-icon orange">
+                    ∅
+                </div>
+
+                <div>
+
+                    <span>Average Purchase</span>
+
+                    <strong>
+                        ₹@averagePurchase.ToString("N2")
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
-}
 
-@if (TempData["Error"] is string errorMessage)
-{
-    <div class="alert alert-danger alert-dismissible fade show">
-        @errorMessage
 
-        <button type="button"
-                class="btn-close"
-                data-bs-dismiss="alert">
-        </button>
-    </div>
-}
+    <!-- Purchase Table -->
 
-<div class="card shadow-sm">
-    <div class="card-body">
+    <div class="purchase-table-card">
+
+        <div class="purchase-table-header">
+
+            <div>
+
+                <strong>
+                    Purchase History
+                </strong>
+
+                <small>
+                    Supplier purchase transactions
+                </small>
+
+            </div>
+
+            <span class="purchase-count-badge">
+                @totalPurchases purchase@(totalPurchases == 1 ? "" : "s")
+            </span>
+
+        </div>
+
 
         @if (Model.Count == 0)
         {
-            <div class="text-center py-5">
-                <h5>No purchases found</h5>
+            <div class="purchase-empty">
 
-                <p class="text-muted">
+                <div class="purchase-empty-icon">
+                    +
+                </div>
+
+                <h5>
+                    No purchases found
+                </h5>
+
+                <p>
                     Create your first purchase to add stock.
                 </p>
 
                 <a asp-action="Create"
                    class="btn btn-primary">
-                    Create Purchase
+
+                    + Create Purchase
+
                 </a>
+
             </div>
         }
         else
         {
-            <div class="table-responsive">
+            <div class="purchase-table-scroll">
 
-                <table class="table table-hover align-middle">
+                <table class="table purchase-table">
 
-                    <thead class="table-light">
+                    <thead>
+
                         <tr>
-                            <th>#</th>
-                            <th>Supplier</th>
-                            <th>Purchase Date</th>
-                            <th>Invoice No.</th>
-                            <th class="text-end">Total Amount</th>
-                            <th class="text-end">Actions</th>
+
+                            <th>
+                                Purchase
+                            </th>
+
+                            <th>
+                                Supplier
+                            </th>
+
+                            <th>
+                                Purchase Date
+                            </th>
+
+                            <th>
+                                Invoice
+                            </th>
+
+                            <th class="text-end">
+                                Total Amount
+                            </th>
+
+                            <th class="text-end">
+                                Actions
+                            </th>
+
                         </tr>
+
                     </thead>
 
                     <tbody>
@@ -81,48 +249,130 @@
                         @foreach (var purchase in Model)
                         {
                             <tr>
-                                <td>
-                                    @purchase.PurchaseId
-                                </td>
 
                                 <td>
-                                    <strong>
-                                        @purchase.SupplierName
+
+                                    <span class="purchase-id">
+                                        #@purchase.PurchaseId
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="supplier-cell">
+
+                                        <div class="supplier-avatar">
+                                            @(string.IsNullOrWhiteSpace(purchase.SupplierName)
+                                                ? "S"
+                                                : purchase.SupplierName.Substring(0, 1).ToUpper())
+                                        </div>
+
+                                        <div>
+
+                                            <strong>
+                                                @purchase.SupplierName
+                                            </strong>
+
+                                            <small>
+                                                Supplier
+                                            </small>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="purchase-date">
+                                        @purchase.PurchaseDate.ToString("dd-MM-yyyy")
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    @if (!string.IsNullOrWhiteSpace(purchase.InvoiceNo))
+                                    {
+                                        <span class="purchase-invoice">
+                                            @purchase.InvoiceNo
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            -
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <td class="text-end">
+
+                                    <strong class="purchase-amount">
+                                        ₹@purchase.TotalAmount.ToString("N2")
                                     </strong>
+
                                 </td>
 
-                                <td>
-                                    @purchase.PurchaseDate.ToString(
-                                        "dd-MM-yyyy")
-                                </td>
-
-                                <td>
-                                    @(purchase.InvoiceNo ?? "-")
-                                </td>
-
-                                <td class="text-end">
-                                    ₹@purchase.TotalAmount.ToString("N2")
-                                </td>
 
                                 <td class="text-end">
 
-                                    <a asp-action="Details"
-                                       asp-route-id="@purchase.PurchaseId"
-                                       class="btn btn-sm btn-outline-primary">
-                                        Details
-                                    </a>
+                                    <div class="purchase-actions">
 
-                                    <a asp-action="Delete"
-                                       asp-route-id="@purchase.PurchaseId"
-                                       class="btn btn-sm btn-outline-danger">
-                                        Delete
-                                    </a>
+                                        <a asp-action="Details"
+                                           asp-route-id="@purchase.PurchaseId"
+                                           class="purchase-action view">
+
+                                            Details
+
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@purchase.PurchaseId"
+                                           class="purchase-action delete">
+
+                                            Delete
+
+                                        </a>
+
+                                    </div>
 
                                 </td>
+
                             </tr>
                         }
 
                     </tbody>
+
+                    <tfoot>
+
+                        <tr>
+
+                            <th colspan="4"
+                                class="text-end">
+
+                                Total
+
+                            </th>
+
+                            <th class="text-end">
+
+                                ₹@totalAmount.ToString("N2")
+
+                            </th>
+
+                            <th></th>
+
+                        </tr>
+
+                    </tfoot>
 
                 </table>
 
@@ -130,4 +380,5 @@
         }
 
     </div>
+
 </div>

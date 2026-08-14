@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using PharmacyManagement.Models;
+using System.Data;
 
 namespace PharmacyManagement.Repositories;
 
@@ -7,15 +8,20 @@ public class DashboardRepository : IDashboardRepository
 {
     private readonly string _connectionString;
 
-    public DashboardRepository(IConfiguration configuration)
+    public DashboardRepository(
+        IConfiguration configuration)
     {
         _connectionString =
-            configuration.GetConnectionString("DefaultConnection")
+            configuration.GetConnectionString(
+                "DefaultConnection")
             ?? throw new InvalidOperationException(
                 "DefaultConnection is not configured.");
     }
 
-    public async Task<DashboardViewModel> GetDashboardAsync()
+    public async Task<DashboardViewModel> GetDashboardAsync(
+        int currentUserId,
+        bool isAdmin,
+        bool canViewPurchases)
     {
         const string sql = """
             /* =====================================================
@@ -44,6 +50,10 @@ public class DashboardRepository : IDashboardRepository
                             1,
                             CAST(GETDATE() AS DATE)
                       )
+                      AND (
+                            @IsAdmin = 1
+                            OR UserId = @UserId
+                          )
                 ) AS TodaySalesCount,
 
                 (
@@ -55,21 +65,51 @@ public class DashboardRepository : IDashboardRepository
                             1,
                             CAST(GETDATE() AS DATE)
                       )
+                      AND (
+                            @IsAdmin = 1
+                            OR UserId = @UserId
+                          )
                 ) AS TodaySalesAmount,
 
                 (
-                    SELECT COUNT(*)
+                    SELECT
+                        CASE
+                            WHEN @CanViewPurchases = 0
+                                THEN 0
+                            ELSE COUNT(*)
+                        END
                     FROM Purchases
+                    WHERE
+                        @CanViewPurchases = 1
+                        AND (
+                            @IsAdmin = 1
+                            OR UserId = @UserId
+                        )
                 ) AS TotalPurchases,
 
                 (
-                    SELECT ISNULL(SUM(TotalAmount), 0)
+                    SELECT
+                        CASE
+                            WHEN @CanViewPurchases = 0
+                                THEN CAST(0 AS DECIMAL(18,2))
+                            ELSE ISNULL(
+                                SUM(TotalAmount),
+                                0
+                            )
+                        END
                     FROM Purchases
+                    WHERE
+                        @CanViewPurchases = 1
+                        AND (
+                            @IsAdmin = 1
+                            OR UserId = @UserId
+                        )
                 ) AS TotalPurchaseAmount;
 
 
             /* =====================================================
                2. LOW STOCK MEDICINES
+               Shared pharmacy inventory
                ===================================================== */
 
             SELECT
@@ -81,11 +121,14 @@ public class DashboardRepository : IDashboardRepository
             FROM Medicines
             WHERE IsActive = 1
               AND Quantity <= 10
-            ORDER BY Quantity ASC, MedicineName;
+            ORDER BY
+                Quantity ASC,
+                MedicineName;
 
 
             /* =====================================================
                3. EXPIRING WITHIN 30 DAYS
+               Shared pharmacy inventory
                ===================================================== */
 
             SELECT
@@ -108,6 +151,7 @@ public class DashboardRepository : IDashboardRepository
 
             /* =====================================================
                4. EXPIRED MEDICINES
+               Shared pharmacy inventory
                ===================================================== */
 
             SELECT
@@ -125,6 +169,8 @@ public class DashboardRepository : IDashboardRepository
 
             /* =====================================================
                5. RECENT SALES
+               Admin -> all
+               Other users -> own
                ===================================================== */
 
             SELECT TOP 5
@@ -134,11 +180,18 @@ public class DashboardRepository : IDashboardRepository
                 SaleDate,
                 TotalAmount
             FROM Sales
+            WHERE
+                @IsAdmin = 1
+                OR UserId = @UserId
             ORDER BY SaleDate DESC;
 
 
             /* =====================================================
                6. RECENT PURCHASES
+               Admin/Pharmacist only
+               Admin -> all
+               Pharmacist -> own
+               Staff -> none
                ===================================================== */
 
             SELECT TOP 5
@@ -146,6 +199,12 @@ public class DashboardRepository : IDashboardRepository
                 PurchaseDate,
                 TotalAmount
             FROM Purchases
+            WHERE
+                @CanViewPurchases = 1
+                AND (
+                    @IsAdmin = 1
+                    OR UserId = @UserId
+                )
             ORDER BY PurchaseDate DESC;
             """;
 
@@ -155,12 +214,30 @@ public class DashboardRepository : IDashboardRepository
         await connection.OpenAsync();
 
         await using var command =
-            new SqlCommand(sql, connection);
+            new SqlCommand(
+                sql,
+                connection);
+
+        command.Parameters.Add(
+            "@UserId",
+            SqlDbType.Int).Value =
+            currentUserId;
+
+        command.Parameters.Add(
+            "@IsAdmin",
+            SqlDbType.Bit).Value =
+            isAdmin;
+
+        command.Parameters.Add(
+            "@CanViewPurchases",
+            SqlDbType.Bit).Value =
+            canViewPurchases;
 
         await using var reader =
             await command.ExecuteReaderAsync();
 
-        var dashboard = new DashboardViewModel();
+        var dashboard =
+            new DashboardViewModel();
 
         // =====================================================
         // 1. DASHBOARD STATISTICS
@@ -170,27 +247,33 @@ public class DashboardRepository : IDashboardRepository
         {
             dashboard.TotalMedicines =
                 reader.GetInt32(
-                    reader.GetOrdinal("TotalMedicines"));
+                    reader.GetOrdinal(
+                        "TotalMedicines"));
 
             dashboard.TotalStock =
                 reader.GetInt32(
-                    reader.GetOrdinal("TotalStock"));
+                    reader.GetOrdinal(
+                        "TotalStock"));
 
             dashboard.TodaySalesCount =
                 reader.GetInt32(
-                    reader.GetOrdinal("TodaySalesCount"));
+                    reader.GetOrdinal(
+                        "TodaySalesCount"));
 
             dashboard.TodaySalesAmount =
                 reader.GetDecimal(
-                    reader.GetOrdinal("TodaySalesAmount"));
+                    reader.GetOrdinal(
+                        "TodaySalesAmount"));
 
             dashboard.TotalPurchases =
                 reader.GetInt32(
-                    reader.GetOrdinal("TotalPurchases"));
+                    reader.GetOrdinal(
+                        "TotalPurchases"));
 
             dashboard.TotalPurchaseAmount =
                 reader.GetDecimal(
-                    reader.GetOrdinal("TotalPurchaseAmount"));
+                    reader.GetOrdinal(
+                        "TotalPurchaseAmount"));
         }
 
         // =====================================================
@@ -245,29 +328,36 @@ public class DashboardRepository : IDashboardRepository
                     {
                         SaleId =
                             reader.GetInt32(
-                                reader.GetOrdinal("SaleId")),
+                                reader.GetOrdinal(
+                                    "SaleId")),
 
                         InvoiceNo =
                             reader.IsDBNull(
-                                reader.GetOrdinal("InvoiceNo"))
+                                reader.GetOrdinal(
+                                    "InvoiceNo"))
                                 ? null
                                 : reader.GetString(
-                                    reader.GetOrdinal("InvoiceNo")),
+                                    reader.GetOrdinal(
+                                        "InvoiceNo")),
 
                         CustomerName =
                             reader.IsDBNull(
-                                reader.GetOrdinal("CustomerName"))
+                                reader.GetOrdinal(
+                                    "CustomerName"))
                                 ? null
                                 : reader.GetString(
-                                    reader.GetOrdinal("CustomerName")),
+                                    reader.GetOrdinal(
+                                        "CustomerName")),
 
                         SaleDate =
                             reader.GetDateTime(
-                                reader.GetOrdinal("SaleDate")),
+                                reader.GetOrdinal(
+                                    "SaleDate")),
 
                         TotalAmount =
                             reader.GetDecimal(
-                                reader.GetOrdinal("TotalAmount"))
+                                reader.GetOrdinal(
+                                    "TotalAmount"))
                     });
             }
         }
@@ -285,15 +375,18 @@ public class DashboardRepository : IDashboardRepository
                     {
                         PurchaseId =
                             reader.GetInt32(
-                                reader.GetOrdinal("PurchaseId")),
+                                reader.GetOrdinal(
+                                    "PurchaseId")),
 
                         PurchaseDate =
                             reader.GetDateTime(
-                                reader.GetOrdinal("PurchaseDate")),
+                                reader.GetOrdinal(
+                                    "PurchaseDate")),
 
                         TotalAmount =
                             reader.GetDecimal(
-                                reader.GetOrdinal("TotalAmount"))
+                                reader.GetOrdinal(
+                                    "TotalAmount"))
                     });
             }
         }
@@ -312,29 +405,36 @@ public class DashboardRepository : IDashboardRepository
         {
             MedicineId =
                 reader.GetInt32(
-                    reader.GetOrdinal("MedicineId")),
+                    reader.GetOrdinal(
+                        "MedicineId")),
 
             MedicineName =
                 reader.GetString(
-                    reader.GetOrdinal("MedicineName")),
+                    reader.GetOrdinal(
+                        "MedicineName")),
 
             BatchNo =
                 reader.IsDBNull(
-                    reader.GetOrdinal("BatchNo"))
+                    reader.GetOrdinal(
+                        "BatchNo"))
                     ? null
                     : reader.GetString(
-                        reader.GetOrdinal("BatchNo")),
+                        reader.GetOrdinal(
+                            "BatchNo")),
 
             ExpiryDate =
                 reader.IsDBNull(
-                    reader.GetOrdinal("ExpiryDate"))
+                    reader.GetOrdinal(
+                        "ExpiryDate"))
                     ? null
                     : reader.GetDateTime(
-                        reader.GetOrdinal("ExpiryDate")),
+                        reader.GetOrdinal(
+                            "ExpiryDate")),
 
             Quantity =
                 reader.GetInt32(
-                    reader.GetOrdinal("Quantity"))
+                    reader.GetOrdinal(
+                        "Quantity"))
         };
     }
 }

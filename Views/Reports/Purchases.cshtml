@@ -1,0 +1,245 @@
+﻿@model PharmacyManagement.Models.PurchaseReportViewModel
+
+@{
+    ViewData["Title"] = "Purchase Report";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2>Purchase Report</h2>
+
+        <p class="text-muted mb-0">
+            View purchase transactions and purchase totals.
+        </p>
+    </div>
+
+</div>
+
+
+<!-- FILTER -->
+
+<div class="card shadow-sm mb-4">
+
+    <div class="card-body">
+
+        <form asp-controller="Reports"
+              asp-action="Purchases"
+              method="get">
+
+            <div class="row g-3 align-items-end">
+
+                <div class="col-md-4">
+
+                    <label asp-for="FromDate"
+                           class="form-label">
+                        From Date
+                    </label>
+
+                    <input asp-for="FromDate"
+                           type="date"
+                           class="form-control" />
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <label asp-for="ToDate"
+                           class="form-label">
+                        To Date
+                    </label>
+
+                    <input asp-for="ToDate"
+                           type="date"
+                           class="form-control" />
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Search
+                    </button>
+
+                    <a asp-controller="Reports"
+                       asp-action="Purchases"
+                       class="btn btn-outline-secondary">
+                        Reset
+                    </a>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- SUMMARY -->
+
+<div class="row g-4 mb-4">
+
+    <div class="col-md-6">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-body">
+
+                <h6 class="text-muted">
+                    Total Purchases
+                </h6>
+
+                <h2 class="mb-0">
+                    @Model.TotalTransactions
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-6">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-body">
+
+                <h6 class="text-muted">
+                    Total Purchase Amount
+                </h6>
+
+                <h2 class="mb-0 text-primary">
+                    ₹@Model.TotalPurchases.ToString("N2")
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- PURCHASE TABLE -->
+
+<div class="card shadow-sm">
+
+    <div class="card-header bg-white">
+
+        <strong>
+            Purchase Transactions
+        </strong>
+
+    </div>
+
+    <div class="card-body p-0">
+
+        @if (Model.Purchases.Count == 0)
+        {
+            <div class="p-4 text-center text-muted">
+
+                No purchases found for the selected period.
+
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+
+                <table class="table table-hover mb-0">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th>Date</th>
+
+                            <th>Supplier</th>
+
+                            <th>Invoice</th>
+
+                            <th class="text-end">
+                                Total Amount
+                            </th>
+
+                            <th class="text-end">
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var purchase in Model.Purchases)
+                        {
+                            <tr>
+
+                                <td>
+                                    @purchase.PurchaseDate.ToString(
+                                        "dd-MM-yyyy HH:mm")
+                                </td>
+
+                                <td>
+                                    @(purchase.SupplierName ?? "-")
+                                </td>
+
+                                <td>
+                                    @(purchase.InvoiceNo ?? "-")
+                                </td>
+
+                                <td class="text-end fw-semibold">
+                                    ₹@purchase.TotalAmount.ToString("N2")
+                                </td>
+
+                                <td class="text-end">
+
+                                    <a asp-controller="Purchase"
+                                       asp-action="Details"
+                                       asp-route-id="@purchase.PurchaseId"
+                                       class="btn btn-sm btn-outline-primary">
+                                        Details
+                                    </a>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                    <tfoot class="table-light">
+
+                        <tr>
+
+                            <th colspan="3"
+                                class="text-end">
+                                Total:
+                            </th>
+
+                            <th class="text-end">
+                                ₹@Model.TotalPurchases.ToString("N2")
+                            </th>
+
+                            <th></th>
+
+                        </tr>
+
+                    </tfoot>
+
+                </table>
+
+            </div>
+        }
+
+    </div>
+
+</div>

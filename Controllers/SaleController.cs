@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PharmacyManagement.Models;
 using PharmacyManagement.Services;
+using System.Security.Claims;
 
 namespace PharmacyManagement.Controllers;
 
@@ -25,20 +26,64 @@ public class SaleController : Controller
         _logger = logger;
     }
 
+    // =========================================================
+    // CURRENT USER
+    // =========================================================
+
+    private int GetCurrentUserId()
+    {
+        var userIdValue =
+            User.FindFirst(
+                ClaimTypes.NameIdentifier)?.Value;
+
+        if (!int.TryParse(
+                userIdValue,
+                out var userId))
+        {
+            throw new InvalidOperationException(
+                "Unable to determine the logged-in user.");
+        }
+
+        return userId;
+    }
+
+    // =========================================================
+    // INDEX
+    // =========================================================
+
     [HttpGet]
     public async Task<IActionResult> Index()
     {
+        var userId = GetCurrentUserId();
+
+        var isAdmin =
+            User.IsInRole("Admin");
+
         var sales =
-            await _service.GetAllAsync();
+            await _service.GetAllAsync(
+                userId,
+                isAdmin);
 
         return View(sales);
     }
 
+    // =========================================================
+    // DETAILS
+    // =========================================================
+
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
+        var userId = GetCurrentUserId();
+
+        var isAdmin =
+            User.IsInRole("Admin");
+
         var sale =
-            await _service.GetByIdAsync(id);
+            await _service.GetByIdAsync(
+                id,
+                userId,
+                isAdmin);
 
         if (sale is null)
             return NotFound();
@@ -46,9 +91,9 @@ public class SaleController : Controller
         return View(sale);
     }
 
-    // ============================
+    // =========================================================
     // CREATE
-    // ============================
+    // =========================================================
 
     [HttpGet]
     public async Task<IActionResult> Create()
@@ -76,8 +121,16 @@ public class SaleController : Controller
 
         try
         {
+            // IMPORTANT:
+            // UserId comes from the authenticated user.
+            // Never trust UserId from the form.
+            var userId =
+                GetCurrentUserId();
+
             var id =
-                await _service.AddAsync(sale);
+                await _service.AddAsync(
+                    sale,
+                    userId);
 
             await _auditLogService.LogAsync(
                 "Create",
@@ -86,13 +139,15 @@ public class SaleController : Controller
                 $"Sale #{id} was created and medicine stock was updated.");
 
             _logger.LogInformation(
-                "Sale {SaleId} created.",
-                id);
+                "Sale {SaleId} created by User {UserId}.",
+                id,
+                userId);
 
             TempData["Success"] =
                 "Sale completed successfully and medicine stock updated.";
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(
+                nameof(Index));
         }
         catch (Exception ex)
         {
@@ -110,21 +165,35 @@ public class SaleController : Controller
         }
     }
 
-    // ============================
-    // DELETE
-    // ============================
+    // =========================================================
+    // DELETE - GET
+    // =========================================================
 
     [HttpGet]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(
+        int id)
     {
+        var userId =
+            GetCurrentUserId();
+
+        var isAdmin =
+            User.IsInRole("Admin");
+
         var sale =
-            await _service.GetByIdAsync(id);
+            await _service.GetByIdAsync(
+                id,
+                userId,
+                isAdmin);
 
         if (sale is null)
             return NotFound();
 
         return View(sale);
     }
+
+    // =========================================================
+    // DELETE - POST
+    // =========================================================
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -133,14 +202,28 @@ public class SaleController : Controller
     {
         try
         {
+            var userId =
+                GetCurrentUserId();
+
+            var isAdmin =
+                User.IsInRole("Admin");
+
+            // First verify that the sale belongs
+            // to this user, unless Admin.
             var sale =
-                await _service.GetByIdAsync(id);
+                await _service.GetByIdAsync(
+                    id,
+                    userId,
+                    isAdmin);
 
             if (sale is null)
                 return NotFound();
 
             var deleted =
-                await _service.DeleteAsync(id);
+                await _service.DeleteAsync(
+                    id,
+                    userId,
+                    isAdmin);
 
             if (!deleted)
                 return NotFound();
@@ -152,13 +235,15 @@ public class SaleController : Controller
                 $"Sale #{id} was deleted and medicine stock was restored.");
 
             _logger.LogInformation(
-                "Sale {SaleId} deleted.",
-                id);
+                "Sale {SaleId} deleted by User {UserId}.",
+                id,
+                userId);
 
             TempData["Success"] =
                 "Sale deleted and medicine stock restored.";
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(
+                nameof(Index));
         }
         catch (Exception ex)
         {
@@ -170,19 +255,21 @@ public class SaleController : Controller
             TempData["Error"] =
                 ex.Message;
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(
+                nameof(Index));
         }
     }
 
-    // ============================
+    // =========================================================
     // MEDICINE DROPDOWN
-    // ============================
+    // =========================================================
 
     private async Task LoadMedicinesAsync()
     {
         var medicines =
             await _medicineService.GetAllAsync();
 
-        ViewBag.Medicines = medicines;
+        ViewBag.Medicines =
+            medicines;
     }
 }

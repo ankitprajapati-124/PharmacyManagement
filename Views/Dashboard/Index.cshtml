@@ -2,56 +2,114 @@
 
 @{
     ViewData["Title"] = "Dashboard";
+
+    var displayName =
+        User.FindFirst(
+            System.Security.Claims.ClaimTypes.GivenName
+        )?.Value
+        ?? User.Identity?.Name
+        ?? "User";
+
+    var role =
+        User.FindFirst(
+            System.Security.Claims.ClaimTypes.Role
+        )?.Value
+        ?? "User";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
 
-    <div>
-        <h2 class="mb-1">
-            Dashboard
-        </h2>
+<!-- =========================================
+     DASHBOARD HEADER
+     ========================================= -->
 
-        <p class="text-muted mb-0">
-            Pharmacy Management Overview
-        </p>
-    </div>
+<div class="dashboard-heading mb-4">
 
-    <div>
-        <a asp-controller="Sale"
-           asp-action="Create"
-           class="btn btn-success me-2">
-            + New Sale
-        </a>
+    <div class="d-flex justify-content-between align-items-center">
 
-        <a asp-controller="Purchase"
-           asp-action="Create"
-           class="btn btn-primary">
-            + New Purchase
-        </a>
+        <div>
+
+            <div class="d-flex align-items-center gap-2 mb-2">
+
+                <span class="status-dot"></span>
+
+                <span class="text-success small fw-semibold">
+                    System Online
+                </span>
+
+            </div>
+
+            <h2 class="mb-1">
+                Good day, @displayName 👋
+            </h2>
+
+            <p class="text-muted mb-0">
+                Here's what's happening in your pharmacy today.
+            </p>
+
+        </div>
+
+
+        <!-- QUICK CREATE -->
+
+        <div class="d-flex gap-2">
+
+            <a asp-controller="Sale"
+               asp-action="Create"
+               class="btn btn-success">
+
+                + New Sale
+
+            </a>
+
+            @if (User.IsInRole("Admin") ||
+                 User.IsInRole("Pharmacist"))
+            {
+                <a asp-controller="Purchase"
+                   asp-action="Create"
+                   class="btn btn-primary">
+
+                    + New Purchase
+
+                </a>
+            }
+
+        </div>
+
     </div>
 
 </div>
 
 
-<!-- Main Statistics -->
+<!-- =========================================
+     STATISTICS
+     ========================================= -->
 
 <div class="row g-4 mb-4">
 
-    <!-- Total Medicines -->
 
-    <div class="col-md-6 col-xl-3">
+    <!-- MEDICINES -->
 
-        <div class="card shadow-sm h-100">
+    <div class="col-xl-3 col-md-6">
 
-            <div class="card-body">
+        <div class="stat-card">
 
-                <div class="text-muted mb-2">
+            <div class="stat-icon medicine-icon">
+                ✚
+            </div>
+
+            <div class="stat-content">
+
+                <span>
                     Total Medicines
-                </div>
+                </span>
 
-                <h2 class="mb-0">
+                <strong>
                     @Model.TotalMedicines
-                </h2>
+                </strong>
+
+                <small>
+                    Available medicines
+                </small>
 
             </div>
 
@@ -60,24 +118,28 @@
     </div>
 
 
-    <!-- Total Stock -->
+    <!-- STOCK -->
 
-    <div class="col-md-6 col-xl-3">
+    <div class="col-xl-3 col-md-6">
 
-        <div class="card shadow-sm h-100">
+        <div class="stat-card">
 
-            <div class="card-body">
+            <div class="stat-icon stock-icon">
+                ▦
+            </div>
 
-                <div class="text-muted mb-2">
+            <div class="stat-content">
+
+                <span>
                     Total Stock
-                </div>
+                </span>
 
-                <h2 class="mb-0">
+                <strong>
                     @Model.TotalStock
-                </h2>
+                </strong>
 
-                <small class="text-muted">
-                    Units in stock
+                <small>
+                    Units currently available
                 </small>
 
             </div>
@@ -87,24 +149,28 @@
     </div>
 
 
-    <!-- Today's Sales -->
+    <!-- SALES -->
 
-    <div class="col-md-6 col-xl-3">
+    <div class="col-xl-3 col-md-6">
 
-        <div class="card shadow-sm h-100">
+        <div class="stat-card">
 
-            <div class="card-body">
+            <div class="stat-icon sales-icon">
+                $
+            </div>
 
-                <div class="text-muted mb-2">
+            <div class="stat-content">
+
+                <span>
                     Today's Sales
-                </div>
+                </span>
 
-                <h2 class="mb-0">
+                <strong>
                     @Model.TodaySalesCount
-                </h2>
+                </strong>
 
-                <small class="text-muted">
-                    Transactions
+                <small>
+                    Transactions today
                 </small>
 
             </div>
@@ -114,21 +180,29 @@
     </div>
 
 
-    <!-- Today's Revenue -->
+    <!-- REVENUE -->
 
-    <div class="col-md-6 col-xl-3">
+    <div class="col-xl-3 col-md-6">
 
-        <div class="card shadow-sm h-100">
+        <div class="stat-card">
 
-            <div class="card-body">
+            <div class="stat-icon revenue-icon">
+                $
+            </div>
 
-                <div class="text-muted mb-2">
+            <div class="stat-content">
+
+                <span>
                     Today's Revenue
-                </div>
+                </span>
 
-                <h2 class="mb-0">
-                    ₹@Model.TodaySalesAmount.ToString("N2")
-                </h2>
+                <strong class="text-success">
+                    $@Model.TodaySalesAmount.ToString("N2")
+                </strong>
+
+                <small>
+                    Sales revenue today
+                </small>
 
             </div>
 
@@ -139,43 +213,74 @@
 </div>
 
 
-<!-- Purchase Statistics -->
+<!-- =========================================
+     PURCHASE SUMMARY
+     ADMIN + PHARMACIST
+     ========================================= -->
+@if (User.IsInRole("Admin") ||
+     User.IsInRole("Pharmacist"))
+{
+    <div class="row g-4 mb-4">
 
-<div class="row g-4 mb-4">
 
-    <div class="col-md-6">
+        <!-- PURCHASE SUMMARY -->
 
-        <div class="card shadow-sm h-100">
+        <div class="col-xl-6">
 
-            <div class="card-header">
-                <strong>Purchases</strong>
-            </div>
+            <div class="dashboard-section-card h-100">
 
-            <div class="card-body">
+                <div class="section-header">
 
-                <div class="row text-center">
+                    <strong>
+                        Purchase Overview
+                    </strong>
 
-                    <div class="col-6">
+                    <a asp-controller="Purchase"
+                       asp-action="Index"
+                       class="btn btn-sm btn-outline-primary">
 
-                        <div class="text-muted">
-                            Total Purchases
+                        View All
+
+                    </a>
+
+                </div>
+
+                <div class="section-body">
+
+                    <div class="row text-center">
+
+                        <div class="col-6">
+
+                            <div class="text-muted small mb-1">
+                                Total Purchases
+                            </div>
+
+                            <div class="fs-3 fw-bold">
+                                @Model.TotalPurchases
+                            </div>
+
+                            <small class="text-muted">
+                                Purchase transactions
+                            </small>
+
                         </div>
 
-                        <h3>
-                            @Model.TotalPurchases
-                        </h3>
 
-                    </div>
+                        <div class="col-6 border-start">
 
-                    <div class="col-6">
+                            <div class="text-muted small mb-1">
+                                Purchase Amount
+                            </div>
 
-                        <div class="text-muted">
-                            Purchase Amount
+                            <div class="fs-3 fw-bold">
+                                $@Model.TotalPurchaseAmount.ToString("N2")
+                            </div>
+
+                            <small class="text-muted">
+                                Total purchase value
+                            </small>
+
                         </div>
-
-                        <h3>
-                            ₹@Model.TotalPurchaseAmount.ToString("N2")
-                        </h3>
 
                     </div>
 
@@ -185,45 +290,53 @@
 
         </div>
 
-    </div>
 
+        <!-- QUICK ACTIONS -->
 
-    <!-- Quick Actions -->
+        <div class="col-xl-6">
 
-    <div class="col-md-6">
+            <div class="dashboard-section-card h-100">
 
-        <div class="card shadow-sm h-100">
+                <div class="section-header">
 
-            <div class="card-header">
-                <strong>Quick Actions</strong>
-            </div>
+                    <strong>
+                        Quick Actions
+                    </strong>
 
-            <div class="card-body">
+                </div>
 
-                <div class="d-flex flex-wrap gap-2">
+                <div class="section-body">
 
                     <a asp-controller="Medicine"
                        asp-action="Create"
-                       class="btn btn-outline-primary">
-                        Add Medicine
+                       class="quick-action btn btn-outline-primary me-2 mb-2">
+
+                        + Add Medicine
+
                     </a>
 
                     <a asp-controller="Purchase"
                        asp-action="Create"
-                       class="btn btn-outline-primary">
-                        New Purchase
+                       class="quick-action btn btn-outline-primary me-2 mb-2">
+
+                        + New Purchase
+
                     </a>
 
                     <a asp-controller="Sale"
                        asp-action="Create"
-                       class="btn btn-outline-success">
-                        New Sale
+                       class="quick-action btn btn-outline-success me-2 mb-2">
+
+                        + New Sale
+
                     </a>
 
                     <a asp-controller="Medicine"
                        asp-action="Index"
-                       class="btn btn-outline-secondary">
+                       class="quick-action btn btn-outline-secondary me-2 mb-2">
+
                         View Medicines
+
                     </a>
 
                 </div>
@@ -233,21 +346,77 @@
         </div>
 
     </div>
+}
+else
+{
+    <!-- =========================================
+         STAFF QUICK ACTIONS
+         ========================================= -->
 
-</div>
+    <div class="row g-4 mb-4">
+
+        <div class="col-12">
+
+            <div class="dashboard-section-card">
+
+                <div class="section-header">
+
+                    <strong>
+                        Quick Actions
+                    </strong>
+
+                </div>
+
+                <div class="section-body">
+
+                    <a asp-controller="Medicine"
+                       asp-action="Create"
+                       class="quick-action btn btn-outline-primary me-2 mb-2">
+
+                        + Add Medicine
+
+                    </a>
+
+                    <a asp-controller="Sale"
+                       asp-action="Create"
+                       class="quick-action btn btn-outline-success me-2 mb-2">
+
+                        + New Sale
+
+                    </a>
+
+                    <a asp-controller="Medicine"
+                       asp-action="Index"
+                       class="quick-action btn btn-outline-secondary me-2 mb-2">
+
+                        View Medicines
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+}
 
 
-<!-- Pharmacy Alerts -->
+<!-- =========================================
+     ALERTS
+     ========================================= -->
 
 <div class="row g-4 mb-4">
 
-    <!-- Low Stock -->
 
-    <div class="col-lg-4">
+    <!-- LOW STOCK -->
 
-        <div class="card shadow-sm h-100">
+    <div class="col-xl-4 col-md-6">
 
-            <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="dashboard-section-card h-100">
+
+            <div class="section-header">
 
                 <strong>
                     🔴 Low Stock
@@ -259,56 +428,46 @@
 
             </div>
 
-            <div class="card-body p-0">
+            <div class="section-body">
 
                 @if (Model.LowStockMedicines.Count == 0)
                 {
-                    <div class="text-center text-muted py-4">
+                    <div class="dashboard-empty">
+
+                        <div class="dashboard-empty-icon">
+                            ✓
+                        </div>
+
                         No low-stock medicines.
+
                     </div>
                 }
                 else
                 {
-                    <div class="table-responsive">
+                    @foreach (var medicine in
+                        Model.LowStockMedicines.Take(5))
+                    {
+                        <div class="dashboard-alert-item">
 
-                        <table class="table table-sm mb-0">
+                            <div class="d-flex justify-content-between">
 
-                            <thead>
-                                <tr>
-                                    <th>Medicine</th>
-                                    <th class="text-end">
-                                        Stock
-                                    </th>
-                                </tr>
-                            </thead>
+                                <strong>
+                                    @medicine.MedicineName
+                                </strong>
 
-                            <tbody>
+                                <span class="badge bg-danger">
+                                    @medicine.Quantity
+                                </span>
 
-                                @foreach (var medicine
-                                    in Model.LowStockMedicines)
-                                {
-                                    <tr>
+                            </div>
 
-                                        <td>
-                                            @medicine.MedicineName
-                                        </td>
+                            <small class="text-muted">
+                                Batch:
+                                @(medicine.BatchNo ?? "-")
+                            </small>
 
-                                        <td class="text-end">
-
-                                            <span class="badge bg-danger">
-                                                @medicine.Quantity
-                                            </span>
-
-                                        </td>
-
-                                    </tr>
-                                }
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
+                        </div>
+                    }
                 }
 
             </div>
@@ -318,13 +477,13 @@
     </div>
 
 
-    <!-- Expiring Soon -->
+    <!-- EXPIRING SOON -->
 
-    <div class="col-lg-4">
+    <div class="col-xl-4 col-md-6">
 
-        <div class="card shadow-sm h-100">
+        <div class="dashboard-section-card h-100">
 
-            <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="section-header">
 
                 <strong>
                     🟠 Expiring Soon
@@ -336,55 +495,44 @@
 
             </div>
 
-            <div class="card-body p-0">
+            <div class="section-body">
 
                 @if (Model.ExpiringSoonMedicines.Count == 0)
                 {
-                    <div class="text-center text-muted py-4">
-                        No medicines expiring within 30 days.
+                    <div class="dashboard-empty">
+
+                        <div class="dashboard-empty-icon">
+                            ✓
+                        </div>
+
+                        No medicines expiring
+                        within 30 days.
+
                     </div>
                 }
                 else
                 {
-                    <div class="table-responsive">
+                    @foreach (var medicine in
+                        Model.ExpiringSoonMedicines.Take(5))
+                    {
+                        <div class="dashboard-alert-item">
 
-                        <table class="table table-sm mb-0">
+                            <strong>
+                                @medicine.MedicineName
+                            </strong>
 
-                            <thead>
-                                <tr>
-                                    <th>Medicine</th>
-                                    <th class="text-end">
-                                        Expiry
-                                    </th>
-                                </tr>
-                            </thead>
+                            <br />
 
-                            <tbody>
+                            <small class="text-warning">
+                                Expiry:
+                                @(medicine.ExpiryDate.HasValue
+                                    ? medicine.ExpiryDate.Value
+                                        .ToString("dd-MM-yyyy")
+                                    : "-")
+                            </small>
 
-                                @foreach (var medicine
-                                    in Model.ExpiringSoonMedicines)
-                                {
-                                    <tr>
-
-                                        <td>
-                                            @medicine.MedicineName
-                                        </td>
-
-                                        <td class="text-end">
-
-                                            @medicine.ExpiryDate?
-                                            .ToString("dd-MM-yyyy")
-
-                                        </td>
-
-                                    </tr>
-                                }
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
+                        </div>
+                    }
                 }
 
             </div>
@@ -394,16 +542,16 @@
     </div>
 
 
-    <!-- Expired -->
+    <!-- EXPIRED -->
 
-    <div class="col-lg-4">
+    <div class="col-xl-4 col-md-6">
 
-        <div class="card shadow-sm h-100">
+        <div class="dashboard-section-card h-100">
 
-            <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="section-header">
 
                 <strong>
-                    ⛔ Expired
+                    🔴 Expired
                 </strong>
 
                 <span class="badge bg-dark">
@@ -412,55 +560,43 @@
 
             </div>
 
-            <div class="card-body p-0">
+            <div class="section-body">
 
                 @if (Model.ExpiredMedicines.Count == 0)
                 {
-                    <div class="text-center text-muted py-4">
+                    <div class="dashboard-empty">
+
+                        <div class="dashboard-empty-icon">
+                            ✓
+                        </div>
+
                         No expired medicines.
+
                     </div>
                 }
                 else
                 {
-                    <div class="table-responsive">
+                    @foreach (var medicine in
+                        Model.ExpiredMedicines.Take(5))
+                    {
+                        <div class="dashboard-alert-item">
 
-                        <table class="table table-sm mb-0">
+                            <strong>
+                                @medicine.MedicineName
+                            </strong>
 
-                            <thead>
-                                <tr>
-                                    <th>Medicine</th>
-                                    <th class="text-end">
-                                        Expired
-                                    </th>
-                                </tr>
-                            </thead>
+                            <br />
 
-                            <tbody>
+                            <small class="text-danger">
+                                Expired:
+                                @(medicine.ExpiryDate.HasValue
+                                    ? medicine.ExpiryDate.Value
+                                        .ToString("dd-MM-yyyy")
+                                    : "-")
+                            </small>
 
-                                @foreach (var medicine
-                                    in Model.ExpiredMedicines)
-                                {
-                                    <tr>
-
-                                        <td>
-                                            @medicine.MedicineName
-                                        </td>
-
-                                        <td class="text-end">
-
-                                            @medicine.ExpiryDate?
-                                            .ToString("dd-MM-yyyy")
-
-                                        </td>
-
-                                    </tr>
-                                }
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
+                        </div>
+                    }
                 }
 
             </div>
@@ -470,63 +606,92 @@
     </div>
 
 </div>
-<!-- Recent Activity -->
+
+
+<!-- =========================================
+     RECENT TRANSACTIONS
+     ========================================= -->
 
 <div class="row g-4 mb-4">
 
-    <!-- Recent Sales -->
 
-    <div class="col-lg-7">
+    <!-- RECENT SALES -->
 
-        <div class="card shadow-sm h-100">
+    <div class="col-xl-6">
 
-            <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="dashboard-section-card h-100">
 
-                <strong>Recent Sales</strong>
+            <div class="section-header">
+
+                <strong>
+                    Recent Sales
+                </strong>
 
                 <a asp-controller="Sale"
                    asp-action="Index"
                    class="btn btn-sm btn-outline-primary">
+
                     View All
+
                 </a>
 
             </div>
 
-            <div class="card-body p-0">
+            <div class="p-0">
 
                 @if (Model.RecentSales.Count == 0)
                 {
-                    <div class="text-center text-muted py-4">
+                    <div class="dashboard-empty">
+
+                        <div class="dashboard-empty-icon">
+                            $
+                        </div>
+
                         No sales found.
+
                     </div>
                 }
                 else
                 {
                     <div class="table-responsive">
 
-                        <table class="table table-hover mb-0">
+                        <table class="table table-hover">
 
-                            <thead class="table-light">
+                            <thead>
 
                                 <tr>
-                                    <th>Invoice</th>
-                                    <th>Customer</th>
-                                    <th>Date</th>
-                                    <th class="text-end">
-                                        Amount
+
+                                    <th>
+                                        Invoice
                                     </th>
+
+                                    <th>
+                                        Customer
+                                    </th>
+
+                                    <th>
+                                        Date
+                                    </th>
+
+                                    <th class="text-end">
+                                        Total
+                                    </th>
+
                                 </tr>
 
                             </thead>
 
                             <tbody>
 
-                                @foreach (var sale in Model.RecentSales)
+                                @foreach (var sale in
+                                    Model.RecentSales)
                                 {
                                     <tr>
 
                                         <td>
-                                            @(sale.InvoiceNo ?? "-")
+                                            <strong>
+                                                @(sale.InvoiceNo ?? "-")
+                                            </strong>
                                         </td>
 
                                         <td>
@@ -538,10 +703,8 @@
                                                 "dd-MM-yyyy HH:mm")
                                         </td>
 
-                                        <td class="text-end">
-                                            <strong>
-                                                ₹@sale.TotalAmount.ToString("N2")
-                                            </strong>
+                                        <td class="text-end fw-semibold">
+                                            $@sale.TotalAmount.ToString("N2")
                                         </td>
 
                                     </tr>
@@ -561,109 +724,107 @@
     </div>
 
 
-    <!-- Recent Purchases -->
+    <!-- RECENT PURCHASES -->
+    @if (User.IsInRole("Admin") ||
+             User.IsInRole("Pharmacist"))
+    {
+        <div class="col-xl-6">
 
-    <div class="col-lg-5">
+            <div class="dashboard-section-card h-100">
 
-        <div class="card shadow-sm h-100">
+                <div class="section-header">
 
-            <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong>
+                        Recent Purchases
+                    </strong>
 
-                <strong>Recent Purchases</strong>
+                    <a asp-controller="Purchase"
+                       asp-action="Index"
+                       class="btn btn-sm btn-outline-primary">
 
-                <a asp-controller="Purchase"
-                   asp-action="Index"
-                   class="btn btn-sm btn-outline-primary">
-                    View All
-                </a>
+                        View All
 
-            </div>
+                    </a>
 
-            <div class="card-body p-0">
+                </div>
 
-                @if (Model.RecentPurchases.Count == 0)
-                {
-                    <div class="text-center text-muted py-4">
-                        No purchases found.
-                    </div>
-                }
-                else
-                {
-                    <div class="table-responsive">
+                <div class="p-0">
 
-                        <table class="table table-hover mb-0">
+                    @if (Model.RecentPurchases.Count == 0)
+                    {
+                        <div class="dashboard-empty">
 
-                            <thead class="table-light">
+                            <div class="dashboard-empty-icon">
+                                $
+                            </div>
 
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Date</th>
-                                    <th class="text-end">
-                                        Amount
-                                    </th>
-                                </tr>
+                            No purchases found.
 
-                            </thead>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
 
-                            <tbody>
+                            <table class="table table-hover">
 
-                                @foreach (
-                                    var purchase
-                                    in Model.RecentPurchases)
-                                {
+                                <thead>
+
                                     <tr>
 
-                                        <td>
-                                            #@purchase.PurchaseId
-                                        </td>
+                                        <th>
+                                            Purchase ID
+                                        </th>
 
-                                        <td>
-                                            @purchase.PurchaseDate.ToString(
-                                                "dd-MM-yyyy")
-                                        </td>
+                                        <th>
+                                            Date
+                                        </th>
 
-                                        <td class="text-end">
-                                            <strong>
-                                                ₹@purchase.TotalAmount.ToString(
-                                                                                                    "N2")
-                                            </strong>
-                                        </td>
+                                        <th class="text-end">
+                                            Total
+                                        </th>
 
                                     </tr>
-                                }
 
-                            </tbody>
+                                </thead>
 
-                        </table>
+                                <tbody>
 
-                    </div>
-                }
+                                    @foreach (var purchase in
+                                        Model.RecentPurchases)
+                                    {
+                                        <tr>
+
+                                            <td>
+                                                <strong>
+                                                    #@purchase.PurchaseId
+                                                </strong>
+                                            </td>
+
+                                            <td>
+                                                @purchase.PurchaseDate.ToString(
+                                                    "dd-MM-yyyy HH:mm")
+                                            </td>
+
+                                            <td class="text-end fw-semibold">
+                                                $@purchase.TotalAmount.ToString("N2")
+                                            </td>
+
+                                        </tr>
+                                    }
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+                    }
+
+                </div>
 
             </div>
 
         </div>
-
-    </div>
-
-</div>
-
-<!-- System Information -->
-
-<div class="card shadow-sm">
-
-    <div class="card-body">
-
-        <h5 class="mb-3">
-            Pharmacy Management System
-        </h5>
-
-        <p class="text-muted mb-0">
-            Use the navigation menu to manage medicines,
-            suppliers, categories, purchases and sales.
-        </p>
-
-    </div>
-
-</div>
+    }
 
 </div>

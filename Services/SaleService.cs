@@ -7,55 +7,49 @@ public class SaleService : ISaleService
 {
     private readonly ISaleRepository _repository;
 
-    public SaleService(ISaleRepository repository)
+    public SaleService(
+        ISaleRepository repository)
     {
         _repository = repository;
     }
 
-    public async Task<IReadOnlyList<Sale>> GetAllAsync()
+    public async Task<IReadOnlyList<Sale>> GetAllAsync(
+        int currentUserId,
+        bool isAdmin)
     {
-        return await _repository.GetAllAsync();
+        return await _repository.GetAllAsync(
+            currentUserId,
+            isAdmin);
     }
 
-    public async Task<Sale?> GetByIdAsync(int id)
+    public async Task<Sale?> GetByIdAsync(
+        int id,
+        int currentUserId,
+        bool isAdmin)
     {
-        return await _repository.GetByIdAsync(id);
+        return await _repository.GetByIdAsync(
+            id,
+            currentUserId,
+            isAdmin);
     }
 
-    public async Task<int> AddAsync(Sale sale)
+    public async Task<int> AddAsync(
+        Sale sale,
+        int currentUserId)
     {
-        if (sale.Items is null ||
-            sale.Items.Count == 0)
-        {
-            throw new ArgumentException(
-                "At least one medicine is required.");
-        }
-
-        if (sale.Discount < 0)
-        {
-            throw new ArgumentException(
-                "Discount cannot be negative.");
-        }
-
-        // Calculate subtotal
-        var subtotal = sale.Items.Sum(
-            x => x.Quantity * x.SellingPrice);
-
-        // Calculate final total
-        sale.TotalAmount =
-            subtotal - sale.Discount;
-
-        if (sale.TotalAmount < 0)
-        {
-            throw new ArgumentException(
-                "Discount cannot be greater than the sale amount.");
-        }
-
-        return await _repository.AddAsync(sale);
+        return await _repository.AddAsync(
+            sale,
+            currentUserId);
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(
+        int id,
+        int currentUserId,
+        bool isAdmin)
     {
-        return await _repository.DeleteAsync(id);
+        return await _repository.DeleteAsync(
+            id,
+            currentUserId,
+            isAdmin);
     }
 }

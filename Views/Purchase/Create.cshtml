@@ -12,230 +12,427 @@
         ?? Enumerable.Empty<PharmacyManagement.Models.Medicine>();
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h2 class="mb-1">New Purchase</h2>
-        <p class="text-muted mb-0">
-            Add medicines and increase stock.
-        </p>
-    </div>
+<div class="purchase-create-page">
 
-    <a asp-action="Index"
-       class="btn btn-outline-secondary">
-        Back
-    </a>
-</div>
+    <!-- Header -->
 
-<form asp-action="Create"
-      method="post"
-      id="purchaseForm">
+    <div class="page-header-card mb-4">
 
-    @Html.AntiForgeryToken()
+        <div>
 
-    <div asp-validation-summary="ModelOnly"
-         class="text-danger mb-3">
-    </div>
+            <div class="d-flex align-items-center gap-2 mb-2">
 
-    <!-- Purchase Information -->
+                <span class="page-header-icon">
+                    +
+                </span>
 
-    <div class="card shadow-sm mb-4">
-
-        <div class="card-header">
-            <strong>Purchase Information</strong>
-        </div>
-
-        <div class="card-body">
-
-            <div class="row">
-
-                <!-- Supplier -->
-
-                <div class="col-md-4 mb-3">
-
-                    <label asp-for="SupplierId"
-                           class="form-label">
-                        Supplier
-                    </label>
-
-                    <select asp-for="SupplierId"
-                            class="form-select">
-
-                        <option value="">
-                            -- Select Supplier --
-                        </option>
-
-                        @foreach (var supplier in suppliers)
-                        {
-                            <option value="@supplier.SupplierId">
-                                @supplier.SupplierName
-                            </option>
-                        }
-
-                    </select>
-
-                    <span asp-validation-for="SupplierId"
-                          class="text-danger">
-                    </span>
-
-                </div>
-
-                <!-- Purchase Date -->
-
-                <div class="col-md-4 mb-3">
-
-                    <label asp-for="PurchaseDate"
-                           class="form-label">
-                        Purchase Date
-                    </label>
-
-                    <input asp-for="PurchaseDate"
-                           type="date"
-                           class="form-control" />
-
-                    <span asp-validation-for="PurchaseDate"
-                          class="text-danger">
-                    </span>
-
-                </div>
-
-                <!-- Invoice -->
-
-                <div class="col-md-4 mb-3">
-
-                    <label asp-for="InvoiceNo"
-                           class="form-label">
-                        Invoice No.
-                    </label>
-
-                    <input asp-for="InvoiceNo"
-                           class="form-control"
-                           placeholder="e.g. INV-001" />
-
-                    <span asp-validation-for="InvoiceNo"
-                          class="text-danger">
-                    </span>
-
-                </div>
+                <span class="text-primary small fw-semibold">
+                    INVENTORY
+                </span>
 
             </div>
 
-        </div>
+            <h2 class="mb-1">
+                New Purchase
+            </h2>
 
-    </div>
-
-
-    <!-- Purchase Items -->
-
-    <div class="card shadow-sm mb-4">
-
-        <div class="card-header d-flex justify-content-between align-items-center">
-
-            <strong>Purchase Items</strong>
-
-            <button type="button"
-                    class="btn btn-sm btn-primary"
-                    id="addItemBtn">
-                + Add Medicine
-            </button>
+            <p class="text-muted mb-0">
+                Add medicines from a supplier and increase stock.
+            </p>
 
         </div>
-
-        <div class="card-body">
-
-            <div class="table-responsive">
-
-                <table class="table table-bordered align-middle"
-                       id="itemsTable">
-
-                    <thead class="table-light">
-
-                        <tr>
-
-                            <th style="width: 35%;">
-                                Medicine
-                            </th>
-
-                            <th style="width: 15%;">
-                                Quantity
-                            </th>
-
-                            <th style="width: 20%;">
-                                Purchase Price
-                            </th>
-
-                            <th style="width: 20%;">
-                                Total
-                            </th>
-
-                            <th style="width: 10%;">
-                                Action
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody id="itemsBody">
-                    </tbody>
-
-                    <tfoot>
-
-                        <tr>
-
-                            <th colspan="3"
-                                class="text-end">
-                                Grand Total
-                            </th>
-
-                            <th>
-                                ₹<span id="grandTotal">0.00</span>
-                            </th>
-
-                            <th></th>
-
-                        </tr>
-
-                    </tfoot>
-
-                </table>
-
-            </div>
-
-            <div id="emptyMessage"
-                 class="text-center text-muted py-4">
-
-                No medicines added.
-
-                <br />
-
-                Click
-                <strong>+ Add Medicine</strong>
-                to add an item.
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- Actions -->
-
-    <div class="d-flex justify-content-end gap-2">
 
         <a asp-action="Index"
-           class="btn btn-secondary">
-            Cancel
-        </a>
+           class="btn btn-outline-secondary">
 
-        <button type="submit"
-                class="btn btn-primary">
-            Save Purchase
-        </button>
+            ← Back to Purchases
+
+        </a>
 
     </div>
 
+
+    <form asp-action="Create"
+          method="post"
+          id="purchaseForm">
+
+        @Html.AntiForgeryToken()
+
+
+        <div asp-validation-summary="ModelOnly"
+             class="alert alert-danger mb-4">
+        </div>
+
+
+        <div class="row g-4">
+
+            <!-- LEFT -->
+
+            <div class="col-xl-8">
+
+                <!-- Purchase Information -->
+
+                <div class="purchase-form-card mb-4">
+
+                    <div class="purchase-form-header">
+
+                        <div class="purchase-form-icon blue">
+                            S
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Purchase Information
+                            </strong>
+
+                            <small>
+                                Supplier and invoice details
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="purchase-form-body">
+
+                        <div class="row g-3">
+
+                            <div class="col-md-4">
+
+                                <label asp-for="SupplierId"
+                                       class="form-label">
+
+                                    Supplier
+
+                                </label>
+
+                                <select asp-for="SupplierId"
+                                        class="form-select">
+
+                                    <option value="">
+                                        -- Select Supplier --
+                                    </option>
+
+                                    @foreach (var supplier in suppliers)
+                                    {
+                                        <option value="@supplier.SupplierId">
+                                            @supplier.SupplierName
+                                        </option>
+                                    }
+
+                                </select>
+
+                                <span asp-validation-for="SupplierId"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+
+                            <div class="col-md-4">
+
+                                <label asp-for="PurchaseDate"
+                                       class="form-label">
+
+                                    Purchase Date
+
+                                </label>
+
+                                <input asp-for="PurchaseDate"
+                                       type="date"
+                                       class="form-control" />
+
+                                <span asp-validation-for="PurchaseDate"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+
+                            <div class="col-md-4">
+
+                                <label asp-for="InvoiceNo"
+                                       class="form-label">
+
+                                    Invoice Number
+
+                                </label>
+
+                                <input asp-for="InvoiceNo"
+                                       class="form-control"
+                                       placeholder="e.g. INV-001" />
+
+                                <span asp-validation-for="InvoiceNo"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Items -->
+
+                <div class="purchase-form-card">
+
+                    <div class="purchase-form-header purchase-items-header">
+
+                        <div class="d-flex align-items-center gap-3">
+
+                            <div class="purchase-form-icon green">
+                                +
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    Purchase Items
+                                </strong>
+
+                                <small>
+                                    Add medicines, quantity and cost
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <button type="button"
+                                class="btn btn-primary"
+                                id="addItemBtn">
+
+                            + Add Medicine
+
+                        </button>
+
+                    </div>
+
+
+                    <div class="purchase-items-wrapper">
+
+                        <div class="purchase-items-scroll">
+
+                            <table class="table purchase-create-table"
+                                   id="itemsTable">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>
+                                            Medicine
+                                        </th>
+
+                                        <th>
+                                            Quantity
+                                        </th>
+
+                                        <th>
+                                            Purchase Price
+                                        </th>
+
+                                        <th>
+                                            Total
+                                        </th>
+
+                                        <th>
+                                            Action
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody id="itemsBody">
+                                </tbody>
+
+                                <tfoot>
+
+                                    <tr>
+
+                                        <th colspan="3"
+                                            class="text-end">
+
+                                            Grand Total
+
+                                        </th>
+
+                                        <th>
+
+                                            ₹<span id="grandTotal">
+                                            0.00
+                                        </span>
+
+                                    </th>
+
+                                    <th></th>
+
+                                </tr>
+
+                            </tfoot>
+
+                        </table>
+
+                    </div>
+
+
+                    <div id="emptyMessage"
+                         class="purchase-empty-items">
+
+                        <div>
+                            +
+                        </div>
+
+                        <strong>
+                            No medicines added
+                        </strong>
+
+                        <span>
+                            Click "Add Medicine" to add purchase items.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT -->
+
+        <div class="col-xl-4">
+
+            <div class="purchase-summary-card-large">
+
+                <div class="purchase-summary-header">
+
+                    <strong>
+                        Purchase Summary
+                    </strong>
+
+                    <span>
+                        STOCK +
+                    </span>
+
+                </div>
+
+
+                <div class="purchase-summary-body">
+
+                    <div class="purchase-bill-line">
+
+                        <span>
+                            Items
+                        </span>
+
+                        <strong id="itemCount">
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div class="purchase-bill-line">
+
+                        <span>
+                            Total Quantity
+                        </span>
+
+                        <strong id="quantityCount">
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <hr />
+
+
+                    <div class="purchase-grand-total">
+
+                        <span>
+                            Grand Total
+                        </span>
+
+                        <strong>
+                            ₹<span id="summaryTotal">
+                            0.00
+                        </span>
+                    </strong>
+
+                </div>
+
+
+                <div class="purchase-stock-note">
+
+                    <span>✓</span>
+
+                    Medicine stock will increase
+                    after saving this purchase.
+
+                </div>
+
+            </div>
+
+
+            <div class="purchase-summary-footer">
+
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary">
+
+                    Cancel
+
+                </a>
+
+                <button type="submit"
+                        class="btn btn-primary">
+
+                    Save Purchase
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="purchase-help-card mt-3">
+
+            <div class="purchase-help-icon">
+                i
+            </div>
+
+            <div>
+
+                <strong>
+                    Purchase tip
+                </strong>
+
+                <p>
+                    Enter the actual purchase cost paid
+                    to the supplier for each medicine.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 </form>
+
+</div>
 
 
 @section Scripts
@@ -243,10 +440,6 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
-
-        // --------------------------------------------------
-        // Medicine data from server
-        // --------------------------------------------------
 
         const medicines = @Html.Raw(
                                     System.Text.Json.JsonSerializer.Serialize(
@@ -261,102 +454,122 @@
         let itemIndex = 0;
 
 
-        // --------------------------------------------------
-        // Create medicine dropdown options
-        // --------------------------------------------------
-
         function createMedicineOptions() {
+
             let options =
                 '<option value="">-- Select Medicine --</option>';
 
             medicines.forEach(function(medicine) {
+
                 options +=
                     `<option value="${medicine.id}">
                                 ${medicine.name}
                             </option>`;
+
             });
 
             return options;
         }
 
 
-        // --------------------------------------------------
-        // Calculate totals
-        // --------------------------------------------------
-
         function updateTotals() {
+
             let grandTotal = 0;
+            let totalQuantity = 0;
+            let itemCount = 0;
+
 
             document
                 .querySelectorAll(".purchase-item")
                 .forEach(function(row) {
+
                     const quantity =
                         parseFloat(
                             row.querySelector(".quantity").value
                         ) || 0;
+
 
                     const price =
                         parseFloat(
                             row.querySelector(".purchase-price").value
                         ) || 0;
 
+
                     const total =
                         quantity * price;
+
 
                     row.querySelector(".item-total")
                         .textContent =
                         total.toFixed(2);
 
+
                     grandTotal += total;
+
+                    totalQuantity += quantity;
+
+                    itemCount++;
+
                 });
+
 
             document.getElementById("grandTotal")
                 .textContent =
                 grandTotal.toFixed(2);
+
+
+            document.getElementById("summaryTotal")
+                .textContent =
+                grandTotal.toFixed(2);
+
+
+            document.getElementById("itemCount")
+                .textContent =
+                itemCount;
+
+
+            document.getElementById("quantityCount")
+                .textContent =
+                totalQuantity;
+
         }
 
-
-        // --------------------------------------------------
-        // Empty message
-        // --------------------------------------------------
 
         function updateEmptyMessage() {
+
             const rows =
-                document.querySelectorAll(".purchase-item");
+                document.querySelectorAll(
+                    ".purchase-item"
+                );
 
-            const message =
-                document.getElementById("emptyMessage");
 
-            message.style.display =
+            document.getElementById("emptyMessage")
+                .style.display =
                 rows.length === 0
-                    ? "block"
+                    ? "flex"
                     : "none";
+
         }
 
 
-        // --------------------------------------------------
-        // Add medicine row
-        // --------------------------------------------------
-
         function addItem() {
-            console.log("Add Medicine clicked");
 
             const tbody =
                 document.getElementById("itemsBody");
 
-            if (!tbody) {
-                console.error("itemsBody not found.");
-                return;
-            }
 
             const row =
                 document.createElement("tr");
 
+
             row.className =
                 "purchase-item";
 
+
             row.innerHTML = `
+
                         <td>
+
                             <select
                                 name="Items[${itemIndex}].MedicineId"
                                 class="form-select medicine"
@@ -365,9 +578,12 @@
                                 ${createMedicineOptions()}
 
                             </select>
+
                         </td>
 
+
                         <td>
+
                             <input
                                 type="number"
                                 name="Items[${itemIndex}].Quantity"
@@ -375,33 +591,54 @@
                                 min="1"
                                 value="1"
                                 required />
+
                         </td>
 
-                        <td>
-                            <input
-                                type="number"
-                                name="Items[${itemIndex}].PurchasePrice"
-                                class="form-control purchase-price"
-                                min="0"
-                                step="0.01"
-                                value="0"
-                                required />
-                        </td>
 
                         <td>
-                            ₹<span class="item-total">0.00</span>
+
+                            <div class="purchase-price-input">
+
+                                <span>₹</span>
+
+                                <input
+                                    type="number"
+                                    name="Items[${itemIndex}].PurchasePrice"
+                                    class="form-control purchase-price"
+                                    min="0"
+                                    step="0.01"
+                                    value="0"
+                                    required />
+
+                            </div>
+
                         </td>
 
+
                         <td>
+
+                            <strong class="purchase-item-total">
+                                ₹<span class="item-total">0.00</span>
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
                             <button
                                 type="button"
-                                class="btn btn-sm btn-outline-danger remove-item">
+                                class="purchase-remove-item"
+                                title="Remove">
 
-                                Remove
+                                ×
 
                             </button>
+
                         </td>
+
                     `;
+
 
             tbody.appendChild(row);
 
@@ -410,91 +647,68 @@
             updateEmptyMessage();
 
             updateTotals();
+
         }
 
 
-        // --------------------------------------------------
-        // Page loaded
-        // --------------------------------------------------
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
 
-        document.addEventListener("DOMContentLoaded", function() {
-            console.log("Purchase Create page loaded.");
-
-            console.log(
-                "Medicines received:",
-                medicines
-            );
-
-            const addButton =
-                document.getElementById("addItemBtn");
-
-            if (!addButton) {
-                console.error(
-                    "Add Medicine button not found."
-                );
-
-                return;
-            }
-
-            addButton.addEventListener(
-                "click",
-                function() {
-                    addItem();
-                }
-            );
+                document
+                    .getElementById("addItemBtn")
+                    .addEventListener(
+                        "click",
+                        addItem
+                    );
 
 
-            // --------------------------------------------------
-            // Quantity / price changes
-            // --------------------------------------------------
-
-            document
-                .getElementById("itemsBody")
-                .addEventListener(
-                    "input",
-                    function() {
-                        updateTotals();
-                    }
-                );
+                document
+                    .getElementById("itemsBody")
+                    .addEventListener(
+                        "input",
+                        updateTotals
+                    );
 
 
-            // --------------------------------------------------
-            // Remove medicine
-            // --------------------------------------------------
+                document
+                    .getElementById("itemsBody")
+                    .addEventListener(
+                        "click",
+                        function(event) {
 
-            document
-                .getElementById("itemsBody")
-                .addEventListener(
-                    "click",
-                    function(event) {
-                        if (
-                            event.target.classList.contains(
-                                "remove-item"
-                            )
-                        ) {
-                            const row =
-                                event.target.closest(
-                                    ".purchase-item"
-                                );
+                            if (
+                                event.target.classList.contains(
+                                    "purchase-remove-item"
+                                )
+                            ) {
 
-                            if (row) {
-                                row.remove();
+                                const row =
+                                    event.target.closest(
+                                        ".purchase-item"
+                                    );
 
-                                updateEmptyMessage();
 
-                                updateTotals();
+                                if (row) {
+
+                                    row.remove();
+
+                                    updateEmptyMessage();
+
+                                    updateTotals();
+
+                                }
+
                             }
+
                         }
-                    }
-                );
+                    );
 
 
-            // --------------------------------------------------
-            // Add first row automatically
-            // --------------------------------------------------
+                addItem();
 
-            addItem();
-        });
+            }
+        );
 
     </script>
 }

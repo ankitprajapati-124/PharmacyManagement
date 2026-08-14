@@ -2,122 +2,565 @@
 
 @{
     ViewData["Title"] = "Medicines";
-    var search = ViewData["Search"]?.ToString();
+
+    var search =
+        ViewData["Search"]?.ToString();
+
+    var totalMedicines = Model.Count;
+
+    var outOfStock =
+        Model.Count(x => x.Quantity == 0);
+
+    var lowStock =
+        Model.Count(x =>
+            x.Quantity > 0 &&
+            x.Quantity < 10);
+
+    var healthyStock =
+        Model.Count(x =>
+            x.Quantity >= 10);
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <div>
-        <h1 class="mb-1">Medicines</h1>
-        <p class="text-muted mb-0">Medicine inventory management</p>
-    </div>
+<div class="medicine-page">
 
-    <a asp-action="Create" class="btn btn-primary">
-        + Add Medicine
-    </a>
-</div>
+    <!-- =========================================
+         PAGE HEADER
+         ========================================= -->
 
-<form method="get" asp-action="Index" class="row g-2 mb-4">
-    <div class="col-md-8">
-        <input type="text"
-               name="search"
-               value="@search"
-               class="form-control"
-               placeholder="Search medicine name..." />
-    </div>
-    <div class="col-auto">
-        <button class="btn btn-outline-primary" type="submit">
-            Search
-        </button>
-    </div>
-    <div class="col-auto">
-        <a asp-action="Index" class="btn btn-outline-secondary">
-            Clear
+    <div class="page-header-card mb-4">
+
+        <div>
+
+            <div class="d-flex align-items-center gap-2 mb-2">
+
+                <span class="page-header-icon">
+                    ✚
+                </span>
+
+                <span class="text-primary small fw-semibold">
+                    INVENTORY
+                </span>
+
+            </div>
+
+            <h2 class="mb-1">
+                Medicines
+            </h2>
+
+            <p class="text-muted mb-0">
+                Manage your pharmacy medicine inventory,
+                stock and pricing.
+            </p>
+
+        </div>
+
+        <a asp-action="Create"
+           class="btn btn-primary">
+
+            <span class="me-1">+</span>
+            Add Medicine
+
         </a>
-    </div>
-</form>
 
-@if (Model.Count == 0)
-{
-    <div class="alert alert-info">
-        No medicines found.
     </div>
-}
-else
-{
-    <div class="table-responsive shadow-sm">
-        <table class="table table-hover align-middle mb-0 bg-white">
-            <thead class="table-light">
-                <tr>
-                    <th>Name</th>
-                    <th>Manufacturer</th>
-                    <th>Batch</th>
-                    <th>Expiry</th>
-                    <th>Purchase</th>
-                    <th>Selling</th>
-                    <th>Stock</th>
-                    <th>Category</th>
-                    <th>Supplier</th>
-                    <th class="text-end">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            @foreach (var medicine in Model)
+
+
+    <!-- =========================================
+         SUMMARY CARDS
+         ========================================= -->
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="medicine-summary-card">
+
+                <div class="summary-icon summary-blue">
+                    ✚
+                </div>
+
+                <div>
+                    <span>Total Medicines</span>
+
+                    <strong>
+                        @totalMedicines
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="medicine-summary-card">
+
+                <div class="summary-icon summary-green">
+                    ✓
+                </div>
+
+                <div>
+                    <span>Healthy Stock</span>
+
+                    <strong>
+                        @healthyStock
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="medicine-summary-card">
+
+                <div class="summary-icon summary-orange">
+                    !
+                </div>
+
+                <div>
+                    <span>Low Stock</span>
+
+                    <strong>
+                        @lowStock
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="medicine-summary-card">
+
+                <div class="summary-icon summary-red">
+                    ×
+                </div>
+
+                <div>
+                    <span>Out of Stock</span>
+
+                    <strong>
+                        @outOfStock
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         SEARCH
+         ========================================= -->
+
+    <div class="medicine-toolbar mb-4">
+
+        <form method="get"
+              asp-action="Index"
+              class="medicine-search-form">
+
+            <div class="medicine-search-box">
+
+                <span class="search-icon">
+                    ⌕
+                </span>
+
+                <input type="text"
+                       name="search"
+                       value="@search"
+                       class="form-control"
+                       placeholder="Search by medicine name..." />
+
+            </div>
+
+            <button type="submit"
+                    class="btn btn-primary">
+
+                Search
+
+            </button>
+
+            @if (!string.IsNullOrWhiteSpace(search))
             {
-                <tr>
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary">
 
-                    <td class="fw-semibold">@medicine.MedicineName</td>
-                    <td>@medicine.Manufacturer</td>
-                    <td>@medicine.BatchNo</td>
-                    <td>
-                        @(medicine.ExpiryDate?.ToString("dd-MM-yyyy") ?? "-")
-                    </td>
-                    <td>₹@medicine.PurchasePrice.ToString("N2")</td>
-                    <td>₹@medicine.SellingPrice.ToString("N2")</td>
-                    <td>
-                        @if (medicine.Quantity == 0)
-                        {
-                            <span class="badge text-bg-danger">Out of stock</span>
-                        }
-                        else if (medicine.Quantity < 10)
-                        {
-                            <span class="badge text-bg-warning">
-                                Low: @medicine.Quantity
-                            </span>
-                        }
-                        else
-                        {
-                            <span class="badge text-bg-success">
-                                @medicine.Quantity
-                            </span>
-                        }
-                    </td>
-                        <td>
-                            @medicine.CategoryName
-                        </td>
+                    Clear
 
-                        <td>
-                            @medicine.SupplierName
-                        </td>
-                    <td class="text-end text-nowrap">
-                        <a asp-action="Details"
-                           asp-route-id="@medicine.MedicineId"
-                           class="btn btn-sm btn-outline-secondary">
-                            Details
-                        </a>
-                        <a asp-action="Edit"
-                           asp-route-id="@medicine.MedicineId"
-                           class="btn btn-sm btn-outline-primary">
-                            Edit
-                        </a>
-                        <a asp-action="Delete"
-                           asp-route-id="@medicine.MedicineId"
-                           class="btn btn-sm btn-outline-danger">
-                            Delete
-                        </a>
-                    </td>
-                </tr>
+                </a>
             }
-            </tbody>
-        </table>
+
+        </form>
+
+        <div class="medicine-count">
+
+            <span>
+                Showing
+            </span>
+
+            <strong>
+                @Model.Count
+            </strong>
+
+            <span>
+                medicine@(Model.Count == 1 ? "" : "s")
+            </span>
+
+        </div>
+
     </div>
-}
+
+
+    <!-- =========================================
+         TABLE
+         ========================================= -->
+    @if (Model.Count == 0)
+    {
+        <div class="medicine-empty-state">
+
+            <div class="empty-state-icon">
+                ✚
+            </div>
+
+            <h4>
+                No medicines found
+            </h4>
+
+            @if (!string.IsNullOrWhiteSpace(search))
+            {
+                <p>
+                    No medicine matches
+                    "<strong>@search</strong>".
+                </p>
+
+                <a asp-action="Index"
+                   class="btn btn-outline-primary">
+
+                    Clear Search
+
+                </a>
+            }
+            else
+            {
+                <p>
+                    Your medicine inventory is currently empty.
+                </p>
+
+                <a asp-action="Create"
+                   class="btn btn-primary">
+
+                    + Add First Medicine
+
+                </a>
+            }
+
+        </div>
+    }
+    else
+    {
+        <div class="medicine-table-card">
+
+            <div class="table-responsive">
+
+                <table class="table medicine-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Medicine
+                            </th>
+
+                            <th>
+                                Manufacturer
+                            </th>
+
+                            <th>
+                                Batch
+                            </th>
+
+                            <th>
+                                Expiry
+                            </th>
+
+                            <th>
+                                Purchase
+                            </th>
+
+                            <th>
+                                Selling
+                            </th>
+
+                            <th>
+                                Stock
+                            </th>
+
+                            <th>
+                                Category
+                            </th>
+
+                            <th>
+                                Supplier
+                            </th>
+
+                            <th class="text-end">
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var medicine in Model)
+                        {
+                            var isExpired =
+                                medicine.ExpiryDate.HasValue &&
+                                medicine.ExpiryDate.Value.Date
+                                    < DateTime.Today;
+
+                            var isExpiringSoon =
+                                medicine.ExpiryDate.HasValue &&
+                                medicine.ExpiryDate.Value.Date >=
+                                    DateTime.Today &&
+                                medicine.ExpiryDate.Value.Date <=
+                                    DateTime.Today.AddDays(30);
+
+                            <tr>
+
+                                <!-- MEDICINE -->
+
+                                <td>
+
+                                    <div class="medicine-name-cell">
+
+                                        <div class="medicine-row-icon">
+                                            ✚
+                                        </div>
+
+                                        <div>
+
+                                            <strong>
+                                                @medicine.MedicineName
+                                            </strong>
+
+                                            <small>
+                                                ID #@medicine.MedicineId
+                                            </small>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- MANUFACTURER -->
+
+                                <td>
+                                    @(medicine.Manufacturer ?? "-")
+                                </td>
+
+
+                                <!-- BATCH -->
+
+                                <td>
+
+                                    @if (!string.IsNullOrWhiteSpace(
+                                        medicine.BatchNo))
+                                    {
+                                        <span class="batch-badge">
+                                            @medicine.BatchNo
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            -
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- EXPIRY -->
+
+                                <td>
+
+                                    @if (isExpired)
+                                    {
+                                        <span class="expiry-danger">
+
+                                            <span>Expired</span>
+
+                                            <small>
+                                                @(medicine.ExpiryDate?
+                                                .ToString("dd-MM-yyyy"))
+                                            </small>
+
+                                        </span>
+                                    }
+                                    else if (isExpiringSoon)
+                                    {
+                                        <span class="expiry-warning">
+
+                                            <span>
+                                                Expiring Soon
+                                            </span>
+
+                                            <small>
+                                                @(medicine.ExpiryDate?
+                                                .ToString("dd-MM-yyyy"))
+                                            </small>
+
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="expiry-normal">
+
+                                            @(medicine.ExpiryDate?
+                                                .ToString("dd-MM-yyyy")
+                                                ?? "-")
+
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- PURCHASE -->
+
+                                <td class="price-cell">
+
+                                    ₹@medicine.PurchasePrice.ToString("N2")
+
+                                </td>
+
+
+                                <!-- SELLING -->
+
+                                <td class="price-cell selling-price">
+
+                                    ₹@medicine.SellingPrice.ToString("N2")
+
+                                </td>
+
+
+                                <!-- STOCK -->
+
+                                <td>
+
+                                    @if (medicine.Quantity == 0)
+                                    {
+                                        <span class="stock-badge stock-out">
+
+                                            <span class="stock-dot"></span>
+
+                                            Out of stock
+
+                                        </span>
+                                    }
+                                    else if (medicine.Quantity < 10)
+                                    {
+                                        <span class="stock-badge stock-low">
+
+                                            <span class="stock-dot"></span>
+
+                                            Low · @medicine.Quantity
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="stock-badge stock-good">
+
+                                            <span class="stock-dot"></span>
+
+                                            @medicine.Quantity
+
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- CATEGORY -->
+
+                                <td>
+
+                                    @(medicine.CategoryName ?? "-")
+
+                                </td>
+
+
+                                <!-- SUPPLIER -->
+
+                                <td>
+
+                                    @(medicine.SupplierName ?? "-")
+
+                                </td>
+
+
+                                <!-- ACTIONS -->
+
+                                <td class="text-end">
+
+                                    <div class="medicine-actions">
+
+                                        <a asp-action="Details"
+                                           asp-route-id="@medicine.MedicineId"
+                                           class="action-btn action-view"
+                                           title="View Details">
+
+                                            View
+
+                                        </a>
+
+                                        <a asp-action="Edit"
+                                           asp-route-id="@medicine.MedicineId"
+                                           class="action-btn action-edit"
+                                           title="Edit Medicine">
+
+                                            Edit
+
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@medicine.MedicineId"
+                                           class="action-btn action-delete"
+                                           title="Delete Medicine">
+
+                                            Delete
+
+                                        </a>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    }
+
+</div>

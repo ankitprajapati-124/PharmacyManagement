@@ -4,102 +4,189 @@
     ViewData["Title"] = "Purchase Details";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h2 class="mb-1">Purchase Details</h2>
-        <p class="text-muted mb-0">
-            Purchase #@Model.PurchaseId
-        </p>
-    </div>
+<div class="purchase-details-page">
 
-    <div>
-        <a asp-action="Index"
-           class="btn btn-outline-secondary">
-            Back
-        </a>
+    <div class="page-header-card mb-4">
 
-        <a asp-action="Delete"
-           asp-route-id="@Model.PurchaseId"
-           class="btn btn-outline-danger">
-            Delete
-        </a>
-    </div>
-</div>
+        <div>
 
-<!-- Purchase Information -->
+            <div class="d-flex align-items-center gap-2 mb-2">
 
-<div class="card shadow-sm mb-4">
+                <span class="page-header-icon">
+                    #
+                </span>
 
-    <div class="card-header">
-        <strong>Purchase Information</strong>
-    </div>
+                <span class="text-primary small fw-semibold">
+                    INVENTORY
+                </span>
 
-    <div class="card-body">
-
-        <div class="row">
-
-            <div class="col-md-3">
-                <strong>Purchase ID</strong>
-                <div>
-                    @Model.PurchaseId
-                </div>
             </div>
 
-            <div class="col-md-3">
-                <strong>Supplier</strong>
-                <div>
+            <h2 class="mb-1">
+                Purchase Details
+            </h2>
+
+            <p class="text-muted mb-0">
+                Purchase #@Model.PurchaseId
+            </p>
+
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <a asp-action="Index"
+               class="btn btn-outline-secondary">
+
+                ← Back
+
+            </a>
+
+            <a asp-action="Delete"
+               asp-route-id="@Model.PurchaseId"
+               class="btn btn-outline-danger">
+
+                Delete
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- Purchase Header -->
+
+    <div class="purchase-invoice-card mb-4">
+
+        <div class="purchase-invoice-top">
+
+            <div>
+
+                <span>
+                    PURCHASE
+                </span>
+
+                <h3>
+                    #@Model.PurchaseId
+                </h3>
+
+            </div>
+
+            <div class="purchase-total-box">
+
+                <span>
+                    Grand Total
+                </span>
+
+                <strong>
+                    ₹@Model.TotalAmount.ToString("N2")
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="purchase-info-grid">
+
+            <div>
+
+                <span>
+                    Supplier
+                </span>
+
+                <strong>
                     @Model.SupplierName
-                </div>
+                </strong>
+
             </div>
 
-            <div class="col-md-3">
-                <strong>Purchase Date</strong>
-                <div>
+
+            <div>
+
+                <span>
+                    Purchase Date
+                </span>
+
+                <strong>
                     @Model.PurchaseDate.ToString("dd-MM-yyyy")
-                </div>
+                </strong>
+
             </div>
 
-            <div class="col-md-3">
-                <strong>Invoice No.</strong>
-                <div>
+
+            <div>
+
+                <span>
+                    Invoice Number
+                </span>
+
+                <strong>
                     @(Model.InvoiceNo ?? "-")
-                </div>
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Purchase ID
+                </span>
+
+                <strong>
+                    #@Model.PurchaseId
+                </strong>
+
             </div>
 
         </div>
 
     </div>
 
-</div>
 
+    <!-- Items -->
 
-<!-- Purchase Items -->
+    <div class="purchase-invoice-card">
 
-<div class="card shadow-sm">
+        <div class="purchase-section-header">
 
-    <div class="card-header">
-        <strong>Purchase Items</strong>
-    </div>
+            <div>
 
-    <div class="card-body">
+                <strong>
+                    Purchased Medicines
+                </strong>
+
+                <small>
+                    @Model.Items.Count item(s) in this purchase
+                </small>
+
+            </div>
+
+        </div>
+
 
         @if (Model.Items.Count == 0)
         {
-            <div class="text-center text-muted py-4">
+            <div class="text-center text-muted py-5">
+
                 No purchase items found.
+
             </div>
         }
         else
         {
-            <div class="table-responsive">
+            <div class="purchase-details-scroll">
 
-                <table class="table table-hover align-middle">
+                <table class="table purchase-details-table">
 
-                    <thead class="table-light">
+                    <thead>
 
                         <tr>
 
-                            <th>#</th>
+                            <th>
+                                #
+                            </th>
 
                             <th>
                                 Medicine
@@ -132,7 +219,11 @@
                                 </td>
 
                                 <td>
-                                    @item.MedicineName
+
+                                    <strong>
+                                        @item.MedicineName
+                                    </strong>
+
                                 </td>
 
                                 <td class="text-end">
@@ -144,7 +235,11 @@
                                 </td>
 
                                 <td class="text-end">
-                                    ₹@item.TotalPrice.ToString("N2")
+
+                                    <strong>
+                                        ₹@item.TotalPrice.ToString("N2")
+                                    </strong>
+
                                 </td>
 
                             </tr>
@@ -158,11 +253,15 @@
 
                             <th colspan="4"
                                 class="text-end">
+
                                 Grand Total
+
                             </th>
 
-                            <th class="text-end">
+                            <th class="text-end purchase-grand-value">
+
                                 ₹@Model.TotalAmount.ToString("N2")
+
                             </th>
 
                         </tr>

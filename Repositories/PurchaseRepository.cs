@@ -16,13 +16,22 @@ public class PurchaseRepository : IPurchaseRepository
                 "DefaultConnection is not configured.");
     }
 
-    public async Task<IReadOnlyList<Purchase>> GetAllAsync()
+    // =========================================================
+    // GET ALL
+    // Admin     -> all purchases
+    // User      -> own purchases
+    // =========================================================
+
+    public async Task<IReadOnlyList<Purchase>> GetAllAsync(
+        int currentUserId,
+        bool isAdmin)
     {
         var purchases = new List<Purchase>();
 
         const string sql = """
             SELECT
                 p.PurchaseId,
+                p.UserId,
                 p.SupplierId,
                 s.SupplierName,
                 p.PurchaseDate,
@@ -32,6 +41,8 @@ public class PurchaseRepository : IPurchaseRepository
             FROM Purchases p
             INNER JOIN Suppliers s
                 ON p.SupplierId = s.SupplierId
+            WHERE @IsAdmin = 1
+               OR p.UserId = @UserId
             ORDER BY p.PurchaseId DESC;
             """;
 
@@ -42,6 +53,16 @@ public class PurchaseRepository : IPurchaseRepository
 
         await using var command =
             new SqlCommand(sql, connection);
+
+        command.Parameters.Add(
+            "@UserId",
+            SqlDbType.Int).Value =
+            currentUserId;
+
+        command.Parameters.Add(
+            "@IsAdmin",
+            SqlDbType.Bit).Value =
+            isAdmin;
 
         await using var reader =
             await command.ExecuteReaderAsync();
@@ -54,11 +75,20 @@ public class PurchaseRepository : IPurchaseRepository
         return purchases;
     }
 
-    public async Task<Purchase?> GetByIdAsync(int id)
+    // =========================================================
+    // GET BY ID
+    // Prevent one user from opening another user's purchase
+    // =========================================================
+
+    public async Task<Purchase?> GetByIdAsync(
+        int id,
+        int currentUserId,
+        bool isAdmin)
     {
         const string purchaseSql = """
             SELECT
                 p.PurchaseId,
+                p.UserId,
                 p.SupplierId,
                 s.SupplierName,
                 p.PurchaseDate,
@@ -68,7 +98,11 @@ public class PurchaseRepository : IPurchaseRepository
             FROM Purchases p
             INNER JOIN Suppliers s
                 ON p.SupplierId = s.SupplierId
-            WHERE p.PurchaseId = @PurchaseId;
+            WHERE p.PurchaseId = @PurchaseId
+              AND (
+                    @IsAdmin = 1
+                    OR p.UserId = @UserId
+                  );
             """;
 
         const string itemsSql = """
@@ -93,12 +127,29 @@ public class PurchaseRepository : IPurchaseRepository
 
         Purchase? purchase;
 
+        // =====================================================
+        // Purchase
+        // =====================================================
+
         await using (var command =
-            new SqlCommand(purchaseSql, connection))
+            new SqlCommand(
+                purchaseSql,
+                connection))
         {
             command.Parameters.Add(
                 "@PurchaseId",
-                SqlDbType.Int).Value = id;
+                SqlDbType.Int).Value =
+                id;
+
+            command.Parameters.Add(
+                "@UserId",
+                SqlDbType.Int).Value =
+                currentUserId;
+
+            command.Parameters.Add(
+                "@IsAdmin",
+                SqlDbType.Bit).Value =
+                isAdmin;
 
             await using var reader =
                 await command.ExecuteReaderAsync();
@@ -109,30 +160,46 @@ public class PurchaseRepository : IPurchaseRepository
             purchase = MapPurchase(reader);
         }
 
+        // =====================================================
+        // Purchase Items
+        // =====================================================
+
         await using (var command =
-            new SqlCommand(itemsSql, connection))
+            new SqlCommand(
+                itemsSql,
+                connection))
         {
             command.Parameters.Add(
                 "@PurchaseId",
-                SqlDbType.Int).Value = id;
+                SqlDbType.Int).Value =
+                id;
 
             await using var reader =
                 await command.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
             {
-                purchase.Items.Add(MapPurchaseItem(reader));
+                purchase.Items.Add(
+                    MapPurchaseItem(reader));
             }
         }
 
         return purchase;
     }
 
-    public async Task<int> AddAsync(Purchase purchase)
+    // =========================================================
+    // CREATE PURCHASE
+    // UserId comes from authenticated user
+    // =========================================================
+
+    public async Task<int> AddAsync(
+        Purchase purchase,
+        int currentUserId)
     {
         const string purchaseSql = """
             INSERT INTO Purchases
             (
+                UserId,
                 SupplierId,
                 PurchaseDate,
                 InvoiceNo,
@@ -140,6 +207,7 @@ public class PurchaseRepository : IPurchaseRepository
             )
             VALUES
             (
+                @UserId,
                 @SupplierId,
                 @PurchaseDate,
                 @InvoiceNo,
@@ -184,13 +252,21 @@ public class PurchaseRepository : IPurchaseRepository
         {
             int purchaseId;
 
-            // 1. Create Purchase
+            // =================================================
+            // 1. CREATE PURCHASE
+            // =================================================
+
             await using (var command =
                 new SqlCommand(
                     purchaseSql,
                     connection,
                     (SqlTransaction)transaction))
             {
+                command.Parameters.Add(
+                    "@UserId",
+                    SqlDbType.Int).Value =
+                    currentUserId;
+
                 command.Parameters.Add(
                     "@SupplierId",
                     SqlDbType.Int).Value =
@@ -215,25 +291,36 @@ public class PurchaseRepository : IPurchaseRepository
 
                 totalAmount.Precision = 12;
                 totalAmount.Scale = 2;
-                totalAmount.Value = purchase.TotalAmount;
+                totalAmount.Value =
+                    purchase.TotalAmount;
 
                 purchaseId =
                     Convert.ToInt32(
                         await command.ExecuteScalarAsync());
             }
 
-            // 2. Add Purchase Items
+            // =================================================
+            // 2. ADD PURCHASE ITEMS
+            // =================================================
+
             foreach (var item in purchase.Items)
             {
                 if (item.Quantity <= 0)
+                {
                     throw new InvalidOperationException(
                         "Purchase quantity must be greater than zero.");
+                }
 
                 if (item.PurchasePrice < 0)
+                {
                     throw new InvalidOperationException(
                         "Purchase price cannot be negative.");
+                }
 
+                // =============================================
                 // Insert purchase item
+                // =============================================
+
                 await using (var command =
                     new SqlCommand(
                         itemSql,
@@ -262,12 +349,16 @@ public class PurchaseRepository : IPurchaseRepository
 
                     price.Precision = 12;
                     price.Scale = 2;
-                    price.Value = item.PurchasePrice;
+                    price.Value =
+                        item.PurchasePrice;
 
                     await command.ExecuteNonQueryAsync();
                 }
 
-                // 3. Increase Medicine Stock
+                // =============================================
+                // Increase medicine stock
+                // =============================================
+
                 await using (var command =
                     new SqlCommand(
                         stockSql,
@@ -306,14 +397,32 @@ public class PurchaseRepository : IPurchaseRepository
         }
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    // =========================================================
+    // DELETE PURCHASE
+    //
+    // Admin     -> any purchase
+    // User      -> only own purchase
+    //
+    // Stock is reversed exactly as before.
+    // =========================================================
+
+    public async Task<bool> DeleteAsync(
+        int id,
+        int currentUserId,
+        bool isAdmin)
     {
         const string getItemsSql = """
             SELECT
-                MedicineId,
-                Quantity
-            FROM PurchaseItems
-            WHERE PurchaseId = @PurchaseId;
+                pi.MedicineId,
+                pi.Quantity
+            FROM PurchaseItems pi
+            INNER JOIN Purchases p
+                ON pi.PurchaseId = p.PurchaseId
+            WHERE pi.PurchaseId = @PurchaseId
+              AND (
+                    @IsAdmin = 1
+                    OR p.UserId = @UserId
+                  );
             """;
 
         const string decreaseStockSql = """
@@ -330,7 +439,11 @@ public class PurchaseRepository : IPurchaseRepository
 
         const string deletePurchaseSql = """
             DELETE FROM Purchases
-            WHERE PurchaseId = @PurchaseId;
+            WHERE PurchaseId = @PurchaseId
+              AND (
+                    @IsAdmin = 1
+                    OR UserId = @UserId
+                  );
             """;
 
         await using var connection =
@@ -343,9 +456,13 @@ public class PurchaseRepository : IPurchaseRepository
 
         try
         {
-            var items = new List<(int MedicineId, int Quantity)>();
+            var items =
+                new List<(int MedicineId, int Quantity)>();
 
-            // Get purchase items
+            // =================================================
+            // Get purchase items only if user has access
+            // =================================================
+
             await using (var command =
                 new SqlCommand(
                     getItemsSql,
@@ -354,7 +471,18 @@ public class PurchaseRepository : IPurchaseRepository
             {
                 command.Parameters.Add(
                     "@PurchaseId",
-                    SqlDbType.Int).Value = id;
+                    SqlDbType.Int).Value =
+                    id;
+
+                command.Parameters.Add(
+                    "@UserId",
+                    SqlDbType.Int).Value =
+                    currentUserId;
+
+                command.Parameters.Add(
+                    "@IsAdmin",
+                    SqlDbType.Bit).Value =
+                    isAdmin;
 
                 await using var reader =
                     await command.ExecuteReaderAsync();
@@ -373,9 +501,15 @@ public class PurchaseRepository : IPurchaseRepository
             }
 
             if (items.Count == 0)
+            {
+                await transaction.RollbackAsync();
                 return false;
+            }
 
+            // =================================================
             // Reverse stock
+            // =================================================
+
             foreach (var item in items)
             {
                 await using var command =
@@ -404,7 +538,10 @@ public class PurchaseRepository : IPurchaseRepository
                 }
             }
 
+            // =================================================
             // Delete purchase items
+            // =================================================
+
             await using (var command =
                 new SqlCommand(
                     deleteItemsSql,
@@ -413,12 +550,16 @@ public class PurchaseRepository : IPurchaseRepository
             {
                 command.Parameters.Add(
                     "@PurchaseId",
-                    SqlDbType.Int).Value = id;
+                    SqlDbType.Int).Value =
+                    id;
 
                 await command.ExecuteNonQueryAsync();
             }
 
+            // =================================================
             // Delete purchase
+            // =================================================
+
             await using (var command =
                 new SqlCommand(
                     deletePurchaseSql,
@@ -427,14 +568,27 @@ public class PurchaseRepository : IPurchaseRepository
             {
                 command.Parameters.Add(
                     "@PurchaseId",
-                    SqlDbType.Int).Value = id;
+                    SqlDbType.Int).Value =
+                    id;
+
+                command.Parameters.Add(
+                    "@UserId",
+                    SqlDbType.Int).Value =
+                    currentUserId;
+
+                command.Parameters.Add(
+                    "@IsAdmin",
+                    SqlDbType.Bit).Value =
+                    isAdmin;
 
                 var affectedRows =
                     await command.ExecuteNonQueryAsync();
 
                 if (affectedRows == 0)
-                    throw new InvalidOperationException(
-                        "Purchase was not found.");
+                {
+                    await transaction.RollbackAsync();
+                    return false;
+                }
             }
 
             await transaction.CommitAsync();
@@ -448,6 +602,10 @@ public class PurchaseRepository : IPurchaseRepository
         }
     }
 
+    // =========================================================
+    // MAP PURCHASE
+    // =========================================================
+
     private static Purchase MapPurchase(
         SqlDataReader reader)
     {
@@ -456,6 +614,10 @@ public class PurchaseRepository : IPurchaseRepository
             PurchaseId =
                 reader.GetInt32(
                     reader.GetOrdinal("PurchaseId")),
+
+            UserId =
+                reader.GetInt32(
+                    reader.GetOrdinal("UserId")),
 
             SupplierId =
                 reader.GetInt32(
@@ -485,6 +647,10 @@ public class PurchaseRepository : IPurchaseRepository
                     reader.GetOrdinal("CreatedAt"))
         };
     }
+
+    // =========================================================
+    // MAP PURCHASE ITEM
+    // =========================================================
 
     private static PurchaseItem MapPurchaseItem(
         SqlDataReader reader)

@@ -13,8 +13,14 @@ public class DashboardService : IDashboardService
         _repository = repository;
     }
 
-    public async Task<DashboardViewModel> GetDashboardAsync()
+    public async Task<DashboardViewModel> GetDashboardAsync(
+        int currentUserId,
+        bool isAdmin,
+        bool canViewPurchases)
     {
-        return await _repository.GetDashboardAsync();
+        return await _repository.GetDashboardAsync(
+            currentUserId,
+            isAdmin,
+            canViewPurchases);
     }
 }

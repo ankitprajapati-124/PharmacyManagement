@@ -4,210 +4,167 @@
     ViewData["Title"] = "Delete Sale";
 }
 
-<div class="mb-4">
-    <h2>Delete Sale</h2>
+<div class="sale-delete-page">
 
-    <p class="text-muted">
-        Review the sale before deleting it.
-    </p>
-</div>
+    <div class="delete-card">
 
-<div class="alert alert-warning">
-    <strong>Warning:</strong>
-    Deleting this sale will restore the sold quantities
-    back into medicine stock.
-</div>
+        <div class="delete-icon">
+            !
+        </div>
 
+        <span class="delete-label">
+            SALE REVERSAL
+        </span>
 
-<!-- Sale Information -->
+        <h2>
+            Delete This Sale?
+        </h2>
 
-<div class="card shadow-sm mb-4">
-
-    <div class="card-header">
-        <strong>Sale Information</strong>
-    </div>
-
-    <div class="card-body">
-
-        <dl class="row mb-0">
-
-            <dt class="col-sm-4">
-                Sale ID
-            </dt>
-
-            <dd class="col-sm-8">
-                @Model.SaleId
-            </dd>
+        <p>
+            This will remove the sale record and restore
+            the sold medicine quantities back to inventory.
+        </p>
 
 
-            <dt class="col-sm-4">
-                Customer
-            </dt>
+        <div class="delete-sale-summary">
 
-            <dd class="col-sm-8">
-                @(Model.CustomerName ?? "-")
-            </dd>
+            <div>
 
+                <span>
+                    Sale ID
+                </span>
 
-            <dt class="col-sm-4">
-                Mobile
-            </dt>
-
-            <dd class="col-sm-8">
-                @(Model.CustomerMobile ?? "-")
-            </dd>
-
-
-            <dt class="col-sm-4">
-                Sale Date
-            </dt>
-
-            <dd class="col-sm-8">
-                @Model.SaleDate.ToString("dd-MM-yyyy HH:mm")
-            </dd>
-
-
-            <dt class="col-sm-4">
-                Invoice No.
-            </dt>
-
-            <dd class="col-sm-8">
-                @(Model.InvoiceNo ?? "-")
-            </dd>
-
-
-            <dt class="col-sm-4">
-                Discount
-            </dt>
-
-            <dd class="col-sm-8">
-                ₹@Model.Discount.ToString("N2")
-            </dd>
-
-
-            <dt class="col-sm-4">
-                Total Amount
-            </dt>
-
-            <dd class="col-sm-8">
                 <strong>
+                    #@Model.SaleId
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Invoice
+                </span>
+
+                <strong>
+                    @(Model.InvoiceNo ?? "-")
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Customer
+                </span>
+
+                <strong>
+                    @(Model.CustomerName ?? "Walk-in Customer")
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Total
+                </span>
+
+                <strong class="delete-total">
                     ₹@Model.TotalAmount.ToString("N2")
                 </strong>
-            </dd>
 
-        </dl>
-
-    </div>
-
-</div>
-
-
-<!-- Sale Items -->
-
-<div class="card shadow-sm mb-4">
-
-    <div class="card-header">
-        <strong>Sale Items</strong>
-    </div>
-
-    <div class="card-body">
-
-        @if (Model.Items.Count == 0)
-        {
-            <div class="text-center text-muted py-4">
-                No sale items found.
             </div>
-        }
-        else
+
+        </div>
+
+
+        <div class="delete-warning">
+
+            <div class="delete-warning-icon">
+                !
+            </div>
+
+            <div>
+
+                <strong>
+                    Stock will be restored
+                </strong>
+
+                <p>
+                    The quantities sold in this transaction
+                    will be added back to the corresponding
+                    medicines.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        @if (Model.Items.Count > 0)
         {
-            <div class="table-responsive">
+            <div class="delete-items">
 
-                <table class="table table-bordered">
+                <strong>
+                    Medicines affected
+                </strong>
 
-                    <thead class="table-light">
+                <div class="delete-item-list">
 
-                        <tr>
+                    @foreach (var item in Model.Items)
+                    {
+                        <div class="delete-item">
 
-                            <th>
-                                Medicine
-                            </th>
+                            <span>
+                                @item.MedicineName
+                            </span>
 
-                            <th class="text-end">
-                                Quantity Sold
-                            </th>
+                            <strong>
+                                +@item.Quantity
+                            </strong>
 
-                            <th class="text-end">
-                                Selling Price
-                            </th>
+                        </div>
+                    }
 
-                            <th class="text-end">
-                                Total
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        @foreach (var item in Model.Items)
-                        {
-                            <tr>
-
-                                <td>
-                                    @item.MedicineName
-                                </td>
-
-                                <td class="text-end">
-                                    @item.Quantity
-                                </td>
-
-                                <td class="text-end">
-                                    ₹@item.SellingPrice.ToString("N2")
-                                </td>
-
-                                <td class="text-end">
-                                    ₹@item.TotalPrice.ToString("N2")
-                                </td>
-
-                            </tr>
-                        }
-
-                    </tbody>
-
-                </table>
+                </div>
 
             </div>
         }
 
+
+        <form asp-action="DeleteConfirmed"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden"
+                   name="id"
+                   value="@Model.SaleId" />
+
+            <div class="delete-actions">
+
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary">
+
+                    Cancel
+
+                </a>
+
+                <button type="submit"
+                        class="btn btn-danger">
+
+                    Delete & Restore Stock
+
+                </button>
+
+            </div>
+
+        </form>
+
     </div>
 
 </div>
-
-
-<!-- Delete Form -->
-
-<form asp-action="DeleteConfirmed"
-      method="post">
-
-    @Html.AntiForgeryToken()
-
-    <input type="hidden"
-           name="id"
-           value="@Model.SaleId" />
-
-    <div class="d-flex justify-content-end gap-2">
-
-        <a asp-action="Index"
-           class="btn btn-secondary">
-            Cancel
-        </a>
-
-        <button type="submit"
-                class="btn btn-danger">
-            Delete Sale & Restore Stock
-        </button>
-
-    </div>
-
-</form>

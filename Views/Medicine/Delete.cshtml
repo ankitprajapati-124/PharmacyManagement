@@ -4,35 +4,111 @@
     ViewData["Title"] = "Delete Medicine";
 }
 
-<div class="card border-danger shadow-sm">
-    <div class="card-body">
-        <h1 class="text-danger">Delete Medicine</h1>
+<div class="delete-page">
 
-        <p>
-            Are you sure you want to deactivate
-            <strong>@Model.MedicineName</strong>?
-        </p>
+    <div class="delete-card">
 
-        <p class="text-muted">
-            This project uses a soft delete so historical records can be
-            preserved.
-        </p>
+        <div class="delete-icon">
+            !
+        </div>
 
-        <form asp-action="DeleteConfirmed"
-              method="post">
-            <input type="hidden"
-                   name="id"
-                   value="@Model.MedicineId" />
+        <div class="delete-content">
 
-            <button type="submit"
-                    class="btn btn-danger">
-                Yes, Delete
-            </button>
+            <span class="delete-label">
+                MEDICINE MANAGEMENT
+            </span>
 
-            <a asp-action="Index"
-               class="btn btn-outline-secondary">
-                Cancel
-            </a>
-        </form>
+            <h2>
+                Deactivate Medicine?
+            </h2>
+
+            <p>
+                You are about to deactivate
+                <strong>@Model.MedicineName</strong>.
+            </p>
+
+            <div class="delete-medicine-info">
+
+                <div>
+
+                    <span>
+                        Medicine
+                    </span>
+
+                    <strong>
+                        @Model.MedicineName
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        Batch
+                    </span>
+
+                    <strong>
+                        @(Model.BatchNo ?? "-")
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        Current Stock
+                    </span>
+
+                    <strong>
+                        @Model.Quantity
+                    </strong>
+
+                </div>
+
+            </div>
+
+            <div class="delete-warning">
+
+                <strong>
+                    Important
+                </strong>
+
+                <p>
+                    This action uses a soft delete.
+                    Historical records will be preserved,
+                    but this medicine will no longer be active
+                    in the inventory.
+                </p>
+
+            </div>
+
+
+            <form asp-action="DeleteConfirmed"
+                  method="post"
+                  class="delete-actions">
+
+                <input type="hidden"
+                       name="id"
+                       value="@Model.MedicineId" />
+
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary">
+
+                    Cancel
+
+                </a>
+
+                <button type="submit"
+                        class="btn btn-danger">
+
+                    Yes, Deactivate
+
+                </button>
+
+            </form>
+
+        </div>
+
     </div>
+
 </div>
