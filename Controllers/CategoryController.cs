@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PharmacyManagement.Models;
 using PharmacyManagement.Services;
 
 namespace PharmacyManagement.Controllers;
 
+[Authorize(Roles = "Admin,Pharmacist")]
 public class CategoryController : Controller
 {
     private readonly ICategoryService _service;

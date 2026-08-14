@@ -10,15 +10,22 @@ namespace PharmacyManagement.Controllers;
 public class AccountController : Controller
 {
     private readonly IAuthService _authService;
+    private readonly IAuditLogService _auditLogService;
     private readonly ILogger<AccountController> _logger;
 
     public AccountController(
         IAuthService authService,
+        IAuditLogService auditLogService,
         ILogger<AccountController> logger)
     {
         _authService = authService;
+        _auditLogService = auditLogService;
         _logger = logger;
     }
+
+    // ============================
+    // LOGIN PAGE
+    // ============================
 
     [HttpGet]
     public IActionResult Login(
@@ -35,6 +42,10 @@ public class AccountController : Controller
 
         return View();
     }
+
+    // ============================
+    // LOGIN
+    // ============================
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -101,6 +112,18 @@ public class AccountController : Controller
                     .AddHours(8)
             });
 
+        // ============================
+        // AUDIT LOGIN
+        // ============================
+
+        await _auditLogService.LogAsync(
+            "Login",
+            "Account",
+            user.UserId,
+            $"User '{user.Username}' logged into the system.",
+            user.UserId,
+            user.Username);
+
         _logger.LogInformation(
             "User {Username} logged in.",
             user.Username);
@@ -116,10 +139,46 @@ public class AccountController : Controller
             "Dashboard");
     }
 
+    // ============================
+    // LOGOUT
+    // ============================
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
+        var userIdValue =
+            User.FindFirst(
+                ClaimTypes.NameIdentifier)?.Value;
+
+        int? userId = null;
+
+        if (int.TryParse(
+                userIdValue,
+                out var parsedUserId))
+        {
+            userId = parsedUserId;
+        }
+
+        var username =
+            User.Identity?.IsAuthenticated == true
+                ? User.Identity.Name
+                : null;
+
+        // ============================
+        // AUDIT LOGOUT
+        // ============================
+
+        await _auditLogService.LogAsync(
+            "Logout",
+            "Account",
+            userId,
+            username is null
+                ? "User logged out of the system."
+                : $"User '{username}' logged out of the system.",
+            userId,
+            username);
+
         await HttpContext.SignOutAsync(
             CookieAuthenticationDefaults
                 .AuthenticationScheme);
@@ -127,6 +186,10 @@ public class AccountController : Controller
         return RedirectToAction(
             nameof(Login));
     }
+
+    // ============================
+    // ACCESS DENIED
+    // ============================
 
     [HttpGet]
     public IActionResult AccessDenied()

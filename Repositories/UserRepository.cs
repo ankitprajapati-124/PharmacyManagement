@@ -16,6 +16,78 @@ public class UserRepository : IUserRepository
                 "DefaultConnection is not configured.");
     }
 
+    public async Task<IReadOnlyList<User>> GetAllAsync()
+    {
+        var users = new List<User>();
+
+        const string sql = """
+            SELECT
+                UserId,
+                Username,
+                PasswordHash,
+                FullName,
+                Role,
+                IsActive,
+                CreatedAt
+            FROM Users
+            ORDER BY Username;
+            """;
+
+        await using var connection =
+            new SqlConnection(_connectionString);
+
+        await connection.OpenAsync();
+
+        await using var command =
+            new SqlCommand(sql, connection);
+
+        await using var reader =
+            await command.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+        {
+            users.Add(MapUser(reader));
+        }
+
+        return users;
+    }
+
+    public async Task<User?> GetByIdAsync(int id)
+    {
+        const string sql = """
+            SELECT
+                UserId,
+                Username,
+                PasswordHash,
+                FullName,
+                Role,
+                IsActive,
+                CreatedAt
+            FROM Users
+            WHERE UserId = @UserId;
+            """;
+
+        await using var connection =
+            new SqlConnection(_connectionString);
+
+        await connection.OpenAsync();
+
+        await using var command =
+            new SqlCommand(sql, connection);
+
+        command.Parameters.Add(
+            "@UserId",
+            SqlDbType.Int).Value = id;
+
+        await using var reader =
+            await command.ExecuteReaderAsync();
+
+        if (!await reader.ReadAsync())
+            return null;
+
+        return MapUser(reader);
+    }
+
     public async Task<User?> GetByUsernameAsync(
         string username)
     {
@@ -43,7 +115,8 @@ public class UserRepository : IUserRepository
         command.Parameters.Add(
             "@Username",
             SqlDbType.NVarChar,
-            100).Value = username.Trim();
+            100).Value =
+                username.Trim();
 
         await using var reader =
             await command.ExecuteReaderAsync();
@@ -116,6 +189,38 @@ public class UserRepository : IUserRepository
 
         return Convert.ToInt32(
             await command.ExecuteScalarAsync());
+    }
+
+    public async Task<bool> SetActiveAsync(
+        int id,
+        bool isActive)
+    {
+        const string sql = """
+        UPDATE Users
+        SET IsActive = @IsActive
+        WHERE UserId = @UserId;
+        """;
+
+        await using var connection =
+            new SqlConnection(_connectionString);
+
+        await connection.OpenAsync();
+
+        await using var command =
+            new SqlCommand(sql, connection);
+
+        command.Parameters.Add(
+            "@UserId",
+            SqlDbType.Int).Value = id;
+
+        command.Parameters.Add(
+            "@IsActive",
+            SqlDbType.Bit).Value = isActive;
+
+        var rowsAffected =
+            await command.ExecuteNonQueryAsync();
+
+        return rowsAffected == 1;
     }
 
     private static User MapUser(

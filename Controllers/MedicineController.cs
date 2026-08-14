@@ -1,32 +1,38 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PharmacyManagement.Models;
 using PharmacyManagement.Services;
 
 namespace PharmacyManagement.Controllers;
 
+[Authorize]
 public class MedicineController : Controller
 {
     private readonly IMedicineService _service;
     private readonly ICategoryService _categoryService;
     private readonly ISupplierService _supplierService;
+    private readonly IAuditLogService _auditLogService;
     private readonly ILogger<MedicineController> _logger;
 
     public MedicineController(
         IMedicineService service,
         ICategoryService categoryService,
         ISupplierService supplierService,
+        IAuditLogService auditLogService,
         ILogger<MedicineController> logger)
     {
         _service = service;
         _categoryService = categoryService;
         _supplierService = supplierService;
+        _auditLogService = auditLogService;
         _logger = logger;
     }
 
     [HttpGet]
     public async Task<IActionResult> Index(string? search)
     {
-        var medicines = await _service.GetAllAsync(search);
+        var medicines =
+            await _service.GetAllAsync(search);
 
         ViewData["Search"] = search;
 
@@ -36,7 +42,8 @@ public class MedicineController : Controller
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
-        var medicine = await _service.GetByIdAsync(id);
+        var medicine =
+            await _service.GetByIdAsync(id);
 
         if (medicine is null)
             return NotFound();
@@ -61,7 +68,8 @@ public class MedicineController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Medicine medicine)
+    public async Task<IActionResult> Create(
+        Medicine medicine)
     {
         if (!ModelState.IsValid)
         {
@@ -70,7 +78,14 @@ public class MedicineController : Controller
             return View(medicine);
         }
 
-        var id = await _service.AddAsync(medicine);
+        var id =
+            await _service.AddAsync(medicine);
+
+        await _auditLogService.LogAsync(
+            "Create",
+            "Medicine",
+            id,
+            $"Medicine '{medicine.MedicineName}' was created.");
 
         _logger.LogInformation(
             "Medicine {MedicineId} created.",
@@ -89,7 +104,8 @@ public class MedicineController : Controller
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
-        var medicine = await _service.GetByIdAsync(id);
+        var medicine =
+            await _service.GetByIdAsync(id);
 
         if (medicine is null)
             return NotFound();
@@ -101,7 +117,8 @@ public class MedicineController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Medicine medicine)
+    public async Task<IActionResult> Edit(
+        Medicine medicine)
     {
         if (!ModelState.IsValid)
         {
@@ -110,10 +127,21 @@ public class MedicineController : Controller
             return View(medicine);
         }
 
-        var updated = await _service.UpdateAsync(medicine);
+        var updated =
+            await _service.UpdateAsync(medicine);
 
         if (!updated)
             return NotFound();
+
+        await _auditLogService.LogAsync(
+            "Update",
+            "Medicine",
+            medicine.MedicineId,
+            $"Medicine '{medicine.MedicineName}' was updated.");
+
+        _logger.LogInformation(
+            "Medicine {MedicineId} updated.",
+            medicine.MedicineId);
 
         TempData["Success"] =
             "Medicine updated successfully.";
@@ -128,7 +156,8 @@ public class MedicineController : Controller
     [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
-        var medicine = await _service.GetByIdAsync(id);
+        var medicine =
+            await _service.GetByIdAsync(id);
 
         if (medicine is null)
             return NotFound();
@@ -138,12 +167,30 @@ public class MedicineController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
+    public async Task<IActionResult> DeleteConfirmed(
+        int id)
     {
-        var deleted = await _service.DeleteAsync(id);
+        var medicine =
+            await _service.GetByIdAsync(id);
+
+        if (medicine is null)
+            return NotFound();
+
+        var deleted =
+            await _service.DeleteAsync(id);
 
         if (!deleted)
             return NotFound();
+
+        await _auditLogService.LogAsync(
+            "Delete",
+            "Medicine",
+            id,
+            $"Medicine '{medicine.MedicineName}' was deleted.");
+
+        _logger.LogInformation(
+            "Medicine {MedicineId} deleted.",
+            id);
 
         TempData["Success"] =
             "Medicine deleted successfully.";

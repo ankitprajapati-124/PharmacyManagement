@@ -16,22 +16,44 @@
 
 <body>
 
+    @{
+        var currentController =
+            ViewContext.RouteData.Values["controller"]?.ToString();
+
+        var isAccountPage =
+            string.Equals(
+                currentController,
+                "Account",
+                StringComparison.OrdinalIgnoreCase);
+    }
+
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
 
         <div class="container">
 
             <!-- Brand -->
-            <a class="navbar-brand fw-bold"
-               asp-controller="Dashboard"
-               asp-action="Index">
-                Pharmacy Management
-            </a>
+            @if (!isAccountPage)
+            {
+                <a class="navbar-brand fw-bold"
+                   asp-controller="Dashboard"
+                   asp-action="Index">
+                    Pharmacy Management
+                </a>
+            }
+            else
+            {
+                <span class="navbar-brand fw-bold">
+                    Pharmacy Management
+                </span>
+            }
 
-            @if (User.Identity?.IsAuthenticated == true)
+            @if (User.Identity?.IsAuthenticated == true &&
+                 !isAccountPage)
             {
                 <!-- Navigation -->
                 <div class="navbar-nav me-auto">
 
+                    <!-- All logged-in users -->
                     <a class="nav-link"
                        asp-controller="Dashboard"
                        asp-action="Index">
@@ -45,32 +67,52 @@
                     </a>
 
                     <a class="nav-link"
-                       asp-controller="Purchase"
-                       asp-action="Index">
-                        Purchases
-                    </a>
-
-                    <a class="nav-link"
                        asp-controller="Sale"
                        asp-action="Index">
                         Sales
                     </a>
 
-                    <a class="nav-link"
-                       asp-controller="Category"
-                       asp-action="Index">
-                        Categories
-                    </a>
+                    <!-- Admin + Pharmacist -->
+                    @if (User.IsInRole("Admin") ||
+                         User.IsInRole("Pharmacist"))
+                    {
+                        <a class="nav-link"
+                           asp-controller="Purchase"
+                           asp-action="Index">
+                            Purchases
+                        </a>
 
-                    <a class="nav-link"
-                       asp-controller="Supplier"
-                       asp-action="Index">
-                        Suppliers
-                    </a>
+                        <a class="nav-link"
+                           asp-controller="Category"
+                           asp-action="Index">
+                            Categories
+                        </a>
 
+                        <a class="nav-link"
+                           asp-controller="Supplier"
+                           asp-action="Index">
+                            Suppliers
+                        </a>
+                    }
+
+                    <!-- Admin only -->
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a class="nav-link"
+                           asp-controller="Users"
+                           asp-action="Index">
+                            Users
+                        </a>
+
+                        <a class="nav-link"
+                           asp-controller="AuditLogs"
+                           asp-action="Index">
+                            Audit Logs
+                        </a>
+                    }
                 </div>
 
-                <!-- Logged-in User -->
+                <!-- Logged-in user -->
                 <div class="d-flex align-items-center">
 
                     <span class="navbar-text text-white me-3">
@@ -78,7 +120,7 @@
                         <strong>
                             @(User.FindFirst(
                                 System.Security.Claims.ClaimTypes.GivenName
-                            )?.Value ?? User.Identity?.Name)
+                            )?.Value ?? User.Identity?.Name ?? "User")
                         </strong>
 
                         <small class="ms-1">

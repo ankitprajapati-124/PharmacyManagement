@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PharmacyManagement.Models;
 using PharmacyManagement.Services;
 
 namespace PharmacyManagement.Controllers;
 
+[Authorize(Roles = "Admin,Pharmacist")]
 public class SupplierController : Controller
 {
     private readonly ISupplierService _service;

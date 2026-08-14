@@ -1,32 +1,38 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PharmacyManagement.Models;
 using PharmacyManagement.Services;
 
 namespace PharmacyManagement.Controllers;
 
+[Authorize(Roles = "Admin,Pharmacist")]
 public class PurchaseController : Controller
 {
     private readonly IPurchaseService _service;
     private readonly ISupplierService _supplierService;
     private readonly IMedicineService _medicineService;
+    private readonly IAuditLogService _auditLogService;
     private readonly ILogger<PurchaseController> _logger;
 
     public PurchaseController(
         IPurchaseService service,
         ISupplierService supplierService,
         IMedicineService medicineService,
+        IAuditLogService auditLogService,
         ILogger<PurchaseController> logger)
     {
         _service = service;
         _supplierService = supplierService;
         _medicineService = medicineService;
+        _auditLogService = auditLogService;
         _logger = logger;
     }
 
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var purchases = await _service.GetAllAsync();
+        var purchases =
+            await _service.GetAllAsync();
 
         return View(purchases);
     }
@@ -34,13 +40,18 @@ public class PurchaseController : Controller
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
-        var purchase = await _service.GetByIdAsync(id);
+        var purchase =
+            await _service.GetByIdAsync(id);
 
         if (purchase is null)
             return NotFound();
 
         return View(purchase);
     }
+
+    // ============================
+    // CREATE
+    // ============================
 
     [HttpGet]
     public async Task<IActionResult> Create()
@@ -55,7 +66,8 @@ public class PurchaseController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Purchase purchase)
+    public async Task<IActionResult> Create(
+        Purchase purchase)
     {
         if (!ModelState.IsValid)
         {
@@ -66,7 +78,14 @@ public class PurchaseController : Controller
 
         try
         {
-            var id = await _service.AddAsync(purchase);
+            var id =
+                await _service.AddAsync(purchase);
+
+            await _auditLogService.LogAsync(
+                "Create",
+                "Purchase",
+                id,
+                $"Purchase #{id} was created and medicine stock was updated.");
 
             _logger.LogInformation(
                 "Purchase {PurchaseId} created.",
@@ -93,10 +112,15 @@ public class PurchaseController : Controller
         }
     }
 
+    // ============================
+    // DELETE
+    // ============================
+
     [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
-        var purchase = await _service.GetByIdAsync(id);
+        var purchase =
+            await _service.GetByIdAsync(id);
 
         if (purchase is null)
             return NotFound();
@@ -106,15 +130,32 @@ public class PurchaseController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
+    public async Task<IActionResult> DeleteConfirmed(
+        int id)
     {
         try
         {
+            var purchase =
+                await _service.GetByIdAsync(id);
+
+            if (purchase is null)
+                return NotFound();
+
             var deleted =
                 await _service.DeleteAsync(id);
 
             if (!deleted)
                 return NotFound();
+
+            await _auditLogService.LogAsync(
+                "Delete",
+                "Purchase",
+                id,
+                $"Purchase #{id} was deleted and medicine stock was reversed.");
+
+            _logger.LogInformation(
+                "Purchase {PurchaseId} deleted.",
+                id);
 
             TempData["Success"] =
                 "Purchase deleted and medicine stock reversed.";
@@ -135,6 +176,10 @@ public class PurchaseController : Controller
         }
     }
 
+    // ============================
+    // DROPDOWN DATA
+    // ============================
+
     private async Task LoadDropdownsAsync()
     {
         var suppliers =
@@ -145,5 +190,5 @@ public class PurchaseController : Controller
 
         ViewBag.Suppliers = suppliers;
         ViewBag.Medicines = medicines;
-    }
+   }
 }
