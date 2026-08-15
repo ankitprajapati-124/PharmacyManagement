@@ -931,7 +931,7 @@ The current version has been:
 
 ---
 
-# 👨‍💻 Author
+##👨‍💻 Author
 
 **Ankit Prajapati**
 
