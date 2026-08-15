@@ -1,114 +1,84 @@
 # Pharmacy Management System
 
-## Stack
+A web-based Pharmacy Management System developed using **ASP.NET Core MVC, C#, SQL Server, and ADO.NET**.
 
-- C#
-- ASP.NET Core MVC
-- .NET 10
-- ADO.NET
-- SQL Server
-- Microsoft.Data.SqlClient
-- Bootstrap
+The system is designed to manage pharmacy operations including medicines, categories, suppliers, purchases, sales, stock, users, reports, and audit logs.
 
-.NET 10 is the current LTS release. The project uses Microsoft.Data.SqlClient 7.0.2.
+The application supports local development as well as production deployment on **MonsterASP with Microsoft SQL Server**.
 
-## First module
+---
 
-This starter project currently implements:
+## Table of Contents
 
-- Dashboard
-- Medicine CRUD
-- Search
-- Model validation
-- Dependency Injection
-- Service layer
-- Repository layer
-- ADO.NET
-- SQL Server
-- Parameterized SQL
-- Async database access
-- Soft delete
+- [Project Overview](#project-overview)
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [Project Architecture](#project-architecture)
+- [Project Structure](#project-structure)
+- [Modules](#modules)
+- [Authentication and Authorization](#authentication-and-authorization)
+- [Medicine Management](#medicine-management)
+- [Category Management](#category-management)
+- [Supplier Management](#supplier-management)
+- [Purchase Management](#purchase-management)
+- [Sales Management](#sales-management)
+- [Automatic Invoice Generation](#automatic-invoice-generation)
+- [Stock Management](#stock-management)
+- [Reports](#reports)
+- [Audit Logs](#audit-logs)
+- [Database](#database)
+- [Database Tables](#database-tables)
+- [Database Relationships](#database-relationships)
+- [Connection String](#connection-string)
+- [Local Development Setup](#local-development-setup)
+- [Running the Application](#running-the-application)
+- [Accessing the Application from a Phone](#accessing-the-application-from-a-phone)
+- [Database Backup](#database-backup)
+- [Database Restore](#database-restore)
+- [Production Deployment](#production-deployment)
+- [MonsterASP Deployment](#monsterasp-deployment)
+- [Production Workflow](#production-workflow)
+- [Testing Checklist](#testing-checklist)
+- [Security Notes](#security-notes)
+- [Troubleshooting](#troubleshooting)
+- [Future Improvements](#future-improvements)
+- [License](#license)
 
-## 1. Create the SQL Server database
+---
 
-Open SQL Server Management Studio.
+# Project Overview
 
-Run:
+The Pharmacy Management System provides a centralized system for managing daily pharmacy operations.
 
-Database/01_CreateDatabase.sql
+The main workflow is:
 
-This creates:
-
-PharmacyDB
-  └── Medicines
-
-## 2. Check the connection string
-
-Open:
-
-appsettings.json
-
-Default:
-
-Server=.\SQLEXPRESS;Database=PharmacyDB;Trusted_Connection=True;TrustServerCertificate=True;
-
-If your SQL Server instance is different, change the Server value.
-
-Examples:
-
-Server=localhost;Database=PharmacyDB;Trusted_Connection=True;TrustServerCertificate=True;
-
-Server=.\SQLEXPRESS;Database=PharmacyDB;Trusted_Connection=True;TrustServerCertificate=True;
-
-## 3. Open the project
-
-Visual Studio:
-- Open PharmacyManagement.csproj
-- Make sure the ASP.NET and web development workload is installed.
-
-Or terminal:
-
-dotnet restore
-dotnet run
-
-## 4. Open the site
-
-Use the localhost URL shown by dotnet run.
-
-Start with:
-
-/Dashboard/Index
-
-or:
-
-/Medicine/Index
-
-## Architecture
-
-Browser
-  ↓
-Controller
-  ↓
-Service
-  ↓
-Repository
-  ↓
-ADO.NET
-  ↓
-SQL Server
-
-## Next modules
-
-1. Categories
-2. Suppliers
-3. Customers
-4. Purchases
-5. Sales
-6. Stock transactions
-7. Login/authentication
-8. Roles/authorization
-9. Dashboard statistics
-10. Reports
-11. Invoice printing
-12. Audit logging
-13. Deployment
+```text
+Login
+  │
+  ├── Dashboard
+  │
+  ├── Medicines
+  │     ├── Add Medicine
+  │     ├── Edit Medicine
+  │     ├── Delete Medicine
+  │     └── Stock Management
+  │
+  ├── Categories
+  │
+  ├── Suppliers
+  │
+  ├── Purchases
+  │     ├── Create Purchase
+  │     ├── Purchase History
+  │     └── Purchase Details
+  │
+  ├── Sales
+  │     ├── Create Sale
+  │     ├── Sales History
+  │     └── Sale Details
+  │
+  ├── Reports
+  │
+  ├── Users
+  │
+  └── Audit Logs
