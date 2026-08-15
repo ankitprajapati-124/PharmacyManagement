@@ -1,92 +1,189 @@
-﻿@model PharmacyManagement.Models.LoginViewModel
+@model LoginViewModel
 
 @{
     ViewData["Title"] = "Login";
+    Layout = null;
 }
 
-<div class="row justify-content-center mt-5">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <div class="col-md-5 col-lg-4">
+    <title>Login - Pharmacy Management</title>
 
-        <div class="card shadow-sm">
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+</head>
 
-            <div class="card-body p-4">
+<body>
 
-                <div class="text-center mb-4">
+    <div class="login-page">
 
-                    <h2 class="fw-bold">
-                        Pharmacy Management
-                    </h2>
+        <!-- Left / Branding Section -->
+        <div class="brand-section">
 
-                    <p class="text-muted mb-0">
-                        Sign in to continue
+            <div class="brand-content">
+
+                <div class="brand-icon">
+                    💊
+                </div>
+
+                <h1>Pharmacy Management</h1>
+
+                <p>
+                    Pharmacy Management System
+                </p>
+
+                <div class="brand-description">
+                    <h2>Manage your pharmacy<br />with confidence.</h2>
+
+                    <p>
+                        Manage medicines, inventory, sales and
+                        pharmacy operations from one place.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Right / Login Section -->
+        <div class="login-section">
+
+            <div class="login-card">
+
+                <div class="mobile-brand">
+                    <div class="mobile-brand-icon">💊</div>
+                    <h1>Pharmacy Management</h1>
+                    <p>Pharmacy Management System</p>
+                </div>
+
+                <div class="login-header">
+
+                    <h2>Welcome back</h2>
+
+                    <p>
+                        Sign in to continue to your account
                     </p>
 
                 </div>
 
+
                 <form asp-action="Login"
-                      method="post">
+                      asp-controller="Account"
+                      method="post"
+                      class="login-form">
 
                     @Html.AntiForgeryToken()
 
                     <input type="hidden"
-                           name="returnUrl"
-                           value="@ViewBag.ReturnUrl" />
+                           name="ReturnUrl"
+                           value="@ViewData["ReturnUrl"]" />
 
+
+                    <!-- Validation -->
                     <div asp-validation-summary="ModelOnly"
-                         class="text-danger mb-3">
+                         class="validation-summary">
                     </div>
 
-                    <div class="mb-3">
 
-                        <label asp-for="Username"
-                               class="form-label">
+                    <!-- Username -->
+                    <div class="form-group">
+
+                        <label asp-for="Username">
+                            Username
                         </label>
 
-                        <input asp-for="Username"
-                               class="form-control"
-                               autocomplete="username"
-                               autofocus />
+                        <div class="input-wrapper">
+
+                            <span class="input-icon">👤</span>
+
+                            <input asp-for="Username"
+                                   class="form-control"
+                                   placeholder="Enter your username"
+                                   autocomplete="username" />
+
+                        </div>
 
                         <span asp-validation-for="Username"
-                              class="text-danger">
+                              class="field-validation">
                         </span>
 
                     </div>
 
-                    <div class="mb-3">
 
-                        <label asp-for="Password"
-                               class="form-label">
+                    <!-- Password -->
+                    <div class="form-group">
+
+                        <label asp-for="Password">
+                            Password
                         </label>
 
-                        <input asp-for="Password"
-                               class="form-control"
-                               autocomplete="current-password" />
+                        <div class="input-wrapper">
+
+                            <span class="input-icon">🔒</span>
+
+                            <input asp-for="Password"
+                                   class="form-control"
+                                   placeholder="Enter your password"
+                                   autocomplete="current-password"
+                                   id="passwordInput" />
+
+                            <button type="button"
+                                    class="password-toggle"
+                                    id="passwordToggle"
+                                    aria-label="Show password">
+
+                                👁
+
+                            </button>
+
+                        </div>
 
                         <span asp-validation-for="Password"
-                              class="text-danger">
+                              class="field-validation">
                         </span>
 
                     </div>
 
-                    <div class="form-check mb-3">
 
-                        <input asp-for="RememberMe"
-                               class="form-check-input" />
+                    <!-- Remember Me -->
+                    <div class="form-options">
 
-                        <label asp-for="RememberMe"
-                               class="form-check-label">
+                        <label class="remember-label">
+
+                            <input asp-for="RememberMe"
+                                   type="checkbox" />
+
+                            <span class="custom-checkbox"></span>
+
+                            <span>Remember me</span>
+
                         </label>
 
                     </div>
 
+
+                    <!-- Login Button -->
                     <button type="submit"
-                            class="btn btn-primary w-100">
-                        Login
+                            class="login-button">
+
+                        <span>Login</span>
+
+                        <span class="button-arrow">→</span>
+
                     </button>
 
                 </form>
+
+
+                <div class="login-footer">
+
+                    <span>Pharmacy Management System</span>
+
+                </div>
 
             </div>
 
@@ -94,11 +191,51 @@
 
     </div>
 
-</div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync(
-            "_ValidationScriptsPartial");
-    }
-}
+    <script>
+
+            const passwordInput =
+                document.getElementById("passwordInput");
+
+            const passwordToggle =
+                document.getElementById("passwordToggle");
+
+            if (passwordToggle && passwordInput) {
+
+                passwordToggle.addEventListener("click", function() {
+
+                    if (passwordInput.type === "password") {
+
+                        passwordInput.type = "text";
+
+                        passwordToggle.textContent = "🙈";
+
+                        passwordToggle.setAttribute(
+                            "aria-label",
+                            "Hide password"
+                        );
+
+                    } else {
+
+                        passwordInput.type = "password";
+
+                        passwordToggle.textContent = "👁";
+
+                        passwordToggle.setAttribute(
+                            "aria-label",
+                            "Show password"
+                        );
+
+                    }
+
+                });
+
+            }
+
+    </script>
+
+
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+</body>
+</html>

@@ -1,18 +1,18 @@
-﻿@model PharmacyManagement.Models.Sale
+@model PharmacyManagement.Models.Sale
 
 @{
     ViewData["Title"] = "Delete Sale";
 }
 
-<div class="sale-delete-page">
+<div class="pm-sale-delete-page">
 
-    <div class="delete-card">
+    <div class="pm-delete-card">
 
-        <div class="delete-icon">
+        <div class="pm-delete-icon">
             !
         </div>
 
-        <span class="delete-label">
+        <span class="pm-delete-label">
             SALE REVERSAL
         </span>
 
@@ -26,7 +26,7 @@
         </p>
 
 
-        <div class="delete-sale-summary">
+        <div class="pm-delete-sale-summary">
 
             <div>
 
@@ -73,7 +73,7 @@
                     Total
                 </span>
 
-                <strong class="delete-total">
+                <strong class="pm-delete-total">
                     ₹@Model.TotalAmount.ToString("N2")
                 </strong>
 
@@ -82,9 +82,9 @@
         </div>
 
 
-        <div class="delete-warning">
+        <div class="pm-delete-warning">
 
-            <div class="delete-warning-icon">
+            <div class="pm-delete-warning-icon">
                 !
             </div>
 
@@ -107,17 +107,17 @@
 
         @if (Model.Items.Count > 0)
         {
-            <div class="delete-items">
+            <div class="pm-delete-items">
 
                 <strong>
                     Medicines affected
                 </strong>
 
-                <div class="delete-item-list">
+                <div class="pm-delete-item-list">
 
                     @foreach (var item in Model.Items)
                     {
-                        <div class="delete-item">
+                        <div class="pm-delete-item">
 
                             <span>
                                 @item.MedicineName
@@ -145,7 +145,7 @@
                    name="id"
                    value="@Model.SaleId" />
 
-            <div class="delete-actions">
+            <div class="pm-delete-actions">
 
                 <a asp-action="Index"
                    class="btn btn-outline-secondary">

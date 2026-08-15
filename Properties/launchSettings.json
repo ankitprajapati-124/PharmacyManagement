@@ -2,13 +2,11 @@
   "profiles": {
     "PharmacyManagement": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
       "launchBrowser": true,
-      "launchUrl": "Medicine",
-      "applicationUrl": "http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "applicationUrl": "https://localhost:65211;http://localhost:65212"
     }
   }
 }

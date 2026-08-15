@@ -13,15 +13,15 @@
         Model.ExpiryDate.Value.Date <= DateTime.Today.AddDays(30);
 }
 
-<div class="medicine-details-page">
+<div class="pm-medicine-details-page">
 
-    <div class="page-header-card mb-4">
+    <div class="pm-page-header-card mb-4">
 
         <div>
 
             <div class="d-flex align-items-center gap-2 mb-2">
 
-                <span class="page-header-icon">
+                <span class="pm-page-header-icon">
                     ◉
                 </span>
 
@@ -71,9 +71,9 @@
 
         <div class="col-md-4">
 
-            <div class="detail-stat-card">
+            <div class="pm-detail-stat-card">
 
-                <div class="summary-icon summary-blue">
+                <div class="pm-summary-icon pm-summary-blue">
                     ▦
                 </div>
 
@@ -113,9 +113,9 @@
 
         <div class="col-md-4">
 
-            <div class="detail-stat-card">
+            <div class="pm-detail-stat-card">
 
-                <div class="summary-icon summary-green">
+                <div class="pm-summary-icon pm-summary-green">
                     ₹
                 </div>
 
@@ -140,9 +140,9 @@
 
         <div class="col-md-4">
 
-            <div class="detail-stat-card">
+            <div class="pm-detail-stat-card">
 
-                <div class="summary-icon summary-orange">
+                <div class="pm-summary-icon pm-summary-orange">
                     !
                 </div>
 
@@ -190,9 +190,9 @@
          DETAILS
          ========================================= -->
 
-    <div class="detail-section-card">
+    <div class="pm-detail-section-card">
 
-        <div class="detail-section-header">
+        <div class="pm-detail-section-header">
 
             <strong>
                 Medicine Information
@@ -201,9 +201,9 @@
         </div>
 
 
-        <div class="detail-grid">
+        <div class="pm-detail-grid">
 
-            <div class="detail-item">
+            <div class="pm-detail-item">
 
                 <span>
                     Medicine Name
@@ -216,7 +216,7 @@
             </div>
 
 
-            <div class="detail-item">
+            <div class="pm-detail-item">
 
                 <span>
                     Manufacturer
@@ -229,7 +229,7 @@
             </div>
 
 
-            <div class="detail-item">
+            <div class="pm-detail-item">
 
                 <span>
                     Category
@@ -242,7 +242,7 @@
             </div>
 
 
-            <div class="detail-item">
+            <div class="pm-detail-item">
 
                 <span>
                     Supplier
@@ -255,7 +255,7 @@
             </div>
 
 
-            <div class="detail-item">
+            <div class="pm-detail-item">
 
                 <span>
                     Batch Number
@@ -268,7 +268,7 @@
             </div>
 
 
-            <div class="detail-item">
+            <div class="pm-detail-item">
 
                 <span>
                     Expiry Date
@@ -283,7 +283,7 @@
             </div>
 
 
-            <div class="detail-item">
+            <div class="pm-detail-item">
 
                 <span>
                     Purchase Price
@@ -296,7 +296,7 @@
             </div>
 
 
-            <div class="detail-item">
+            <div class="pm-detail-item">
 
                 <span>
                     Selling Price
@@ -309,7 +309,7 @@
             </div>
 
 
-            <div class="detail-item">
+            <div class="pm-detail-item">
 
                 <span>
                     Quantity
@@ -324,7 +324,7 @@
         </div>
 
 
-        <div class="detail-footer">
+        <div class="pm-detail-footer">
 
             <a asp-action="Edit"
                asp-route-id="@Model.MedicineId"

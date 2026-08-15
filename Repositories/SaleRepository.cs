@@ -181,7 +181,45 @@ public class SaleRepository : ISaleRepository
     // UserId comes from authenticated user
     // NOT from browser/form
     // =========================================================
+    private static async Task<string> GenerateSaleInvoiceAsync(
+    SqlConnection connection,
+    SqlTransaction transaction,
+    DateTime saleDate)
+    {
+        const string sql = """
+        SELECT ISNULL(
+            MAX(
+                TRY_CONVERT(
+                    INT,
+                    RIGHT(InvoiceNo, 3)
+                )
+            ),
+            0
+        ) + 1
+        FROM Sales WITH (UPDLOCK, HOLDLOCK)
+        WHERE InvoiceNo LIKE @Pattern;
+        """;
 
+        await using var command =
+            new SqlCommand(
+                sql,
+                connection,
+                transaction);
+
+        command.Parameters.Add(
+            "@Pattern",
+            SqlDbType.NVarChar,
+            50).Value =
+            $"SAL-{saleDate:yyyyMMdd}-%";
+
+        var result =
+            await command.ExecuteScalarAsync();
+
+        var sequence =
+            Convert.ToInt32(result);
+
+        return $"SAL-{saleDate:yyyyMMdd}-{sequence:000}";
+    }
     public async Task<int> AddAsync(
         Sale sale,
         int currentUserId)
@@ -248,7 +286,11 @@ public class SaleRepository : ISaleRepository
 
         await using var transaction =
             await connection.BeginTransactionAsync();
-
+        var invoiceNo =
+    await GenerateSaleInvoiceAsync(
+        connection,
+        (SqlTransaction)transaction,
+        sale.SaleDate);
         try
         {
             int saleId;
@@ -291,8 +333,7 @@ public class SaleRepository : ISaleRepository
                     "@InvoiceNo",
                     SqlDbType.NVarChar,
                     50).Value =
-                    (object?)sale.InvoiceNo?.Trim()
-                    ?? DBNull.Value;
+                    invoiceNo;
 
                 var discount =
                     command.Parameters.Add(

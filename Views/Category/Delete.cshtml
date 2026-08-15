@@ -1,49 +1,151 @@
-﻿@model PharmacyManagement.Models.Category
+@model PharmacyManagement.Models.Category
 
 @{
     ViewData["Title"] = "Delete Category";
+
+    var initial =
+        string.IsNullOrWhiteSpace(Model.CategoryName)
+            ? "?"
+            : Model.CategoryName.Substring(0, 1).ToUpper();
 }
 
-<div class="container mt-4">
+<div class="pm-catui-delete-page">
 
-    <h1>Delete Category</h1>
+    <!-- TOP -->
+    <div class="pm-catui-form-top">
 
-    <div class="alert alert-warning">
-        Are you sure you want to delete this category?
+        <a asp-action="Index"
+           class="pm-catui-back">
+            ← Back to Categories
+        </a>
+
+
+        <div class="pm-catui-form-heading">
+
+            <div class="pm-catui-form-icon pm-red">
+                !
+            </div>
+
+            <div>
+
+                <div class="pm-catui-eyebrow pm-catui-eyebrow-danger">
+                    DANGER ZONE
+                </div>
+
+                <h1>Delete Category</h1>
+
+                <p>
+                    Review the category before deleting it.
+                </p>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <div class="card">
 
-        <div class="card-body">
+    <!-- DELETE CARD -->
+    <div class="pm-catui-delete-card">
 
-            <h5 class="card-title">
-                @Model.CategoryName
-            </h5>
+        <!-- WARNING -->
+        <div class="pm-catui-delete-warning">
 
-            <p class="card-text">
-                Category ID: @Model.CategoryId
-            </p>
+            <div class="pm-catui-warning-icon">
+                !
+            </div>
 
-            <form asp-action="DeleteConfirmed"
-                  method="post">
+            <div>
 
-                <input type="hidden"
-                       name="id"
-                       value="@Model.CategoryId" />
+                <h2>Are you sure?</h2>
 
-                <button type="submit"
-                        class="btn btn-danger">
-                    Yes, Delete
-                </button>
+                <p>
+                    You are about to permanently delete this category.
+                    This action cannot be undone.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- CATEGORY INFORMATION -->
+        <div class="pm-catui-delete-body">
+
+            <div class="pm-catui-delete-item">
+
+                <div class="pm-catui-delete-avatar">
+                    @initial
+                </div>
+
+                <div class="pm-catui-delete-info">
+
+                    <span>Category</span>
+
+                    <strong>
+                        @Model.CategoryName
+                    </strong>
+
+                    <small>
+                        Category ID: #@Model.CategoryId
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="pm-catui-delete-note">
+
+                <span>!</span>
+
+                <div>
+
+                    <strong>
+                        Permanent deletion
+                    </strong>
+
+                    <p>
+                        Make sure this category is no longer required
+                        before continuing.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACTIONS -->
+        <form asp-action="DeleteConfirmed"
+              method="post">
+
+            <input type="hidden"
+                   name="id"
+                   value="@Model.CategoryId" />
+
+            <div class="pm-catui-delete-footer">
 
                 <a asp-action="Index"
-                   class="btn btn-secondary">
+                   class="pm-catui-secondary-btn">
                     Cancel
                 </a>
 
-            </form>
+                <button type="submit"
+                        class="pm-catui-danger-btn">
 
-        </div>
+                    <span>
+                        ×
+                    </span>
+
+                    Yes, Delete Category
+
+                </button>
+
+            </div>
+
+        </form>
 
     </div>
 

@@ -1,4 +1,4 @@
-﻿@model IReadOnlyList<PharmacyManagement.Models.Sale>
+@model IReadOnlyList<PharmacyManagement.Models.Sale>
 
 @{
     ViewData["Title"] = "Sales";
@@ -8,15 +8,15 @@
     var totalSales = Model.Sum(x => x.TotalAmount);
 }
 
-<div class="sales-page">
+<div class="pm-sales-page">
 
     <!-- Header -->
-    <div class="page-header-card mb-4">
+    <div class="pm-page-header-card mb-4">
 
         <div>
 
             <div class="d-flex align-items-center gap-2 mb-2">
-                <span class="page-header-icon">₹</span>
+                <span class="pm-page-header-icon">₹</span>
 
                 <span class="text-primary small fw-semibold">
                     BILLING
@@ -77,9 +77,9 @@
 
         <div class="col-xl-4 col-md-6">
 
-            <div class="sales-summary-card">
+            <div class="pm-sales-summary-card">
 
-                <div class="sales-summary-icon blue">
+                <div class="pm-sales-summary-icon pm-blue">
                     #
                 </div>
 
@@ -98,9 +98,9 @@
 
         <div class="col-xl-4 col-md-6">
 
-            <div class="sales-summary-card">
+            <div class="pm-sales-summary-card">
 
-                <div class="sales-summary-icon orange">
+                <div class="pm-sales-summary-icon pm-orange">
                     %
                 </div>
 
@@ -119,16 +119,16 @@
 
         <div class="col-xl-4 col-md-12">
 
-            <div class="sales-summary-card">
+            <div class="pm-sales-summary-card">
 
-                <div class="sales-summary-icon green">
+                <div class="pm-sales-summary-icon pm-green">
                     ₹
                 </div>
 
                 <div>
                     <span>Total Sales</span>
 
-                    <strong class="sales-total">
+                    <strong class="pm-sales-total">
                         ₹@totalSales.ToString("N2")
                     </strong>
                 </div>
@@ -142,9 +142,9 @@
 
     <!-- Sales Table -->
 
-    <div class="sales-table-card">
+    <div class="pm-sales-table-card">
 
-        <div class="sales-table-header">
+        <div class="pm-sales-table-header">
 
             <div>
 
@@ -158,7 +158,7 @@
 
             </div>
 
-            <span class="sales-count-badge">
+            <span class="pm-sales-count-badge">
                 @totalTransactions transaction@(totalTransactions == 1 ? "" : "s")
             </span>
 
@@ -167,9 +167,9 @@
 
         @if (Model.Count == 0)
         {
-            <div class="sales-empty">
+            <div class="pm-sales-empty">
 
-                <div class="sales-empty-icon">
+                <div class="pm-sales-empty-icon">
                     ₹
                 </div>
 
@@ -192,9 +192,9 @@
         }
         else
         {
-            <div class="table-responsive sales-table-scroll">
+            <div class="table-responsive pm-sales-table-scroll">
 
-                <table class="table sales-table">
+                <table class="table pm-sales-table">
 
                     <thead>
 
@@ -234,7 +234,7 @@
 
                                 <td>
 
-                                    <span class="sale-id">
+                                    <span class="pm-sale-id">
                                         #@sale.SaleId
                                     </span>
 
@@ -243,9 +243,9 @@
 
                                 <td>
 
-                                    <div class="customer-cell">
+                                    <div class="pm-customer-cell">
 
-                                        <div class="customer-avatar">
+                                        <div class="pm-customer-avatar">
                                             @(string.IsNullOrWhiteSpace(sale.CustomerName)
                                                 ? "C"
                                                 : sale.CustomerName.Substring(0, 1).ToUpper())
@@ -275,7 +275,7 @@
 
                                 <td>
 
-                                    <span class="sale-date">
+                                    <span class="pm-sale-date">
                                         @sale.SaleDate.ToString("dd-MM-yyyy")
                                     </span>
 
@@ -290,7 +290,7 @@
 
                                     @if (!string.IsNullOrWhiteSpace(sale.InvoiceNo))
                                     {
-                                        <span class="invoice-badge">
+                                        <span class="pm-invoice-badge">
                                             @sale.InvoiceNo
                                         </span>
                                     }
@@ -308,7 +308,7 @@
 
                                     @if (sale.Discount > 0)
                                     {
-                                        <span class="discount-value">
+                                        <span class="pm-discount-value">
                                             ₹@sale.Discount.ToString("N2")
                                         </span>
                                     }
@@ -324,7 +324,7 @@
 
                                 <td class="text-end">
 
-                                    <strong class="sale-amount">
+                                    <strong class="pm-sale-amount">
                                         ₹@sale.TotalAmount.ToString("N2")
                                     </strong>
 
@@ -333,11 +333,11 @@
 
                                 <td class="text-end">
 
-                                    <div class="sale-actions">
+                                    <div class="pm-sale-actions">
 
                                         <a asp-action="Details"
                                            asp-route-id="@sale.SaleId"
-                                           class="sale-action view">
+                                           class="pm-sale-action pm-view">
 
                                             Details
 
@@ -345,7 +345,7 @@
 
                                         <a asp-action="Delete"
                                            asp-route-id="@sale.SaleId"
-                                           class="sale-action delete">
+                                           class="pm-sale-action pm-delete">
 
                                             Delete
 

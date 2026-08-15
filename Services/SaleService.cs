@@ -37,6 +37,54 @@ public class SaleService : ISaleService
         Sale sale,
         int currentUserId)
     {
+        // =========================================
+        // BASIC VALIDATION
+        // =========================================
+
+        if (sale.Items is null ||
+            sale.Items.Count == 0)
+        {
+            throw new ArgumentException(
+                "At least one medicine is required.");
+        }
+
+        if (sale.Discount < 0)
+        {
+            throw new ArgumentException(
+                "Discount cannot be negative.");
+        }
+
+        // =========================================
+        // CALCULATE SUBTOTAL FROM SALE ITEMS
+        // =========================================
+
+        decimal subtotal =
+            sale.Items.Sum(
+                item =>
+                    item.Quantity *
+                    item.SellingPrice);
+
+        // =========================================
+        // DISCOUNT CANNOT EXCEED SUBTOTAL
+        // =========================================
+
+        if (sale.Discount > subtotal)
+        {
+            throw new ArgumentException(
+                "Discount cannot be greater than the sale subtotal.");
+        }
+
+        // =========================================
+        // CALCULATE FINAL TOTAL
+        // =========================================
+
+        sale.TotalAmount =
+            subtotal - sale.Discount;
+
+        // =========================================
+        // SAVE SALE
+        // =========================================
+
         return await _repository.AddAsync(
             sale,
             currentUserId);

@@ -4,15 +4,15 @@
     ViewData["Title"] = "Edit Medicine";
 }
 
-<div class="medicine-form-page">
+<div class="pm-medicine-form-page">
 
-    <div class="page-header-card mb-4">
+    <div class="pm-page-header-card mb-4">
 
         <div>
 
             <div class="d-flex align-items-center gap-2 mb-2">
 
-                <span class="page-header-icon">
+                <span class="pm-page-header-icon">
                     ✎
                 </span>
 
@@ -59,11 +59,11 @@
 
             <div class="col-lg-8">
 
-                <div class="form-section-card">
+                <div class="pm-form-section-card">
 
-                    <div class="form-section-header">
+                    <div class="pm-form-section-header">
 
-                        <div class="form-section-icon blue">
+                        <div class="pm-form-section-icon pm-blue">
                             ✚
                         </div>
 
@@ -82,7 +82,7 @@
                     </div>
 
 
-                    <div class="form-section-body">
+                    <div class="pm-form-section-body">
 
                         <div class="row g-3">
 
@@ -96,7 +96,7 @@
                                        class="form-control" />
 
                                 <span asp-validation-for="MedicineName"
-                                      class="field-validation">
+                                      class="pm-field-validation">
                                 </span>
 
                             </div>
@@ -112,7 +112,7 @@
                                        class="form-control" />
 
                                 <span asp-validation-for="Manufacturer"
-                                      class="field-validation">
+                                      class="pm-field-validation">
                                 </span>
 
                             </div>
@@ -145,7 +145,7 @@
                                 </select>
 
                                 <span asp-validation-for="CategoryId"
-                                      class="field-validation">
+                                      class="pm-field-validation">
                                 </span>
 
                             </div>
@@ -178,7 +178,7 @@
                                 </select>
 
                                 <span asp-validation-for="SupplierId"
-                                      class="field-validation">
+                                      class="pm-field-validation">
                                 </span>
 
                             </div>
@@ -194,9 +194,9 @@
 
             <div class="col-lg-4">
 
-                <div class="form-info-card">
+                <div class="pm-form-info-card">
 
-                    <div class="form-info-icon">
+                    <div class="pm-form-info-icon">
                         ✎
                     </div>
 
@@ -209,7 +209,7 @@
                         <strong>#@Model.MedicineId</strong>
                     </p>
 
-                    <div class="info-line">
+                    <div class="pm-info-line">
 
                         <span>
                             Current Stock
@@ -221,7 +221,7 @@
 
                     </div>
 
-                    <div class="info-line">
+                    <div class="pm-info-line">
 
                         <span>
                             Selling Price
@@ -240,11 +240,11 @@
 
             <div class="col-12">
 
-                <div class="form-section-card">
+                <div class="pm-form-section-card">
 
-                    <div class="form-section-header">
+                    <div class="pm-form-section-header">
 
-                        <div class="form-section-icon green">
+                        <div class="pm-form-section-icon pm-green">
                             ▦
                         </div>
 
@@ -263,7 +263,7 @@
                     </div>
 
 
-                    <div class="form-section-body">
+                    <div class="pm-form-section-body">
 
                         <div class="row g-3">
 
@@ -277,7 +277,7 @@
                                        class="form-control" />
 
                                 <span asp-validation-for="BatchNo"
-                                      class="field-validation">
+                                      class="pm-field-validation">
                                 </span>
 
                             </div>
@@ -294,7 +294,7 @@
                                        class="form-control" />
 
                                 <span asp-validation-for="ExpiryDate"
-                                      class="field-validation">
+                                      class="pm-field-validation">
                                 </span>
 
                             </div>
@@ -320,7 +320,7 @@
                                 </div>
 
                                 <span asp-validation-for="Quantity"
-                                      class="field-validation">
+                                      class="pm-field-validation">
                                 </span>
 
                             </div>
@@ -347,7 +347,7 @@
                                 </div>
 
                                 <span asp-validation-for="PurchasePrice"
-                                      class="field-validation">
+                                      class="pm-field-validation">
                                 </span>
 
                             </div>
@@ -374,7 +374,7 @@
                                 </div>
 
                                 <span asp-validation-for="SellingPrice"
-                                      class="field-validation">
+                                      class="pm-field-validation">
                                 </span>
 
                             </div>
@@ -384,7 +384,7 @@
                     </div>
 
 
-                    <div class="form-section-footer">
+                    <div class="pm-form-section-footer">
 
                         <a asp-action="Index"
                            class="btn btn-outline-secondary">

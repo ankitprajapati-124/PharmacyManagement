@@ -1,57 +1,186 @@
-﻿@model PharmacyManagement.Models.Supplier
+@model PharmacyManagement.Models.Supplier
 
 @{
     ViewData["Title"] = "Delete Supplier";
+
+    var initial =
+        string.IsNullOrWhiteSpace(Model.SupplierName)
+            ? "?"
+            : Model.SupplierName.Trim()
+                .Substring(0, 1)
+                .ToUpperInvariant();
 }
 
-<div class="container mt-4">
+<div class="pm-supplier-delete-page">
 
-    <h1>Delete Supplier</h1>
+    <div class="pm-supplier-form-top">
 
-    <div class="alert alert-warning">
-        Are you sure you want to delete this supplier?
+        <a asp-action="Index"
+           class="pm-supplier-back">
+            ← Back to Suppliers
+        </a>
+
+        <div class="pm-supplier-form-heading">
+
+            <div class="pm-supplier-form-icon red">
+                !
+            </div>
+
+            <div>
+
+                <div class="pm-supplier-eyebrow danger">
+                    DANGER ZONE
+                </div>
+
+                <h1>Delete Supplier</h1>
+
+                <p>
+                    Review the supplier before deleting it.
+                </p>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <div class="card">
 
-        <div class="card-body">
+    <div class="pm-supplier-delete-card">
 
-            <h5 class="card-title">
-                @Model.SupplierName
-            </h5>
 
-            <p>
-                Supplier ID: @Model.SupplierId
-            </p>
+        <!-- WARNING -->
 
-            <p>
-                Phone: @Model.Phone
-            </p>
+        <div class="pm-supplier-delete-warning">
 
-            <p>
-                Email: @Model.Email
-            </p>
+            <div class="pm-supplier-warning-icon">
+                !
+            </div>
 
-            <form asp-action="DeleteConfirmed"
-                  method="post">
+            <div>
 
-                <input type="hidden"
-                       name="id"
-                       value="@Model.SupplierId" />
+                <h2>
+                    Are you sure?
+                </h2>
 
-                <button type="submit"
-                        class="btn btn-danger">
-                    Yes, Delete
-                </button>
+                <p>
+                    You are about to permanently delete this supplier.
+                    This action cannot be undone.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- DETAILS -->
+
+        <div class="pm-supplier-delete-body">
+
+            <div class="pm-supplier-delete-item">
+
+                <div class="pm-supplier-delete-avatar">
+                    @initial
+                </div>
+
+                <div class="pm-supplier-delete-info">
+
+                    <span>
+                        Supplier
+                    </span>
+
+                    <strong>
+                        @Model.SupplierName
+                    </strong>
+
+                    <small>
+                        Supplier ID: #@Model.SupplierId
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="pm-supplier-delete-details">
+
+                <div>
+
+                    <span>
+                        Phone
+                    </span>
+
+                    <strong>
+                        @(string.IsNullOrWhiteSpace(Model.Phone)
+                            ? "-"
+                            : Model.Phone)
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Email
+                    </span>
+
+                    <strong>
+                        @(string.IsNullOrWhiteSpace(Model.Email)
+                            ? "-"
+                            : Model.Email)
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="pm-supplier-delete-note">
+
+                <span>!</span>
+
+                <div>
+
+                    <strong>
+                        Permanent deletion
+                    </strong>
+
+                    <p>
+                        Make sure this supplier is no longer required
+                        before continuing.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- FOOTER -->
+
+        <form asp-action="DeleteConfirmed"
+              method="post">
+
+            <input type="hidden"
+                   name="id"
+                   value="@Model.SupplierId" />
+
+            <div class="pm-supplier-delete-footer">
 
                 <a asp-action="Index"
-                   class="btn btn-secondary">
+                   class="pm-supplier-secondary-btn">
                     Cancel
                 </a>
 
-            </form>
+                <button type="submit"
+                        class="pm-supplier-danger-btn">
+                    × Yes, Delete Supplier
+                </button>
 
-        </div>
+            </div>
+
+        </form>
 
     </div>
 

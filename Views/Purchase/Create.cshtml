@@ -1,4 +1,4 @@
-﻿@model PharmacyManagement.Models.Purchase
+@model PharmacyManagement.Models.Purchase
 
 @{
     ViewData["Title"] = "New Purchase";
@@ -12,17 +12,17 @@
         ?? Enumerable.Empty<PharmacyManagement.Models.Medicine>();
 }
 
-<div class="purchase-create-page">
+<div class="pm-purchase-create-page">
 
     <!-- Header -->
 
-    <div class="page-header-card mb-4">
+    <div class="pm-page-header-card mb-4">
 
         <div>
 
             <div class="d-flex align-items-center gap-2 mb-2">
 
-                <span class="page-header-icon">
+                <span class="pm-page-header-icon">
                     +
                 </span>
 
@@ -72,11 +72,11 @@
 
                 <!-- Purchase Information -->
 
-                <div class="purchase-form-card mb-4">
+                <div class="pm-purchase-form-card mb-4">
 
-                    <div class="purchase-form-header">
+                    <div class="pm-purchase-form-header">
 
-                        <div class="purchase-form-icon blue">
+                        <div class="pm-purchase-form-icon pm-blue">
                             S
                         </div>
 
@@ -95,7 +95,7 @@
                     </div>
 
 
-                    <div class="purchase-form-body">
+                    <div class="pm-purchase-form-body">
 
                         <div class="row g-3">
 
@@ -160,13 +160,20 @@
 
                                 </label>
 
-                                <input asp-for="InvoiceNo"
-                                       class="form-control"
-                                       placeholder="e.g. INV-001" />
+                                <div class="pm-auto-invoice">
+                                    <input asp-for="InvoiceNo"
+                                           class="form-control"
+                                           placeholder="Invoice-no.will be auto generated "
+                                           readonly />
 
-                                <span asp-validation-for="InvoiceNo"
-                                      class="text-danger">
-                                </span>
+                                    <span class="pm-auto-invoice-badge">
+                                        
+                                    </span>
+                                </div>
+
+                                <small class="text-muted">
+                                 
+                                </small>
 
                             </div>
 
@@ -179,13 +186,13 @@
 
                 <!-- Items -->
 
-                <div class="purchase-form-card">
+                <div class="pm-purchase-form-card">
 
-                    <div class="purchase-form-header purchase-items-header">
+                    <div class="pm-purchase-form-header pm-purchase-items-header">
 
                         <div class="d-flex align-items-center gap-3">
 
-                            <div class="purchase-form-icon green">
+                            <div class="pm-purchase-form-icon pm-green">
                                 +
                             </div>
 
@@ -215,11 +222,11 @@
                     </div>
 
 
-                    <div class="purchase-items-wrapper">
+                    <div class="pm-purchase-items-wrapper">
 
-                        <div class="purchase-items-scroll">
+                        <div class="pm-purchase-items-scroll">
 
-                            <table class="table purchase-create-table"
+                            <table class="table pm-purchase-create-table"
                                    id="itemsTable">
 
                                 <thead>
@@ -284,7 +291,7 @@
 
 
                     <div id="emptyMessage"
-                         class="purchase-empty-items">
+                         class="pm-purchase-empty-items">
 
                         <div>
                             +
@@ -311,9 +318,9 @@
 
         <div class="col-xl-4">
 
-            <div class="purchase-summary-card-large">
+            <div class="pm-purchase-summary-card-large">
 
-                <div class="purchase-summary-header">
+                <div class="pm-purchase-summary-header">
 
                     <strong>
                         Purchase Summary
@@ -326,9 +333,9 @@
                 </div>
 
 
-                <div class="purchase-summary-body">
+                <div class="pm-purchase-summary-body">
 
-                    <div class="purchase-bill-line">
+                    <div class="pm-purchase-bill-line">
 
                         <span>
                             Items
@@ -341,7 +348,7 @@
                     </div>
 
 
-                    <div class="purchase-bill-line">
+                    <div class="pm-purchase-bill-line">
 
                         <span>
                             Total Quantity
@@ -357,7 +364,7 @@
                     <hr />
 
 
-                    <div class="purchase-grand-total">
+                    <div class="pm-purchase-grand-total">
 
                         <span>
                             Grand Total
@@ -372,7 +379,7 @@
                 </div>
 
 
-                <div class="purchase-stock-note">
+                <div class="pm-purchase-stock-note">
 
                     <span>✓</span>
 
@@ -384,7 +391,7 @@
             </div>
 
 
-            <div class="purchase-summary-footer">
+            <div class="pm-purchase-summary-footer">
 
                 <a asp-action="Index"
                    class="btn btn-outline-secondary">
@@ -405,9 +412,9 @@
         </div>
 
 
-        <div class="purchase-help-card mt-3">
+        <div class="pm-purchase-help-card mt-3">
 
-            <div class="purchase-help-icon">
+            <div class="pm-purchase-help-icon">
                 i
             </div>
 
@@ -485,21 +492,18 @@
 
                     const quantity =
                         parseFloat(
-                            row.querySelector(".quantity").value
+                            row.querySelector(".pm-quantity").value
                         ) || 0;
-
 
                     const price =
                         parseFloat(
-                            row.querySelector(".purchase-price").value
+                            row.querySelector(".pm-purchase-price").value
                         ) || 0;
-
 
                     const total =
                         quantity * price;
 
-
-                    row.querySelector(".item-total")
+                    row.querySelector(".pm-item-total")
                         .textContent =
                         total.toFixed(2);
 
@@ -572,7 +576,7 @@
 
                             <select
                                 name="Items[${itemIndex}].MedicineId"
-                                class="form-select medicine"
+                                class="form-select pm-medicine"
                                 required>
 
                                 ${createMedicineOptions()}
@@ -587,7 +591,7 @@
                             <input
                                 type="number"
                                 name="Items[${itemIndex}].Quantity"
-                                class="form-control quantity"
+                                class="form-control pm-quantity"
                                 min="1"
                                 value="1"
                                 required />
@@ -597,14 +601,14 @@
 
                         <td>
 
-                            <div class="purchase-price-input">
+                            <div class="pm-purchase-price-input">
 
                                 <span>₹</span>
 
                                 <input
                                     type="number"
                                     name="Items[${itemIndex}].PurchasePrice"
-                                    class="form-control purchase-price"
+                                    class="form-control pm-purchase-price"
                                     min="0"
                                     step="0.01"
                                     value="0"
@@ -617,8 +621,8 @@
 
                         <td>
 
-                            <strong class="purchase-item-total">
-                                ₹<span class="item-total">0.00</span>
+                            <strong class="pm-purchase-item-total">
+                                ₹<span class="pm-item-total">0.00</span>
                             </strong>
 
                         </td>
@@ -628,7 +632,7 @@
 
                             <button
                                 type="button"
-                                class="purchase-remove-item"
+                                class="pm-purchase-remove-item"
                                 title="Remove">
 
                                 ×

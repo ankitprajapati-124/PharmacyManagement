@@ -3,19 +3,49 @@
 @{
     ViewData["Title"] = "Sale Details";
 
+    var saleItems =
+        Model.Items ?? new List<PharmacyManagement.Models.SaleItem>();
+
     var subtotal =
-        Model.TotalAmount + Model.Discount;
+        saleItems.Sum(x => x.Quantity * x.SellingPrice);
+
+    var discount = Model.Discount;
+
+    var calculatedGrandTotal =
+        subtotal - discount;
+
+    var grandTotal =
+        Model.TotalAmount;
+
+    var invoiceNumber =
+        Model.InvoiceNo ?? Model.SaleId.ToString();
+
+    var customerName =
+        string.IsNullOrWhiteSpace(Model.CustomerName)
+            ? "Walk-in Customer"
+            : Model.CustomerName;
+
+    var customerMobile =
+        string.IsNullOrWhiteSpace(Model.CustomerMobile)
+            ? "-"
+            : Model.CustomerMobile;
 }
 
-<div class="sale-details-page">
 
-    <div class="page-header-card mb-4">
+<div class="pm-sale-details-page">
+
+
+    <!-- =====================================================
+         PAGE HEADER
+         ===================================================== -->
+
+    <div class="pm-page-header-card mb-4">
 
         <div>
 
             <div class="d-flex align-items-center gap-2 mb-2">
 
-                <span class="page-header-icon">
+                <span class="pm-page-header-icon">
                     #
                 </span>
 
@@ -25,17 +55,20 @@
 
             </div>
 
+
             <h2 class="mb-1">
                 Sale Details
             </h2>
 
+
             <p class="text-muted mb-0">
-                Invoice #@(Model.InvoiceNo ?? Model.SaleId.ToString())
+                Invoice #@invoiceNumber
             </p>
 
         </div>
 
-        <div class="d-flex gap-2">
+
+        <div class="d-flex gap-2 flex-wrap">
 
             <a asp-action="Index"
                class="btn btn-outline-secondary">
@@ -44,6 +77,7 @@
 
             </a>
 
+
             <a asp-action="Delete"
                asp-route-id="@Model.SaleId"
                class="btn btn-outline-danger">
@@ -51,6 +85,7 @@
                 Delete
 
             </a>
+
 
             <button type="button"
                     class="btn btn-primary"
@@ -65,32 +100,41 @@
     </div>
 
 
-    <!-- Invoice Header -->
 
-    <div class="invoice-card mb-4">
+    <!-- =====================================================
+         INVOICE SUMMARY
+         ===================================================== -->
 
-        <div class="invoice-top">
+    <div class="pm-invoice-card mb-4">
+
+
+        <!-- Invoice top -->
+
+        <div class="pm-invoice-top">
 
             <div>
 
-                <span class="invoice-label">
+                <span class="pm-invoice-label">
                     INVOICE
                 </span>
 
+
                 <h3>
-                    #@(Model.InvoiceNo ?? Model.SaleId.ToString())
+                    #@invoiceNumber
                 </h3>
 
             </div>
 
-            <div class="invoice-total-box">
+
+            <div class="pm-invoice-total-box">
 
                 <span>
                     Grand Total
                 </span>
 
+
                 <strong>
-                    ₹@Model.TotalAmount.ToString("N2")
+                    ₹@grandTotal.ToString("N2")
                 </strong>
 
             </div>
@@ -98,7 +142,13 @@
         </div>
 
 
-        <div class="invoice-info-grid">
+
+        <!-- Invoice information -->
+
+        <div class="pm-invoice-info-grid">
+
+
+            <!-- Customer -->
 
             <div>
 
@@ -107,11 +157,13 @@
                 </span>
 
                 <strong>
-                    @(Model.CustomerName ?? "Walk-in Customer")
+                    @customerName
                 </strong>
 
             </div>
 
+
+            <!-- Mobile -->
 
             <div>
 
@@ -120,11 +172,13 @@
                 </span>
 
                 <strong>
-                    @(Model.CustomerMobile ?? "-")
+                    @customerMobile
                 </strong>
 
             </div>
 
+
+            <!-- Date -->
 
             <div>
 
@@ -138,6 +192,8 @@
 
             </div>
 
+
+            <!-- Sale ID -->
 
             <div>
 
@@ -156,11 +212,17 @@
     </div>
 
 
-    <!-- Items -->
 
-    <div class="invoice-card">
+    <!-- =====================================================
+         ITEMS
+         ===================================================== -->
 
-        <div class="invoice-section-header">
+    <div class="pm-invoice-card">
+
+
+        <!-- Items header -->
+
+        <div class="pm-invoice-section-header">
 
             <div>
 
@@ -168,8 +230,11 @@
                     Items
                 </strong>
 
+
                 <small>
-                    @Model.Items.Count item(s) in this invoice
+                    @saleItems.Count
+                    @(saleItems.Count == 1 ? "item" : "items")
+                    in this invoice
                 </small>
 
             </div>
@@ -177,25 +242,49 @@
         </div>
 
 
-        @if (Model.Items.Count == 0)
+
+        @if (saleItems.Count == 0)
         {
+            <!-- EMPTY STATE -->
+
             <div class="text-center text-muted py-5">
-                No sale items found.
+
+                <div class="mb-2"
+                     style="font-size: 28px;">
+                    ∅
+                </div>
+
+                <strong>
+                    No sale items found.
+                </strong>
+
+                <div class="small mt-1">
+                    This invoice does not contain any item records.
+                </div>
+
             </div>
         }
         else
         {
-            <div class="table-responsive sale-invoice-scroll">
+            <!-- =================================================
+                 ITEMS TABLE
+                 ================================================= -->
 
-                <table class="table invoice-table">
+            <div class="table-responsive pm-sale-invoice-scroll">
+
+                <table class="table pm-invoice-table">
 
                     <thead>
 
                         <tr>
 
-                            <th>#</th>
+                            <th>
+                                #
+                            </th>
 
-                            <th>Medicine</th>
+                            <th>
+                                Medicine
+                            </th>
 
                             <th class="text-end">
                                 Quantity
@@ -213,31 +302,48 @@
 
                     </thead>
 
+
                     <tbody>
 
-                        @foreach (var item in Model.Items)
+                        @foreach (var item in saleItems)
                         {
                             <tr>
+
+                                <!-- ID -->
 
                                 <td>
                                     @item.SaleItemId
                                 </td>
 
+
+                                <!-- Medicine -->
+
                                 <td>
 
                                     <strong>
-                                        @item.MedicineName
+                                        @(item.MedicineName ?? "Unknown Medicine")
                                     </strong>
 
                                 </td>
+
+
+                                <!-- Quantity -->
 
                                 <td class="text-end">
                                     @item.Quantity
                                 </td>
 
+
+                                <!-- Price -->
+
                                 <td class="text-end">
+
                                     ₹@item.SellingPrice.ToString("N2")
+
                                 </td>
+
+
+                                <!-- Total -->
 
                                 <td class="text-end">
 
@@ -257,9 +363,17 @@
             </div>
 
 
-            <div class="invoice-totals">
 
-                <div class="invoice-total-line">
+            <!-- =================================================
+                 TOTALS
+                 ================================================= -->
+
+            <div class="pm-invoice-totals">
+
+
+                <!-- Subtotal -->
+
+                <div class="pm-invoice-total-line">
 
                     <span>
                         Subtotal
@@ -272,32 +386,52 @@
                 </div>
 
 
-                <div class="invoice-total-line">
+                <!-- Discount -->
+
+                <div class="pm-invoice-total-line">
 
                     <span>
                         Discount
                     </span>
 
-                    <strong class="discount-value">
-                        ₹@Model.Discount.ToString("N2")
+                    <strong class="pm-discount-value">
+                        ₹@discount.ToString("N2")
                     </strong>
 
                 </div>
 
 
-                <div class="invoice-grand-line">
+                <!-- Calculated total -->
+
+                <div class="pm-invoice-total-line">
+
+                    <span>
+                        After Discount
+                    </span>
+
+                    <strong>
+                        ₹@calculatedGrandTotal.ToString("N2")
+                    </strong>
+
+                </div>
+
+
+                <!-- Final total -->
+
+                <div class="pm-invoice-grand-line">
 
                     <span>
                         Grand Total
                     </span>
 
                     <strong>
-                        ₹@Model.TotalAmount.ToString("N2")
+                        ₹@grandTotal.ToString("N2")
                     </strong>
 
                 </div>
 
             </div>
+
         }
 
     </div>
@@ -305,28 +439,54 @@
 </div>
 
 
+
+<!-- =========================================================
+     PRINT STYLES
+     ========================================================= -->
+
 <style>
 
     @@media print {
 
-        .btn,
+        body {
+            background: #ffffff !important;
+        }
+
         nav,
-        footer {
+        footer,
+        .navbar,
+        .sidebar,
+        .pm-sidebar,
+        .btn {
             display: none !important;
         }
 
-        .page-header-card {
+        .pm-app-shell,
+        .pm-main-content,
+        .pm-page-content {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+        }
+
+        .pm-page-header-card {
             border: none !important;
             box-shadow: none !important;
+            margin-bottom: 15px !important;
         }
 
-        .invoice-card {
+        .pm-invoice-card {
+            border: 1px solid #dddddd !important;
             box-shadow: none !important;
-            border: 1px solid #ddd !important;
+            break-inside: avoid;
         }
 
-        body {
-            background: white !important;
+        .pm-invoice-table {
+            min-width: 100% !important;
+        }
+
+        .pm-invoice-totals {
+            width: 320px !important;
         }
     }
 

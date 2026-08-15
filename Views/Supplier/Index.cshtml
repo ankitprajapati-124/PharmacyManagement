@@ -1,88 +1,407 @@
-﻿@model IEnumerable<PharmacyManagement.Models.Supplier>
+@model IEnumerable<PharmacyManagement.Models.Supplier>
 
 @{
     ViewData["Title"] = "Suppliers";
+    var suppliers = Model?.ToList()
+        ?? new List<PharmacyManagement.Models.Supplier>();
+
+    var activeCount = suppliers.Count(x => x.IsActive);
 }
 
-<div class="container mt-4">
+<div class="pm-supplier-page">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="pm-supplier-header">
 
-        <div>
-            <h1>Suppliers</h1>
+        <div class="pm-supplier-header-content">
 
-            <p class="text-muted">
-                Pharmacy supplier management
-            </p>
+            <div class="pm-supplier-header-icon">
+                ◇
+            </div>
+
+            <div>
+                <div class="pm-supplier-eyebrow">
+                    MASTER DATA
+                </div>
+
+                <h1>Suppliers</h1>
+
+                <p>
+                    Manage pharmacy suppliers and their contact information.
+                </p>
+            </div>
+
         </div>
 
         <a asp-action="Create"
-           class="btn btn-primary">
-            + Add Supplier
+           class="pm-supplier-primary-btn">
+            <span>+</span>
+            Add Supplier
         </a>
 
     </div>
 
-    <table class="table table-bordered table-hover">
 
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Supplier Name</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th>Address</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
+    <!-- STATISTICS -->
 
-        <tbody>
+    <div class="pm-supplier-stats">
 
-            @foreach (var supplier in Model)
-            {
-                <tr>
+        <div class="pm-supplier-stat">
 
-                    <td>
-                        @supplier.SupplierId
-                    </td>
+            <div class="pm-supplier-stat-icon blue">
+                #
+            </div>
 
-                    <td>
-                        @supplier.SupplierName
-                    </td>
+            <div>
+                <span>Total Suppliers</span>
+                <strong>@suppliers.Count</strong>
+            </div>
 
-                    <td>
-                        @supplier.Phone
-                    </td>
+        </div>
 
-                    <td>
-                        @supplier.Email
-                    </td>
 
-                    <td>
-                        @supplier.Address
-                    </td>
+        <div class="pm-supplier-stat">
 
-                    <td>
+            <div class="pm-supplier-stat-icon green">
+                ✓
+            </div>
 
-                        <a asp-action="Edit"
-                           asp-route-id="@supplier.SupplierId"
-                           class="btn btn-sm btn-outline-primary">
-                            Edit
-                        </a>
+            <div>
+                <span>Active Suppliers</span>
+                <strong>@activeCount</strong>
+            </div>
 
-                        <a asp-action="Delete"
-                           asp-route-id="@supplier.SupplierId"
-                           class="btn btn-sm btn-outline-danger">
-                            Delete
-                        </a>
+        </div>
 
-                    </td>
 
-                </tr>
-            }
+        <div class="pm-supplier-stat">
 
-        </tbody>
+            <div class="pm-supplier-stat-icon orange">
+                ◇
+            </div>
 
-    </table>
+            <div>
+                <span>Supplier Network</span>
+                <strong>Active</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MAIN CARD -->
+
+    <div class="pm-supplier-card">
+
+        <div class="pm-supplier-card-header">
+
+            <div>
+                <h2>Supplier List</h2>
+
+                <p>
+                    View and manage your pharmacy suppliers.
+                </p>
+            </div>
+
+            <span class="pm-supplier-count">
+                @suppliers.Count
+                @(suppliers.Count == 1 ? "supplier" : "suppliers")
+            </span>
+
+        </div>
+
+
+        <!-- SEARCH -->
+
+        <div class="pm-supplier-toolbar">
+
+            <div class="pm-supplier-search">
+
+                <span>
+                    ⌕
+                </span>
+
+                <input type="text"
+                       id="pmSupplierSearch"
+                       placeholder="Search suppliers..."
+                       autocomplete="off" />
+
+            </div>
+
+        </div>
+
+
+        <!-- TABLE -->
+
+        <div class="pm-supplier-table-scroll">
+
+            <table class="pm-supplier-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Supplier</th>
+
+                        <th>Phone</th>
+
+                        <th>Email</th>
+
+                        <th>Address</th>
+
+                        <th>Status</th>
+
+                        <th class="pm-supplier-actions-head">
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="pmSupplierTableBody">
+
+                    @if (!suppliers.Any())
+                    {
+                        <tr>
+
+                            <td colspan="7">
+
+                                <div class="pm-supplier-empty">
+
+                                    <div class="pm-supplier-empty-icon">
+                                        ◇
+                                    </div>
+
+                                    <h3>
+                                        No suppliers found
+                                    </h3>
+
+                                    <p>
+                                        Add your first supplier to get started.
+                                    </p>
+
+                                    <a asp-action="Create"
+                                       class="pm-supplier-primary-btn">
+                                        + Add Supplier
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var supplier in suppliers)
+                        {
+                            var initial =
+                                string.IsNullOrWhiteSpace(supplier.SupplierName)
+                                    ? "?"
+                                    : supplier.SupplierName
+                                        .Trim()
+                                        .Substring(0, 1)
+                                        .ToUpperInvariant();
+
+                            <tr class="pm-supplier-row"
+                                data-search="@($"{supplier.SupplierName} {supplier.Phone} {supplier.Email} {supplier.Address}")">
+
+                                <td>
+                                    <span class="pm-supplier-id">
+                                        #@supplier.SupplierId
+                                    </span>
+                                </td>
+
+
+                                <td>
+
+                                    <div class="pm-supplier-name">
+
+                                        <div class="pm-supplier-avatar">
+                                            @initial
+                                        </div>
+
+                                        <div>
+
+                                            <strong>
+                                                @supplier.SupplierName
+                                            </strong>
+
+                                            <small>
+                                                Pharmacy Supplier
+                                            </small>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+                                    <span class="pm-supplier-contact">
+                                        @(string.IsNullOrWhiteSpace(supplier.Phone)
+                                            ? "-"
+                                            : supplier.Phone)
+                                    </span>
+                                </td>
+
+
+                                <td>
+                                    <span class="pm-supplier-contact">
+                                        @(string.IsNullOrWhiteSpace(supplier.Email)
+                                            ? "-"
+                                            : supplier.Email)
+                                    </span>
+                                </td>
+
+
+                                <td>
+
+                                    <span class="pm-supplier-address">
+                                        @(string.IsNullOrWhiteSpace(supplier.Address)
+                                            ? "-"
+                                            : supplier.Address)
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    @if (supplier.IsActive)
+                                    {
+                                        <span class="pm-supplier-status active">
+                                            <span></span>
+                                            Active
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="pm-supplier-status inactive">
+                                            <span></span>
+                                            Inactive
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="pm-supplier-actions">
+
+                                        <a asp-action="Edit"
+                                           asp-route-id="@supplier.SupplierId"
+                                           class="pm-supplier-action edit">
+                                            ✎
+                                            <span>Edit</span>
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@supplier.SupplierId"
+                                           class="pm-supplier-action delete">
+                                            ×
+                                            <span>Delete</span>
+                                        </a>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div id="pmSupplierNoResult"
+             class="pm-supplier-no-result">
+
+            <div>
+                ⌕
+            </div>
+
+            <strong>
+                No suppliers found
+            </strong>
+
+            <span>
+                Try another search term.
+            </span>
+
+        </div>
+
+    </div>
 
 </div>
+
+
+@section Scripts {
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const search =
+                document.getElementById("pmSupplierSearch");
+
+            const rows =
+                document.querySelectorAll(".pm-supplier-row");
+
+            const noResult =
+                document.getElementById("pmSupplierNoResult");
+
+            if (!search) {
+                return;
+            }
+
+            search.addEventListener("input", function() {
+
+                const value =
+                    this.value.trim().toLowerCase();
+
+                let visible = 0;
+
+                rows.forEach(function(row) {
+
+                    const data =
+                        (row.dataset.search || "").toLowerCase();
+
+                    if (data.includes(value)) {
+
+                        row.style.display = "";
+                        visible++;
+
+                    } else {
+
+                        row.style.display = "none";
+
+                    }
+
+                });
+
+                if (noResult) {
+
+                    noResult.style.display =
+                        value.length > 0 && visible === 0
+                            ? "flex"
+                            : "none";
+
+                }
+
+            });
+
+        });
+
+    </script>
+
+}

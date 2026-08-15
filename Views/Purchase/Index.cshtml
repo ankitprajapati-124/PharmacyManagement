@@ -1,4 +1,4 @@
-﻿@model IReadOnlyList<PharmacyManagement.Models.Purchase>
+@model IReadOnlyList<PharmacyManagement.Models.Purchase>
 
 @{
     ViewData["Title"] = "Purchases";
@@ -10,16 +10,16 @@
         : 0;
 }
 
-<div class="purchase-page">
+<div class="pm-purchase-page">
 
     <!-- Header -->
-    <div class="page-header-card mb-4">
+    <div class="pm-page-header-card mb-4">
 
         <div>
 
             <div class="d-flex align-items-center gap-2 mb-2">
 
-                <span class="page-header-icon">
+                <span class="pm-page-header-icon">
                     +
                 </span>
 
@@ -87,9 +87,9 @@
 
         <div class="col-xl-4 col-md-6">
 
-            <div class="purchase-summary-card">
+            <div class="pm-purchase-summary-card">
 
-                <div class="purchase-summary-icon blue">
+                <div class="pm-purchase-summary-icon pm-blue">
                     #
                 </div>
 
@@ -110,9 +110,9 @@
 
         <div class="col-xl-4 col-md-6">
 
-            <div class="purchase-summary-card">
+            <div class="pm-purchase-summary-card">
 
-                <div class="purchase-summary-icon green">
+                <div class="pm-purchase-summary-icon pm-green">
                     ₹
                 </div>
 
@@ -120,7 +120,7 @@
 
                     <span>Total Purchase Amount</span>
 
-                    <strong class="purchase-total">
+                    <strong class="pm-purchase-total">
                         ₹@totalAmount.ToString("N2")
                     </strong>
 
@@ -133,9 +133,9 @@
 
         <div class="col-xl-4 col-md-12">
 
-            <div class="purchase-summary-card">
+            <div class="pm-purchase-summary-card">
 
-                <div class="purchase-summary-icon orange">
+                <div class="pm-purchase-summary-icon pm-orange">
                     ∅
                 </div>
 
@@ -158,9 +158,9 @@
 
     <!-- Purchase Table -->
 
-    <div class="purchase-table-card">
+    <div class="pm-purchase-table-card">
 
-        <div class="purchase-table-header">
+        <div class="pm-purchase-table-header">
 
             <div>
 
@@ -174,7 +174,7 @@
 
             </div>
 
-            <span class="purchase-count-badge">
+            <span class="pm-purchase-count-badge">
                 @totalPurchases purchase@(totalPurchases == 1 ? "" : "s")
             </span>
 
@@ -183,9 +183,9 @@
 
         @if (Model.Count == 0)
         {
-            <div class="purchase-empty">
+            <div class="pm-purchase-empty">
 
-                <div class="purchase-empty-icon">
+                <div class="pm-purchase-empty-icon">
                     +
                 </div>
 
@@ -208,9 +208,9 @@
         }
         else
         {
-            <div class="purchase-table-scroll">
+            <div class="pm-purchase-table-scroll">
 
-                <table class="table purchase-table">
+                <table class="table pm-purchase-table">
 
                     <thead>
 
@@ -252,7 +252,7 @@
 
                                 <td>
 
-                                    <span class="purchase-id">
+                                    <span class="pm-purchase-id">
                                         #@purchase.PurchaseId
                                     </span>
 
@@ -261,9 +261,9 @@
 
                                 <td>
 
-                                    <div class="supplier-cell">
+                                    <div class="pm-supplier-cell">
 
-                                        <div class="supplier-avatar">
+                                        <div class="pm-supplier-avatar">
                                             @(string.IsNullOrWhiteSpace(purchase.SupplierName)
                                                 ? "S"
                                                 : purchase.SupplierName.Substring(0, 1).ToUpper())
@@ -288,7 +288,7 @@
 
                                 <td>
 
-                                    <span class="purchase-date">
+                                    <span class="pm-purchase-date">
                                         @purchase.PurchaseDate.ToString("dd-MM-yyyy")
                                     </span>
 
@@ -299,7 +299,7 @@
 
                                     @if (!string.IsNullOrWhiteSpace(purchase.InvoiceNo))
                                     {
-                                        <span class="purchase-invoice">
+                                        <span class="pm-purchase-invoice">
                                             @purchase.InvoiceNo
                                         </span>
                                     }
@@ -315,7 +315,7 @@
 
                                 <td class="text-end">
 
-                                    <strong class="purchase-amount">
+                                    <strong class="pm-purchase-amount">
                                         ₹@purchase.TotalAmount.ToString("N2")
                                     </strong>
 
@@ -324,11 +324,11 @@
 
                                 <td class="text-end">
 
-                                    <div class="purchase-actions">
+                                    <div class="pm-purchase-actions">
 
                                         <a asp-action="Details"
                                            asp-route-id="@purchase.PurchaseId"
-                                           class="purchase-action view">
+                                           class="pm-purchase-action pm-view">
 
                                             Details
 
@@ -336,7 +336,7 @@
 
                                         <a asp-action="Delete"
                                            asp-route-id="@purchase.PurchaseId"
-                                           class="purchase-action delete">
+                                           class="pm-purchase-action pm-delete">
 
                                             Delete
 

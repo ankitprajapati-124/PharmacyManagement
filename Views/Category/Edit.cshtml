@@ -1,44 +1,147 @@
-﻿@model PharmacyManagement.Models.Category
+@model PharmacyManagement.Models.Category
 
 @{
     ViewData["Title"] = "Edit Category";
 }
 
-<div class="container mt-4">
+<div class="pm-catui-form-page">
 
-    <h1>Edit Category</h1>
+    <!-- TOP -->
+    <div class="pm-catui-form-top">
 
-    <form asp-action="Edit" method="post">
+        <a asp-action="Index"
+           class="pm-catui-back">
+            ← Back to Categories
+        </a>
 
-        <input type="hidden"
-               asp-for="CategoryId" />
 
-        <div class="mb-3">
+        <div class="pm-catui-form-heading">
 
-            <label asp-for="CategoryName"
-                   class="form-label">
-                Category Name
-            </label>
+            <div class="pm-catui-form-icon pm-blue">
+                ✎
+            </div>
 
-            <input asp-for="CategoryName"
-                   class="form-control" />
+            <div>
 
-            <span asp-validation-for="CategoryName"
-                  class="text-danger">
+                <div class="pm-catui-eyebrow">
+                    MASTER DATA
+                </div>
+
+                <h1>Edit Category</h1>
+
+                <p>
+                    Update the medicine category information.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- FORM CARD -->
+    <div class="pm-catui-form-card">
+
+        <!-- HEADER -->
+        <div class="pm-catui-form-card-header">
+
+            <div>
+
+                <h2>Category Information</h2>
+
+                <p>
+                    Modify the category name and save your changes.
+                </p>
+
+            </div>
+
+            <span class="pm-catui-id-badge">
+                #@Model.CategoryId
             </span>
 
         </div>
 
-        <button type="submit"
-                class="btn btn-primary">
-            Update Category
-        </button>
 
-        <a asp-action="Index"
-           class="btn btn-secondary">
-            Cancel
-        </a>
+        <!-- FORM -->
+        <form asp-action="Edit"
+              method="post">
 
-    </form>
+            <input type="hidden"
+                   asp-for="CategoryId" />
+
+
+            <div class="pm-catui-form-body">
+
+                <div asp-validation-summary="ModelOnly"
+                     class="pm-catui-validation">
+                </div>
+
+
+                <div class="pm-catui-field">
+
+                    <label asp-for="CategoryName">
+                        Category Name
+                    </label>
+
+
+                    <div class="pm-catui-input-wrapper">
+
+                        <span class="pm-catui-input-icon">
+                            ◇
+                        </span>
+
+                        <input asp-for="CategoryName"
+                               class="pm-catui-input"
+                               placeholder="Enter category name"
+                               autocomplete="off"
+                               autofocus />
+
+                    </div>
+
+
+                    <span asp-validation-for="CategoryName"
+                          class="pm-catui-field-error">
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- FOOTER -->
+            <div class="pm-catui-form-footer">
+
+                <a asp-action="Index"
+                   class="pm-catui-secondary-btn">
+                    Cancel
+                </a>
+
+                <button type="submit"
+                        class="pm-catui-primary-btn">
+
+                    <span class="pm-catui-btn-icon">
+                        ✓
+                    </span>
+
+                    Update Category
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
+
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync(
+            "_ValidationScriptsPartial");
+    }
+
+}

@@ -22,7 +22,7 @@
      DASHBOARD HEADER
      ========================================= -->
 
-<div class="dashboard-heading mb-4">
+<div class="pm-dashboard-heading mb-4">
 
     <div class="d-flex justify-content-between align-items-center">
 
@@ -30,7 +30,7 @@
 
             <div class="d-flex align-items-center gap-2 mb-2">
 
-                <span class="status-dot"></span>
+                <span class="pm-status-dot"></span>
 
                 <span class="text-success small fw-semibold">
                     System Online
@@ -91,13 +91,13 @@
 
     <div class="col-xl-3 col-md-6">
 
-        <div class="stat-card">
+        <div class="pm-stat-card">
 
-            <div class="stat-icon medicine-icon">
+            <div class="pm-stat-icon pm-medicine-icon">
                 ✚
             </div>
 
-            <div class="stat-content">
+            <div class="pm-stat-content">
 
                 <span>
                     Total Medicines
@@ -122,13 +122,13 @@
 
     <div class="col-xl-3 col-md-6">
 
-        <div class="stat-card">
+        <div class="pm-stat-card">
 
-            <div class="stat-icon stock-icon">
+            <div class="pm-stat-icon pm-stock-icon">
                 ▦
             </div>
 
-            <div class="stat-content">
+            <div class="pm-stat-content">
 
                 <span>
                     Total Stock
@@ -153,13 +153,13 @@
 
     <div class="col-xl-3 col-md-6">
 
-        <div class="stat-card">
+        <div class="pm-stat-card">
 
-            <div class="stat-icon sales-icon">
-                $
+            <div class="pm-stat-icon pm-sales-icon">
+                ₹
             </div>
 
-            <div class="stat-content">
+            <div class="pm-stat-content">
 
                 <span>
                     Today's Sales
@@ -184,20 +184,20 @@
 
     <div class="col-xl-3 col-md-6">
 
-        <div class="stat-card">
+        <div class="pm-stat-card">
 
-            <div class="stat-icon revenue-icon">
-                $
+            <div class="pm-stat-icon pm-revenue-icon">
+                ₹
             </div>
 
-            <div class="stat-content">
+            <div class="pm-stat-content">
 
                 <span>
                     Today's Revenue
                 </span>
 
                 <strong class="text-success">
-                    $@Model.TodaySalesAmount.ToString("N2")
+                    ₹@Model.TodaySalesAmount.ToString("N2")
                 </strong>
 
                 <small>
@@ -227,9 +227,9 @@
 
         <div class="col-xl-6">
 
-            <div class="dashboard-section-card h-100">
+            <div class="pm-dashboard-section-card h-100">
 
-                <div class="section-header">
+                <div class="pm-section-header">
 
                     <strong>
                         Purchase Overview
@@ -245,7 +245,7 @@
 
                 </div>
 
-                <div class="section-body">
+                <div class="pm-section-body">
 
                     <div class="row text-center">
 
@@ -273,7 +273,7 @@
                             </div>
 
                             <div class="fs-3 fw-bold">
-                                $@Model.TotalPurchaseAmount.ToString("N2")
+                                ₹@Model.TotalPurchaseAmount.ToString("N2")
                             </div>
 
                             <small class="text-muted">
@@ -295,9 +295,9 @@
 
         <div class="col-xl-6">
 
-            <div class="dashboard-section-card h-100">
+            <div class="pm-dashboard-section-card h-100">
 
-                <div class="section-header">
+                <div class="pm-section-header">
 
                     <strong>
                         Quick Actions
@@ -305,11 +305,11 @@
 
                 </div>
 
-                <div class="section-body">
+                <div class="pm-section-body">
 
                     <a asp-controller="Medicine"
                        asp-action="Create"
-                       class="quick-action btn btn-outline-primary me-2 mb-2">
+                       class="pm-quick-action btn btn-outline-primary me-2 mb-2">
 
                         + Add Medicine
 
@@ -317,7 +317,7 @@
 
                     <a asp-controller="Purchase"
                        asp-action="Create"
-                       class="quick-action btn btn-outline-primary me-2 mb-2">
+                       class="pm-quick-action btn btn-outline-primary me-2 mb-2">
 
                         + New Purchase
 
@@ -325,7 +325,7 @@
 
                     <a asp-controller="Sale"
                        asp-action="Create"
-                       class="quick-action btn btn-outline-success me-2 mb-2">
+                       class="pm-quick-action btn btn-outline-success me-2 mb-2">
 
                         + New Sale
 
@@ -333,7 +333,7 @@
 
                     <a asp-controller="Medicine"
                        asp-action="Index"
-                       class="quick-action btn btn-outline-secondary me-2 mb-2">
+                       class="pm-quick-action btn btn-outline-secondary me-2 mb-2">
 
                         View Medicines
 
@@ -357,9 +357,9 @@ else
 
         <div class="col-12">
 
-            <div class="dashboard-section-card">
+            <div class="pm-dashboard-section-card">
 
-                <div class="section-header">
+                <div class="pm-section-header">
 
                     <strong>
                         Quick Actions
@@ -367,11 +367,11 @@ else
 
                 </div>
 
-                <div class="section-body">
+                <div class="pm-section-body">
 
                     <a asp-controller="Medicine"
                        asp-action="Create"
-                       class="quick-action btn btn-outline-primary me-2 mb-2">
+                       class="pm-quick-action btn btn-outline-primary me-2 mb-2">
 
                         + Add Medicine
 
@@ -379,7 +379,7 @@ else
 
                     <a asp-controller="Sale"
                        asp-action="Create"
-                       class="quick-action btn btn-outline-success me-2 mb-2">
+                       class="pm-quick-action btn btn-outline-success me-2 mb-2">
 
                         + New Sale
 
@@ -387,7 +387,7 @@ else
 
                     <a asp-controller="Medicine"
                        asp-action="Index"
-                       class="quick-action btn btn-outline-secondary me-2 mb-2">
+                       class="pm-quick-action btn btn-outline-secondary me-2 mb-2">
 
                         View Medicines
 
@@ -414,9 +414,9 @@ else
 
     <div class="col-xl-4 col-md-6">
 
-        <div class="dashboard-section-card h-100">
+        <div class="pm-dashboard-section-card h-100">
 
-            <div class="section-header">
+            <div class="pm-section-header">
 
                 <strong>
                     🔴 Low Stock
@@ -428,13 +428,13 @@ else
 
             </div>
 
-            <div class="section-body">
+            <div class="pm-section-body">
 
                 @if (Model.LowStockMedicines.Count == 0)
                 {
-                    <div class="dashboard-empty">
+                    <div class="pm-dashboard-empty">
 
-                        <div class="dashboard-empty-icon">
+                        <div class="pm-dashboard-empty-icon">
                             ✓
                         </div>
 
@@ -447,7 +447,7 @@ else
                     @foreach (var medicine in
                         Model.LowStockMedicines.Take(5))
                     {
-                        <div class="dashboard-alert-item">
+                        <div class="pm-dashboard-alert-item">
 
                             <div class="d-flex justify-content-between">
 
@@ -481,9 +481,9 @@ else
 
     <div class="col-xl-4 col-md-6">
 
-        <div class="dashboard-section-card h-100">
+        <div class="pm-dashboard-section-card h-100">
 
-            <div class="section-header">
+            <div class="pm-section-header">
 
                 <strong>
                     🟠 Expiring Soon
@@ -495,13 +495,13 @@ else
 
             </div>
 
-            <div class="section-body">
+            <div class="pm-section-body">
 
                 @if (Model.ExpiringSoonMedicines.Count == 0)
                 {
-                    <div class="dashboard-empty">
+                    <div class="pm-dashboard-empty">
 
-                        <div class="dashboard-empty-icon">
+                        <div class="pm-dashboard-empty-icon">
                             ✓
                         </div>
 
@@ -515,7 +515,7 @@ else
                     @foreach (var medicine in
                         Model.ExpiringSoonMedicines.Take(5))
                     {
-                        <div class="dashboard-alert-item">
+                        <div class="pm-dashboard-alert-item">
 
                             <strong>
                                 @medicine.MedicineName
@@ -546,9 +546,9 @@ else
 
     <div class="col-xl-4 col-md-6">
 
-        <div class="dashboard-section-card h-100">
+        <div class="pm-dashboard-section-card h-100">
 
-            <div class="section-header">
+            <div class="pm-section-header">
 
                 <strong>
                     🔴 Expired
@@ -560,13 +560,13 @@ else
 
             </div>
 
-            <div class="section-body">
+            <div class="pm-section-body">
 
                 @if (Model.ExpiredMedicines.Count == 0)
                 {
-                    <div class="dashboard-empty">
+                    <div class="pm-dashboard-empty">
 
-                        <div class="dashboard-empty-icon">
+                        <div class="pm-dashboard-empty-icon">
                             ✓
                         </div>
 
@@ -579,7 +579,7 @@ else
                     @foreach (var medicine in
                         Model.ExpiredMedicines.Take(5))
                     {
-                        <div class="dashboard-alert-item">
+                        <div class="pm-dashboard-alert-item">
 
                             <strong>
                                 @medicine.MedicineName
@@ -619,9 +619,9 @@ else
 
     <div class="col-xl-6">
 
-        <div class="dashboard-section-card h-100">
+        <div class="pm-dashboard-section-card h-100">
 
-            <div class="section-header">
+            <div class="pm-section-header">
 
                 <strong>
                     Recent Sales
@@ -641,10 +641,10 @@ else
 
                 @if (Model.RecentSales.Count == 0)
                 {
-                    <div class="dashboard-empty">
+                    <div class="pm-dashboard-empty">
 
-                        <div class="dashboard-empty-icon">
-                            $
+                        <div class="pm-dashboard-empty-icon">
+                            ₹
                         </div>
 
                         No sales found.
@@ -704,7 +704,7 @@ else
                                         </td>
 
                                         <td class="text-end fw-semibold">
-                                            $@sale.TotalAmount.ToString("N2")
+                                            ₹@sale.TotalAmount.ToString("N2")
                                         </td>
 
                                     </tr>
@@ -730,9 +730,9 @@ else
     {
         <div class="col-xl-6">
 
-            <div class="dashboard-section-card h-100">
+            <div class="pm-dashboard-section-card h-100">
 
-                <div class="section-header">
+                <div class="pm-section-header">
 
                     <strong>
                         Recent Purchases
@@ -752,10 +752,10 @@ else
 
                     @if (Model.RecentPurchases.Count == 0)
                     {
-                        <div class="dashboard-empty">
+                        <div class="pm-dashboard-empty">
 
-                            <div class="dashboard-empty-icon">
-                                $
+                            <div class="pm-dashboard-empty-icon">
+                                ₹
                             </div>
 
                             No purchases found.
@@ -807,7 +807,7 @@ else
                                             </td>
 
                                             <td class="text-end fw-semibold">
-                                                $@purchase.TotalAmount.ToString("N2")
+                                                ₹@purchase.TotalAmount.ToString("N2")
                                             </td>
 
                                         </tr>

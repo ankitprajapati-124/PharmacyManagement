@@ -21,19 +21,19 @@
             x.Quantity >= 10);
 }
 
-<div class="medicine-page">
+<div class="pm-medicine-page">
 
     <!-- =========================================
          PAGE HEADER
          ========================================= -->
 
-    <div class="page-header-card mb-4">
+    <div class="pm-page-header-card mb-4">
 
         <div>
 
             <div class="d-flex align-items-center gap-2 mb-2">
 
-                <span class="page-header-icon">
+                <span class="pm-page-header-icon">
                     ✚
                 </span>
 
@@ -73,9 +73,9 @@
 
         <div class="col-xl-3 col-md-6">
 
-            <div class="medicine-summary-card">
+            <div class="pm-medicine-summary-card">
 
-                <div class="summary-icon summary-blue">
+                <div class="pm-summary-icon pm-summary-blue">
                     ✚
                 </div>
 
@@ -94,9 +94,9 @@
 
         <div class="col-xl-3 col-md-6">
 
-            <div class="medicine-summary-card">
+            <div class="pm-medicine-summary-card">
 
-                <div class="summary-icon summary-green">
+                <div class="pm-summary-icon pm-summary-green">
                     ✓
                 </div>
 
@@ -115,9 +115,9 @@
 
         <div class="col-xl-3 col-md-6">
 
-            <div class="medicine-summary-card">
+            <div class="pm-medicine-summary-card">
 
-                <div class="summary-icon summary-orange">
+                <div class="pm-summary-icon pm-summary-orange">
                     !
                 </div>
 
@@ -136,9 +136,9 @@
 
         <div class="col-xl-3 col-md-6">
 
-            <div class="medicine-summary-card">
+            <div class="pm-medicine-summary-card">
 
-                <div class="summary-icon summary-red">
+                <div class="pm-summary-icon pm-summary-red">
                     ×
                 </div>
 
@@ -161,15 +161,15 @@
          SEARCH
          ========================================= -->
 
-    <div class="medicine-toolbar mb-4">
+    <div class="pm-medicine-toolbar mb-4">
 
         <form method="get"
               asp-action="Index"
-              class="medicine-search-form">
+              class="pm-medicine-search-form">
 
-            <div class="medicine-search-box">
+            <div class="pm-medicine-search-box">
 
-                <span class="search-icon">
+                <span class="pm-search-icon">
                     ⌕
                 </span>
 
@@ -200,7 +200,7 @@
 
         </form>
 
-        <div class="medicine-count">
+        <div class="pm-medicine-count">
 
             <span>
                 Showing
@@ -224,9 +224,9 @@
          ========================================= -->
     @if (Model.Count == 0)
     {
-        <div class="medicine-empty-state">
+        <div class="pm-medicine-empty-state">
 
-            <div class="empty-state-icon">
+            <div class="pm-empty-state-icon">
                 ✚
             </div>
 
@@ -266,11 +266,11 @@
     }
     else
     {
-        <div class="medicine-table-card">
+        <div class="pm-medicine-table-card">
 
             <div class="table-responsive">
 
-                <table class="table medicine-table">
+                <table class="table pm-medicine-table">
 
                     <thead>
 
@@ -342,9 +342,9 @@
 
                                 <td>
 
-                                    <div class="medicine-name-cell">
+                                    <div class="pm-medicine-name-cell">
 
-                                        <div class="medicine-row-icon">
+                                        <div class="pm-medicine-row-icon">
                                             ✚
                                         </div>
 
@@ -379,7 +379,7 @@
                                     @if (!string.IsNullOrWhiteSpace(
                                         medicine.BatchNo))
                                     {
-                                        <span class="batch-badge">
+                                        <span class="pm-batch-badge">
                                             @medicine.BatchNo
                                         </span>
                                     }
@@ -399,7 +399,7 @@
 
                                     @if (isExpired)
                                     {
-                                        <span class="expiry-danger">
+                                        <span class="pm-expiry-danger">
 
                                             <span>Expired</span>
 
@@ -412,7 +412,7 @@
                                     }
                                     else if (isExpiringSoon)
                                     {
-                                        <span class="expiry-warning">
+                                        <span class="pm-expiry-warning">
 
                                             <span>
                                                 Expiring Soon
@@ -428,7 +428,7 @@
                                     }
                                     else
                                     {
-                                        <span class="expiry-normal">
+                                        <span class="pm-expiry-normal">
 
                                             @(medicine.ExpiryDate?
                                                 .ToString("dd-MM-yyyy")
@@ -442,7 +442,7 @@
 
                                 <!-- PURCHASE -->
 
-                                <td class="price-cell">
+                                <td class="pm-price-cell">
 
                                     ₹@medicine.PurchasePrice.ToString("N2")
 
@@ -451,7 +451,7 @@
 
                                 <!-- SELLING -->
 
-                                <td class="price-cell selling-price">
+                                <td class="pm-price-cell pm-selling-price">
 
                                     ₹@medicine.SellingPrice.ToString("N2")
 
@@ -464,9 +464,9 @@
 
                                     @if (medicine.Quantity == 0)
                                     {
-                                        <span class="stock-badge stock-out">
+                                        <span class="pm-stock-badge pm-stock-out">
 
-                                            <span class="stock-dot"></span>
+                                            <span class="pm-stock-dot"></span>
 
                                             Out of stock
 
@@ -474,9 +474,9 @@
                                     }
                                     else if (medicine.Quantity < 10)
                                     {
-                                        <span class="stock-badge stock-low">
+                                        <span class="pm-stock-badge pm-stock-low">
 
-                                            <span class="stock-dot"></span>
+                                            <span class="pm-stock-dot"></span>
 
                                             Low · @medicine.Quantity
 
@@ -484,9 +484,9 @@
                                     }
                                     else
                                     {
-                                        <span class="stock-badge stock-good">
+                                        <span class="pm-stock-badge pm-stock-good">
 
-                                            <span class="stock-dot"></span>
+                                            <span class="pm-stock-dot"></span>
 
                                             @medicine.Quantity
 
@@ -518,11 +518,11 @@
 
                                 <td class="text-end">
 
-                                    <div class="medicine-actions">
+                                    <div class="pm-medicine-actions">
 
                                         <a asp-action="Details"
                                            asp-route-id="@medicine.MedicineId"
-                                           class="action-btn action-view"
+                                           class="pm-action-btn pm-action-view"
                                            title="View Details">
 
                                             View
@@ -531,7 +531,7 @@
 
                                         <a asp-action="Edit"
                                            asp-route-id="@medicine.MedicineId"
-                                           class="action-btn action-edit"
+                                           class="pm-action-btn pm-action-edit"
                                            title="Edit Medicine">
 
                                             Edit
@@ -540,7 +540,7 @@
 
                                         <a asp-action="Delete"
                                            asp-route-id="@medicine.MedicineId"
-                                           class="action-btn action-delete"
+                                           class="pm-action-btn pm-action-delete"
                                            title="Delete Medicine">
 
                                             Delete

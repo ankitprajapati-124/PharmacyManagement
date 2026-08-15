@@ -191,7 +191,45 @@ public class PurchaseRepository : IPurchaseRepository
     // CREATE PURCHASE
     // UserId comes from authenticated user
     // =========================================================
+    private static async Task<string> GeneratePurchaseInvoiceAsync(
+    SqlConnection connection,
+    SqlTransaction transaction,
+    DateTime purchaseDate)
+    {
+        const string sql = """
+        SELECT ISNULL(
+            MAX(
+                TRY_CONVERT(
+                    INT,
+                    RIGHT(InvoiceNo, 3)
+                )
+            ),
+            0
+        ) + 1
+        FROM Purchases WITH (UPDLOCK, HOLDLOCK)
+        WHERE InvoiceNo LIKE @Pattern;
+        """;
 
+        await using var command =
+            new SqlCommand(
+                sql,
+                connection,
+                transaction);
+
+        command.Parameters.Add(
+            "@Pattern",
+            SqlDbType.NVarChar,
+            50).Value =
+            $"PUR-{purchaseDate:yyyyMMdd}-%";
+
+        var result =
+            await command.ExecuteScalarAsync();
+
+        var sequence =
+            Convert.ToInt32(result);
+
+        return $"PUR-{purchaseDate:yyyyMMdd}-{sequence:000}";
+    }
     public async Task<int> AddAsync(
         Purchase purchase,
         int currentUserId)
@@ -247,7 +285,11 @@ public class PurchaseRepository : IPurchaseRepository
 
         await using var transaction =
             await connection.BeginTransactionAsync();
-
+        var invoiceNo =
+    await GeneratePurchaseInvoiceAsync(
+        connection,
+        (SqlTransaction)transaction,
+        purchase.PurchaseDate);
         try
         {
             int purchaseId;
@@ -281,8 +323,7 @@ public class PurchaseRepository : IPurchaseRepository
                     "@InvoiceNo",
                     SqlDbType.NVarChar,
                     50).Value =
-                    (object?)purchase.InvoiceNo?.Trim()
-                    ?? DBNull.Value;
+                    invoiceNo;
 
                 var totalAmount =
                     command.Parameters.Add(

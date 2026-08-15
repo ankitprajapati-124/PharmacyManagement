@@ -1,0 +1,559 @@
+﻿/* =========================================================
+   PHARMACY MANAGEMENT SYSTEM
+   LOGIN PAGE
+   ========================================================= */
+
+
+/* ---------- Reset ---------- */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+/* ---------- Page ---------- */
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+}
+
+body {
+    background: #f4f8fc;
+    color: #172b4d;
+}
+
+
+/* ---------- Main Layout ---------- */
+
+.login-page {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    background: linear-gradient( 135deg, #f7fbff 0%, #edf5fb 100% );
+}
+
+
+/* =========================================================
+   BRAND SECTION
+   ========================================================= */
+
+.brand-section {
+    width: 52%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient( 145deg, #0b5cab 0%, #0879c9 50%, #05a6c9 100% );
+}
+
+
+    /* Decorative circles */
+
+    .brand-section::before {
+        content: "";
+        position: absolute;
+        width: 420px;
+        height: 420px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.07);
+        top: -150px;
+        left: -150px;
+    }
+
+
+    .brand-section::after {
+        content: "";
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+        bottom: -250px;
+        right: -180px;
+    }
+
+
+/* ---------- Brand Content ---------- */
+
+.brand-content {
+    width: 75%;
+    position: relative;
+    z-index: 2;
+    color: white;
+}
+
+
+.brand-icon {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 16px;
+    font-size: 32px;
+    margin-bottom: 25px;
+    backdrop-filter: blur(10px);
+}
+
+
+.brand-content h1 {
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+}
+
+
+.brand-content > p {
+    font-size: 17px;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 85px;
+}
+
+
+.brand-description {
+    max-width: 480px;
+}
+
+
+    .brand-description h2 {
+        font-size: 34px;
+        line-height: 1.25;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+
+    .brand-description p {
+        font-size: 17px;
+        line-height: 1.7;
+        color: rgba(255, 255, 255, 0.78);
+        max-width: 430px;
+    }
+
+
+/* =========================================================
+   LOGIN SECTION
+   ========================================================= */
+
+.login-section {
+    width: 48%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+
+/* ---------- Login Card ---------- */
+
+.login-card {
+    width: 100%;
+    max-width: 460px;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 42px 42px 30px;
+    box-shadow: 0 20px 60px rgba(31, 65, 97, 0.12), 0 4px 15px rgba(31, 65, 97, 0.05);
+    border: 1px solid #e7eef5;
+}
+
+
+/* =========================================================
+   MOBILE BRAND
+   ========================================================= */
+
+.mobile-brand {
+    display: none;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+
+.mobile-brand-icon {
+    width: 58px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+    border-radius: 15px;
+    background: #eaf5ff;
+    font-size: 28px;
+}
+
+
+.mobile-brand h1 {
+    font-size: 22px;
+    color: #12345b;
+    margin-bottom: 5px;
+}
+
+
+.mobile-brand p {
+    font-size: 13px;
+    color: #718096;
+}
+
+
+/* =========================================================
+   LOGIN HEADER
+   ========================================================= */
+
+.login-header {
+    margin-bottom: 30px;
+}
+
+
+    .login-header h2 {
+        font-size: 30px;
+        font-weight: 700;
+        color: #142f4c;
+        margin-bottom: 8px;
+    }
+
+
+    .login-header p {
+        font-size: 14px;
+        color: #718096;
+        line-height: 1.5;
+    }
+
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.login-form {
+    width: 100%;
+}
+
+
+.form-group {
+    margin-bottom: 21px;
+}
+
+
+    .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #34495e;
+        margin-bottom: 8px;
+    }
+
+
+/* ---------- Input Wrapper ---------- */
+
+.input-wrapper {
+    width: 100%;
+    height: 50px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+
+/* ---------- Input Icon ---------- */
+
+.input-icon {
+    position: absolute;
+    left: 16px;
+    z-index: 2;
+    font-size: 16px;
+    opacity: 0.75;
+    pointer-events: none;
+}
+
+
+/* ---------- Input ---------- */
+
+.form-control {
+    width: 100%;
+    height: 50px;
+    border: 1px solid #d7e2ec;
+    border-radius: 10px;
+    background: #f9fbfd;
+    color: #1f344a;
+    font-size: 15px;
+    padding: 0 48px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+
+    .form-control::placeholder {
+        color: #9aa9b8;
+    }
+
+
+    .form-control:hover {
+        border-color: #b9cadb;
+    }
+
+
+    .form-control:focus {
+        background: #ffffff;
+        border-color: #1687d9;
+        box-shadow: 0 0 0 4px rgba(22, 135, 217, 0.10);
+    }
+
+
+/* ---------- Password Toggle ---------- */
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 7px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+    .password-toggle:hover {
+        background: #edf5fb;
+    }
+
+
+/* =========================================================
+   VALIDATION
+   ========================================================= */
+
+.field-validation {
+    display: block;
+    color: #d64545;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+
+.validation-summary {
+    color: #d64545;
+    font-size: 13px;
+    margin-bottom: 15px;
+}
+
+
+    .validation-summary ul {
+        margin-left: 18px;
+    }
+
+
+/* =========================================================
+   REMEMBER ME
+   ========================================================= */
+
+.form-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 3px 0 24px;
+}
+
+
+.remember-label {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #5c6f82;
+    user-select: none;
+}
+
+
+    .remember-label input {
+        width: 16px;
+        height: 16px;
+        accent-color: #0879c9;
+        cursor: pointer;
+    }
+
+
+/* Hide custom checkbox because native checkbox
+   is more reliable with asp-for */
+
+.custom-checkbox {
+    display: none;
+}
+
+
+/* =========================================================
+   LOGIN BUTTON
+   ========================================================= */
+
+.login-button {
+    width: 100%;
+    height: 52px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient( 135deg, #0879c9, #0567b3 );
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    box-shadow: 0 7px 18px rgba(8, 121, 201, 0.22);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+
+    .login-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 24px rgba(8, 121, 201, 0.28);
+    }
+
+
+    .login-button:active {
+        transform: translateY(0);
+        box-shadow: 0 5px 12px rgba(8, 121, 201, 0.20);
+    }
+
+
+.button-arrow {
+    font-size: 20px;
+    line-height: 1;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.login-footer {
+    text-align: center;
+    margin-top: 25px;
+    padding-top: 22px;
+    border-top: 1px solid #edf1f5;
+    color: #9aa7b5;
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   RESPONSIVE - TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .brand-section {
+        width: 45%;
+    }
+
+    .login-section {
+        width: 55%;
+        padding: 25px;
+    }
+
+    .brand-content {
+        width: 80%;
+    }
+
+        .brand-content h1 {
+            font-size: 32px;
+        }
+
+    .brand-description h2 {
+        font-size: 27px;
+    }
+
+    .login-card {
+        padding: 35px 30px 25px;
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE - MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .login-page {
+        display: block;
+        min-height: 100vh;
+    }
+
+
+    .brand-section {
+        display: none;
+    }
+
+
+    .login-section {
+        width: 100%;
+        min-height: 100vh;
+        padding: 25px 18px;
+        align-items: center;
+    }
+
+
+    .login-card {
+        max-width: 480px;
+        padding: 30px 24px 25px;
+        border-radius: 16px;
+    }
+
+
+    .mobile-brand {
+        display: block;
+    }
+
+
+    .login-header h2 {
+        font-size: 27px;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 400px) {
+
+    .login-section {
+        padding: 15px 12px;
+    }
+
+
+    .login-card {
+        padding: 25px 19px 22px;
+        border-radius: 14px;
+    }
+
+
+    .login-header h2 {
+        font-size: 25px;
+    }
+
+
+    .form-control,
+    .input-wrapper {
+        height: 48px;
+    }
+
+
+    .form-control {
+        font-size: 14px;
+    }
+}

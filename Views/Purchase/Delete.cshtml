@@ -1,18 +1,18 @@
-﻿@model PharmacyManagement.Models.Purchase
+@model PharmacyManagement.Models.Purchase
 
 @{
     ViewData["Title"] = "Delete Purchase";
 }
 
-<div class="purchase-delete-page">
+<div class="pm-purchase-delete-page">
 
-    <div class="delete-card">
+    <div class="pm-delete-card">
 
-        <div class="purchase-delete-icon">
+        <div class="pm-purchase-delete-icon">
             !
         </div>
 
-        <span class="delete-label">
+        <span class="pm-delete-label">
             STOCK REVERSAL
         </span>
 
@@ -26,7 +26,7 @@
         </p>
 
 
-        <div class="purchase-delete-summary">
+        <div class="pm-purchase-delete-summary">
 
             <div>
 
@@ -73,7 +73,7 @@
                     Total
                 </span>
 
-                <strong class="delete-total">
+                <strong class="pm-delete-total">
                     ₹@Model.TotalAmount.ToString("N2")
                 </strong>
 
@@ -82,9 +82,9 @@
         </div>
 
 
-        <div class="delete-warning">
+        <div class="pm-delete-warning">
 
-            <div class="delete-warning-icon">
+            <div class="pm-delete-warning-icon">
                 !
             </div>
 
@@ -106,17 +106,17 @@
 
         @if (Model.Items.Count > 0)
         {
-            <div class="delete-items">
+            <div class="pm-delete-items">
 
                 <strong>
                     Medicines affected
                 </strong>
 
-                <div class="delete-item-list">
+                <div class="pm-delete-item-list">
 
                     @foreach (var item in Model.Items)
                     {
-                        <div class="delete-item">
+                        <div class="pm-delete-item">
 
                             <span>
                                 @item.MedicineName
@@ -144,7 +144,7 @@
                    name="id"
                    value="@Model.PurchaseId" />
 
-            <div class="delete-actions">
+            <div class="pm-delete-actions">
 
                 <a asp-action="Index"
                    class="btn btn-outline-secondary">

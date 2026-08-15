@@ -1,41 +1,148 @@
-﻿@model PharmacyManagement.Models.Category
+@model PharmacyManagement.Models.Category
 
 @{
     ViewData["Title"] = "Add Category";
 }
 
-<div class="container mt-4">
+<div class="pm-catui-form-page">
 
-    <h1>Add Category</h1>
+    <!-- TOP -->
+    <div class="pm-catui-form-top">
 
-    <form asp-action="Create" method="post">
+        <a asp-action="Index"
+           class="pm-catui-back">
+            ← Back to Categories
+        </a>
 
-        <div class="mb-3">
 
-            <label asp-for="CategoryName"
-                   class="form-label">
-                Category Name
-            </label>
+        <div class="pm-catui-form-heading">
 
-            <input asp-for="CategoryName"
-                   class="form-control" />
+            <div class="pm-catui-form-icon pm-blue">
+                +
+            </div>
 
-            <span asp-validation-for="CategoryName"
-                  class="text-danger">
+            <div>
+
+                <div class="pm-catui-eyebrow">
+                    MASTER DATA
+                </div>
+
+                <h1>Add Category</h1>
+
+                <p>
+                    Create a new medicine category.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- FORM CARD -->
+    <div class="pm-catui-form-card">
+
+        <!-- CARD HEADER -->
+        <div class="pm-catui-form-card-header">
+
+            <div>
+
+                <h2>Category Information</h2>
+
+                <p>
+                    Enter the category name below.
+                </p>
+
+            </div>
+
+            <span class="pm-catui-required">
+                Required
             </span>
 
         </div>
 
-        <button type="submit"
-                class="btn btn-primary">
-            Save Category
-        </button>
 
-        <a asp-action="Index"
-           class="btn btn-secondary">
-            Cancel
-        </a>
+        <!-- FORM -->
+        <form asp-action="Create"
+              method="post">
 
-    </form>
+            <div class="pm-catui-form-body">
+
+                <div asp-validation-summary="ModelOnly"
+                     class="pm-catui-validation">
+                </div>
+
+
+                <div class="pm-catui-field">
+
+                    <label asp-for="CategoryName">
+                        Category Name
+                    </label>
+
+
+                    <div class="pm-catui-input-wrapper">
+
+                        <span class="pm-catui-input-icon">
+                            ◇
+                        </span>
+
+                        <input asp-for="CategoryName"
+                               class="pm-catui-input"
+                               placeholder="e.g. Tablets, Syrups, Capsules"
+                               autocomplete="off"
+                               autofocus />
+
+                    </div>
+
+
+                    <span asp-validation-for="CategoryName"
+                          class="pm-catui-field-error">
+                    </span>
+
+
+                    <small>
+                        Use a clear name that identifies the medicine group.
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- FOOTER -->
+            <div class="pm-catui-form-footer">
+
+                <a asp-action="Index"
+                   class="pm-catui-secondary-btn">
+                    Cancel
+                </a>
+
+                <button type="submit"
+                        class="pm-catui-primary-btn">
+
+                    <span class="pm-catui-btn-icon">
+                        ✓
+                    </span>
+
+                    Save Category
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
+
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync(
+            "_ValidationScriptsPartial");
+    }
+
+}

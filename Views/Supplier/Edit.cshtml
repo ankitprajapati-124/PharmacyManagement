@@ -1,82 +1,227 @@
-﻿@model PharmacyManagement.Models.Supplier
+@model PharmacyManagement.Models.Supplier
 
 @{
     ViewData["Title"] = "Edit Supplier";
+
+    var initial =
+        string.IsNullOrWhiteSpace(Model.SupplierName)
+            ? "?"
+            : Model.SupplierName.Trim()
+                .Substring(0, 1)
+                .ToUpperInvariant();
 }
 
-<div class="container mt-4">
+<div class="pm-supplier-form-page">
 
-    <h1>Edit Supplier</h1>
+    <div class="pm-supplier-form-top">
 
-    <form asp-action="Edit" method="post">
+        <a asp-action="Index"
+           class="pm-supplier-back">
+            ← Back to Suppliers
+        </a>
 
-        <input type="hidden"
-               asp-for="SupplierId" />
+        <div class="pm-supplier-form-heading">
 
-        <div class="mb-3">
+            <div class="pm-supplier-form-icon blue">
+                ✎
+            </div>
 
-            <label asp-for="SupplierName"
-                   class="form-label">
-                Supplier Name
-            </label>
+            <div>
 
-            <input asp-for="SupplierName"
-                   class="form-control" />
+                <div class="pm-supplier-eyebrow">
+                    MASTER DATA
+                </div>
 
-            <span asp-validation-for="SupplierName"
-                  class="text-danger">
+                <h1>Edit Supplier</h1>
+
+                <p>
+                    Update the supplier information.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="pm-supplier-form-card">
+
+        <div class="pm-supplier-form-card-header">
+
+            <div class="pm-supplier-edit-title">
+
+                <div class="pm-supplier-small-avatar">
+                    @initial
+                </div>
+
+                <div>
+
+                    <h2>
+                        @Model.SupplierName
+                    </h2>
+
+                    <p>
+                        Supplier #@Model.SupplierId
+                    </p>
+
+                </div>
+
+            </div>
+
+            <span class="pm-supplier-id-badge">
+                #@Model.SupplierId
             </span>
 
         </div>
 
-        <div class="mb-3">
 
-            <label asp-for="Phone"
-                   class="form-label">
-                Phone
-            </label>
+        <form asp-action="Edit"
+              method="post">
 
-            <input asp-for="Phone"
-                   class="form-control" />
+            <input type="hidden"
+                   asp-for="SupplierId" />
 
-        </div>
 
-        <div class="mb-3">
+            <div class="pm-supplier-form-body">
 
-            <label asp-for="Email"
-                   class="form-label">
-                Email
-            </label>
+                <div asp-validation-summary="ModelOnly"
+                     class="pm-supplier-validation">
+                </div>
 
-            <input asp-for="Email"
-                   type="email"
-                   class="form-control" />
 
-        </div>
+                <!-- NAME -->
 
-        <div class="mb-3">
+                <div class="pm-supplier-field">
 
-            <label asp-for="Address"
-                   class="form-label">
-                Address
-            </label>
+                    <label asp-for="SupplierName">
+                        Supplier Name
+                    </label>
 
-            <textarea asp-for="Address"
-                      class="form-control"
-                      rows="3"></textarea>
+                    <div class="pm-supplier-input-wrap">
 
-        </div>
+                        <span>◇</span>
 
-        <button type="submit"
-                class="btn btn-primary">
-            Update Supplier
-        </button>
+                        <input asp-for="SupplierName"
+                               class="pm-supplier-input"
+                               placeholder="Enter supplier name"
+                               autocomplete="off"
+                               autofocus />
 
-        <a asp-action="Index"
-           class="btn btn-secondary">
-            Cancel
-        </a>
+                    </div>
 
-    </form>
+                    <span asp-validation-for="SupplierName"
+                          class="pm-supplier-error">
+                    </span>
+
+                </div>
+
+
+                <!-- PHONE -->
+
+                <div class="pm-supplier-field">
+
+                    <label asp-for="Phone">
+                        Phone
+                    </label>
+
+                    <div class="pm-supplier-input-wrap">
+
+                        <span>☎</span>
+
+                        <input asp-for="Phone"
+                               class="pm-supplier-input"
+                               placeholder="Enter phone number" />
+
+                    </div>
+
+                    <span asp-validation-for="Phone"
+                          class="pm-supplier-error">
+                    </span>
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="pm-supplier-field">
+
+                    <label asp-for="Email">
+                        Email
+                    </label>
+
+                    <div class="pm-supplier-input-wrap">
+
+                        <span>✉</span>
+
+                        <input asp-for="Email"
+                               type="email"
+                               class="pm-supplier-input"
+                               placeholder="supplier@example.com" />
+
+                    </div>
+
+                    <span asp-validation-for="Email"
+                          class="pm-supplier-error">
+                    </span>
+
+                </div>
+
+
+                <!-- ADDRESS -->
+
+                <div class="pm-supplier-field">
+
+                    <label asp-for="Address">
+                        Address
+                    </label>
+
+                    <div class="pm-supplier-input-wrap textarea">
+
+                        <span>⌂</span>
+
+                        <textarea asp-for="Address"
+                                  class="pm-supplier-textarea"
+                                  rows="4"
+                                  placeholder="Enter supplier address"></textarea>
+
+                    </div>
+
+                    <span asp-validation-for="Address"
+                          class="pm-supplier-error">
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="pm-supplier-form-footer">
+
+                <a asp-action="Index"
+                   class="pm-supplier-secondary-btn">
+                    Cancel
+                </a>
+
+                <button type="submit"
+                        class="pm-supplier-primary-btn">
+                    ✓ Update Supplier
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
+
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync(
+            "_ValidationScriptsPartial");
+    }
+
+}

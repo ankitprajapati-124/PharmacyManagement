@@ -1,4 +1,4 @@
-﻿@model PharmacyManagement.Models.Sale
+@model PharmacyManagement.Models.Sale
 
 @{
     ViewData["Title"] = "New Sale";
@@ -8,17 +8,17 @@
         ?? Enumerable.Empty<PharmacyManagement.Models.Medicine>();
 }
 
-<div class="sale-create-page">
+<div class="pm-sale-create-page">
 
     <!-- Header -->
 
-    <div class="page-header-card mb-4">
+    <div class="pm-page-header-card mb-4">
 
         <div>
 
             <div class="d-flex align-items-center gap-2 mb-2">
 
-                <span class="page-header-icon">
+                <span class="pm-page-header-icon">
                     ₹
                 </span>
 
@@ -67,11 +67,11 @@
 
                 <!-- Customer -->
 
-                <div class="sale-form-card mb-4">
+                <div class="pm-sale-form-card mb-4">
 
-                    <div class="sale-form-header">
+                    <div class="pm-sale-form-header">
 
-                        <div class="sale-form-icon blue">
+                        <div class="pm-sale-form-icon pm-blue">
                             👤
                         </div>
 
@@ -90,7 +90,7 @@
                     </div>
 
 
-                    <div class="sale-form-body">
+                    <div class="pm-sale-form-body">
 
                         <div class="row g-3">
 
@@ -129,9 +129,20 @@
                                     Invoice Number
                                 </label>
 
-                                <input asp-for="InvoiceNo"
-                                       class="form-control"
-                                       placeholder="e.g. INV-1001" />
+                                <div class="pm-auto-invoice">
+                                    <input asp-for="InvoiceNo"
+                                           class="form-control"
+                                           placeholder="Invoice-no.will be auto generated "
+                                           readonly />
+
+                                    <span class="pm-auto-invoice-badge">
+                                      
+                                    </span>
+                                </div>
+
+                                <small class="text-muted">
+                                   
+                                </small>
 
                             </div>
 
@@ -158,13 +169,13 @@
 
                 <!-- Items -->
 
-                <div class="sale-form-card">
+                <div class="pm-sale-form-card">
 
-                    <div class="sale-form-header sale-items-header">
+                    <div class="pm-sale-form-header pm-sale-items-header">
 
                         <div class="d-flex align-items-center gap-3">
 
-                            <div class="sale-form-icon green">
+                            <div class="pm-sale-form-icon pm-green">
                                 +
                             </div>
 
@@ -194,11 +205,11 @@
                     </div>
 
 
-                    <div class="sale-items-wrapper">
+                    <div class="pm-sale-items-wrapper">
 
                         <div class="table-responsive">
 
-                            <table class="table sale-create-table">
+                            <table class="table pm-sale-create-table">
 
                                 <thead>
 
@@ -241,7 +252,7 @@
 
 
                         <div id="emptyMessage"
-                             class="sale-empty-items">
+                             class="pm-sale-empty-items">
 
                             <div>
                                 +
@@ -268,9 +279,9 @@
 
             <div class="col-xl-4">
 
-                <div class="sale-summary-card">
+                <div class="pm-sale-summary-card">
 
-                    <div class="sale-summary-header">
+                    <div class="pm-sale-summary-header">
 
                         <strong>
                             Bill Summary
@@ -283,9 +294,9 @@
                     </div>
 
 
-                    <div class="sale-summary-body">
+                    <div class="pm-sale-summary-body">
 
-                        <div class="bill-line">
+                        <div class="pm-bill-line">
 
                             <span>
                                 Subtotal
@@ -298,13 +309,13 @@
                         </div>
 
 
-                        <div class="bill-line discount-line">
+                        <div class="pm-bill-line pm-discount-line">
 
                             <span>
                                 Discount
                             </span>
 
-                            <div class="discount-input">
+                            <div class="pm-discount-input">
 
                                 <span>₹</span>
 
@@ -324,7 +335,7 @@
                         <hr />
 
 
-                        <div class="grand-total-line">
+                        <div class="pm-grand-total-line">
 
                             <span>
                                 Grand Total
@@ -337,7 +348,7 @@
                         </div>
 
 
-                        <div class="sale-summary-note">
+                        <div class="pm-sale-summary-note">
 
                             <span>✓</span>
 
@@ -349,7 +360,7 @@
                     </div>
 
 
-                    <div class="sale-summary-footer">
+                    <div class="pm-sale-summary-footer">
 
                         <a asp-action="Index"
                            class="btn btn-outline-secondary">
@@ -370,9 +381,9 @@
                 </div>
 
 
-                <div class="sale-help-card mt-3">
+                <div class="pm-sale-help-card mt-3">
 
-                    <div class="sale-help-icon">
+                    <div class="pm-sale-help-icon">
                         i
                     </div>
 
@@ -408,37 +419,46 @@
     <script>
 
         const medicines = @Html.Raw(
-            System.Text.Json.JsonSerializer.Serialize(
-                medicines.Select(m => new
-                {
-                    id = m.MedicineId,
-                    name = m.MedicineName,
-                    stock = m.Quantity,
-                    price = m.SellingPrice
-                })
-            )
-        );
+                            System.Text.Json.JsonSerializer.Serialize(
+                                    medicines.Select(m => new
+                            {
+                                id = m.MedicineId,
+                                            name = m.MedicineName,
+                                            stock = m.Quantity,
+                                            price = m.SellingPrice
+                            })
+                    )
+                    );
 
         let itemIndex = 0;
 
+
+        // =========================================================
+        // MEDICINE OPTIONS
+        // =========================================================
 
         function createMedicineOptions() {
 
             let options =
                 '<option value="">-- Select Medicine --</option>';
 
-            medicines.forEach(function (medicine) {
+            medicines.forEach(function(medicine) {
 
-                options +=
-                    `<option value="${medicine.id}">
-                        ${medicine.name}
-                    </option>`;
+                options += `
+                        <option value="${medicine.id}">
+                            ${medicine.name}
+                        </option>
+                    `;
 
             });
 
             return options;
         }
 
+
+        // =========================================================
+        // FIND MEDICINE
+        // =========================================================
 
         function getMedicine(id) {
 
@@ -449,24 +469,35 @@
         }
 
 
+        // =========================================================
+        // UPDATE MEDICINE ROW
+        // =========================================================
+
         function updateMedicineRow(row) {
 
             const select =
-                row.querySelector(".medicine");
+                row.querySelector(".pm-medicine");
 
             const stock =
-                row.querySelector(".available-stock");
+                row.querySelector(".pm-available-stock");
 
             const price =
-                row.querySelector(".selling-price");
+                row.querySelector(".pm-selling-price");
 
             const quantity =
-                row.querySelector(".quantity");
+                row.querySelector(".pm-quantity");
+
+
+            if (!select || !stock || !price || !quantity) {
+                return;
+            }
+
 
             const medicine =
                 getMedicine(select.value);
 
 
+            // No medicine selected
             if (!medicine) {
 
                 stock.textContent = "-";
@@ -481,18 +512,22 @@
             }
 
 
+            // Available stock
             stock.textContent =
                 medicine.stock;
 
 
+            // Selling price
             price.value =
                 Number(medicine.price).toFixed(2);
 
 
+            // Maximum quantity
             quantity.max =
                 medicine.stock;
 
 
+            // If entered quantity is greater than stock
             if (
                 Number(quantity.value) >
                 medicine.stock
@@ -508,6 +543,10 @@
         }
 
 
+        // =========================================================
+        // UPDATE TOTALS
+        // =========================================================
+
         function updateTotals() {
 
             let subtotal = 0;
@@ -515,17 +554,35 @@
 
             document
                 .querySelectorAll(".sale-item")
-                .forEach(function (row) {
+                .forEach(function(row) {
+
+                    const quantityInput =
+                        row.querySelector(".pm-quantity");
+
+                    const priceInput =
+                        row.querySelector(".pm-selling-price");
+
+                    const itemTotal =
+                        row.querySelector(".pm-item-total");
+
+
+                    if (!quantityInput ||
+                        !priceInput ||
+                        !itemTotal) {
+
+                        return;
+                    }
+
 
                     const quantity =
                         parseFloat(
-                            row.querySelector(".quantity").value
+                            quantityInput.value
                         ) || 0;
 
 
                     const price =
                         parseFloat(
-                            row.querySelector(".selling-price").value
+                            priceInput.value
                         ) || 0;
 
 
@@ -533,8 +590,7 @@
                         quantity * price;
 
 
-                    row.querySelector(".item-total")
-                        .textContent =
+                    itemTotal.textContent =
                         total.toFixed(2);
 
 
@@ -543,12 +599,18 @@
                 });
 
 
+            // Discount
+            const discountInput =
+                document.getElementById("discount");
+
+
             const discount =
                 parseFloat(
-                    document.getElementById("discount").value
+                    discountInput?.value
                 ) || 0;
 
 
+            // Grand total
             let grandTotal =
                 subtotal - discount;
 
@@ -558,6 +620,7 @@
             }
 
 
+            // Update UI
             document.getElementById("subtotal")
                 .textContent =
                 subtotal.toFixed(2);
@@ -570,20 +633,36 @@
         }
 
 
+        // =========================================================
+        // EMPTY MESSAGE
+        // =========================================================
+
         function updateEmptyMessage() {
 
             const rows =
                 document.querySelectorAll(".sale-item");
 
 
-            document.getElementById("emptyMessage")
-                .style.display =
+            const emptyMessage =
+                document.getElementById("emptyMessage");
+
+
+            if (!emptyMessage) {
+                return;
+            }
+
+
+            emptyMessage.style.display =
                 rows.length === 0
                     ? "flex"
                     : "none";
 
         }
 
+
+        // =========================================================
+        // ADD MEDICINE ROW
+        // =========================================================
 
         function addItem() {
 
@@ -601,90 +680,97 @@
 
             row.innerHTML = `
 
-                <td>
+                    <td>
 
-                    <select
-                        name="Items[${itemIndex}].MedicineId"
-                        class="form-select medicine"
-                        required>
+                        <select
+                            name="Items[${itemIndex}].MedicineId"
+                            class="form-select pm-medicine"
+                            required>
 
-                        ${createMedicineOptions()}
+                            ${createMedicineOptions()}
 
-                    </select>
+                        </select>
 
-                </td>
-
-
-                <td>
-
-                    <span class="available-stock stock-number">
-                        -
-                    </span>
-
-                </td>
+                    </td>
 
 
-                <td>
+                    <td>
 
-                    <input
-                        type="number"
-                        name="Items[${itemIndex}].Quantity"
-                        class="form-control quantity"
-                        min="1"
-                        value="1"
-                        required />
+                        <span
+                            class="pm-available-stock pm-stock-number">
 
-                </td>
+                            -
+
+                        </span>
+
+                    </td>
 
 
-                <td>
-
-                    <div class="price-input">
-
-                        <span>₹</span>
+                    <td>
 
                         <input
                             type="number"
-                            name="Items[${itemIndex}].SellingPrice"
-                            class="form-control selling-price"
-                            min="0"
-                            step="0.01"
-                            value="0"
+                            name="Items[${itemIndex}].Quantity"
+                            class="form-control pm-quantity"
+                            min="1"
+                            value="1"
                             required />
 
-                    </div>
-
-                </td>
+                    </td>
 
 
-                <td>
+                    <td>
 
-                    <strong>
-                        ₹<span class="item-total">0.00</span>
-                    </strong>
+                        <div class="pm-price-input">
 
-                </td>
+                            <span>₹</span>
+
+                            <input
+                                type="number"
+                                name="Items[${itemIndex}].SellingPrice"
+                                class="form-control pm-selling-price"
+                                min="0"
+                                step="0.01"
+                                value="0"
+                                required />
+
+                        </div>
+
+                    </td>
 
 
-                <td>
+                    <td>
 
-                    <button
-                        type="button"
-                        class="remove-item"
-                        title="Remove">
+                        <strong>
+                            ₹<span class="pm-item-total">
+                                0.00
+                            </span>
+                        </strong>
 
-                        ×
+                    </td>
 
-                    </button>
 
-                </td>
+                    <td>
 
-            `;
+                        <button
+                            type="button"
+                            class="pm-remove-item"
+                            title="Remove">
+
+                            ×
+
+                        </button>
+
+                    </td>
+
+                `;
 
 
             tbody.appendChild(row);
 
+
             itemIndex++;
+
 
             updateEmptyMessage();
 
@@ -693,10 +779,16 @@
         }
 
 
+        // =========================================================
+        // PAGE INITIALIZATION
+        // =========================================================
+
         document.addEventListener(
             "DOMContentLoaded",
-            function () {
+            function() {
 
+
+                // Add medicine button
                 document
                     .getElementById("addItemBtn")
                     .addEventListener(
@@ -705,23 +797,30 @@
                     );
 
 
+                // Medicine selection
                 document
                     .getElementById("itemsBody")
                     .addEventListener(
                         "change",
-                        function (event) {
+                        function(event) {
 
                             if (
                                 event.target.classList.contains(
-                                    "medicine"
+                                    "pm-medicine"
                                 )
                             ) {
 
-                                updateMedicineRow(
+                                const row =
                                     event.target.closest(
                                         ".sale-item"
-                                    )
-                                );
+                                    );
+
+
+                                if (row) {
+
+                                    updateMedicineRow(row);
+
+                                }
 
                             }
 
@@ -729,31 +828,42 @@
                     );
 
 
+                // Quantity / price changes
                 document
                     .getElementById("itemsBody")
                     .addEventListener(
                         "input",
-                        updateTotals
+                        function() {
+
+                            updateTotals();
+
+                        }
                     );
 
 
+                // Discount changes
                 document
                     .getElementById("discount")
                     .addEventListener(
                         "input",
-                        updateTotals
+                        function() {
+
+                            updateTotals();
+
+                        }
                     );
 
 
+                // Remove medicine
                 document
                     .getElementById("itemsBody")
                     .addEventListener(
                         "click",
-                        function (event) {
+                        function(event) {
 
                             if (
                                 event.target.classList.contains(
-                                    "remove-item"
+                                    "pm-remove-item"
                                 )
                             ) {
 
@@ -779,6 +889,7 @@
                     );
 
 
+                // Add first row automatically
                 addItem();
 
             }

@@ -4,17 +4,17 @@
     ViewData["Title"] = "Delete Medicine";
 }
 
-<div class="delete-page">
+<div class="pm-delete-page">
 
-    <div class="delete-card">
+    <div class="pm-delete-card">
 
-        <div class="delete-icon">
+        <div class="pm-delete-icon">
             !
         </div>
 
-        <div class="delete-content">
+        <div class="pm-delete-content">
 
-            <span class="delete-label">
+            <span class="pm-delete-label">
                 MEDICINE MANAGEMENT
             </span>
 
@@ -27,7 +27,7 @@
                 <strong>@Model.MedicineName</strong>.
             </p>
 
-            <div class="delete-medicine-info">
+            <div class="pm-delete-medicine-info">
 
                 <div>
 
@@ -67,7 +67,7 @@
 
             </div>
 
-            <div class="delete-warning">
+            <div class="pm-delete-warning">
 
                 <strong>
                     Important
@@ -85,7 +85,7 @@
 
             <form asp-action="DeleteConfirmed"
                   method="post"
-                  class="delete-actions">
+                  class="pm-delete-actions">
 
                 <input type="hidden"
                        name="id"

@@ -42,27 +42,33 @@
                 System.Security.Claims.ClaimTypes.Role
             )?.Value
             ?? "User";
+
+        var displayInitial =
+            string.IsNullOrWhiteSpace(displayName)
+                ? "U"
+                : displayName.Trim().Substring(0, 1).ToUpperInvariant();
     }
 
 
     @if (!isAccountPage && User.Identity?.IsAuthenticated == true)
     {
-        <div class="app-shell">
+        <div class="pm-app-shell">
 
             <!-- ========================= -->
             <!-- SIDEBAR -->
             <!-- ========================= -->
 
-            <aside class="sidebar" id="sidebar">
+            <aside class="pm-sidebar" id="sidebar">
 
-                <div class="sidebar-brand">
+                <div class="pm-sidebar-brand">
 
                     <a asp-controller="Dashboard"
                        asp-action="Index"
-                       class="brand-link">
+                       class="pm-brand-link">
 
-                        <span class="brand-icon">
-                            +
+                        <span class="pm-brand-icon">
+                            <img src="~/images/logo.png"
+                                 alt="Pharmacy Management Logo" />
                         </span>
 
                         <span>
@@ -73,7 +79,7 @@
                     </a>
 
                     <button type="button"
-                            class="sidebar-close"
+                            class="pm-sidebar-close"
                             id="sidebarClose">
                         ×
                     </button>
@@ -83,13 +89,13 @@
 
                 <!-- USER PROFILE -->
 
-                <div class="sidebar-user">
+                <div class="pm-sidebar-user">
 
-                    <div class="user-avatar">
-                        @displayName.Substring(0, 1).ToUpper()
+                    <div class="pm-user-avatar">
+                        @displayInitial
                     </div>
 
-                    <div class="user-info">
+                    <div class="pm-user-info">
 
                         <strong>
                             @displayName
@@ -106,17 +112,17 @@
 
                 <!-- NAVIGATION -->
 
-                <div class="sidebar-section">
+                <div class="pm-sidebar-section">
                     <span>MAIN MENU</span>
                 </div>
 
-                <nav class="sidebar-nav">
+                <nav class="pm-sidebar-nav">
 
                     <a asp-controller="Dashboard"
                        asp-action="Index"
-                       class="sidebar-link @(currentController == "Dashboard" ? "active" : "")">
+                       class="pm-sidebar-link @(currentController == "Dashboard" ? "pm-active" : "")">
 
-                        <span class="nav-icon">⌂</span>
+                        <span class="pm-nav-icon">⌂</span>
                         <span>Dashboard</span>
 
                     </a>
@@ -124,9 +130,9 @@
 
                     <a asp-controller="Medicine"
                        asp-action="Index"
-                       class="sidebar-link @(currentController == "Medicine" ? "active" : "")">
+                       class="pm-sidebar-link @(currentController == "Medicine" ? "pm-active" : "")">
 
-                        <span class="nav-icon">✚</span>
+                        <span class="pm-nav-icon">✚</span>
                         <span>Medicines</span>
 
                     </a>
@@ -134,9 +140,9 @@
 
                     <a asp-controller="Sale"
                        asp-action="Index"
-                       class="sidebar-link @(currentController == "Sale" ? "active" : "")">
+                       class="pm-sidebar-link @(currentController == "Sale" ? "pm-active" : "")">
 
-                        <span class="nav-icon">▣</span>
+                        <span class="pm-nav-icon">▣</span>
                         <span>Sales</span>
 
                     </a>
@@ -147,9 +153,9 @@
                     {
                         <a asp-controller="Purchase"
                            asp-action="Index"
-                           class="sidebar-link @(currentController == "Purchase" ? "active" : "")">
+                           class="pm-sidebar-link @(currentController == "Purchase" ? "pm-active" : "")">
 
-                            <span class="nav-icon">▤</span>
+                            <span class="pm-nav-icon">▤</span>
                             <span>Purchases</span>
 
                         </a>
@@ -157,9 +163,9 @@
 
                         <a asp-controller="Category"
                            asp-action="Index"
-                           class="sidebar-link @(currentController == "Category" ? "active" : "")">
+                           class="pm-sidebar-link @(currentController == "Category" ? "pm-active" : "")">
 
-                            <span class="nav-icon">◈</span>
+                            <span class="pm-nav-icon">◈</span>
                             <span>Categories</span>
 
                         </a>
@@ -167,9 +173,9 @@
 
                         <a asp-controller="Supplier"
                            asp-action="Index"
-                           class="sidebar-link @(currentController == "Supplier" ? "active" : "")">
+                           class="pm-sidebar-link @(currentController == "Supplier" ? "pm-active" : "")">
 
-                            <span class="nav-icon">♧</span>
+                            <span class="pm-nav-icon">♧</span>
                             <span>Suppliers</span>
 
                         </a>
@@ -179,15 +185,15 @@
                     @if (User.IsInRole("Admin") ||
                          User.IsInRole("Pharmacist"))
                     {
-                        <div class="sidebar-section mt-3">
+                        <div class="pm-sidebar-section mt-3">
                             <span>REPORTS</span>
                         </div>
 
                         <a asp-controller="Reports"
                            asp-action="Sales"
-                           class="sidebar-link @(currentController == "Reports" && currentAction == "Sales" ? "active" : "")">
+                           class="pm-sidebar-link @(currentController == "Reports" && currentAction == "Sales" ? "pm-active" : "")">
 
-                            <span class="nav-icon">↗</span>
+                            <span class="pm-nav-icon">↗</span>
                             <span>Sales Report</span>
 
                         </a>
@@ -195,9 +201,9 @@
 
                         <a asp-controller="Reports"
                            asp-action="Purchases"
-                           class="sidebar-link @(currentController == "Reports" && currentAction == "Purchases" ? "active" : "")">
+                           class="pm-sidebar-link @(currentController == "Reports" && currentAction == "Purchases" ? "pm-active" : "")">
 
-                            <span class="nav-icon">↗</span>
+                            <span class="pm-nav-icon">↗</span>
                             <span>Purchase Report</span>
 
                         </a>
@@ -205,9 +211,9 @@
 
                         <a asp-controller="Reports"
                            asp-action="Stock"
-                           class="sidebar-link @(currentController == "Reports" && currentAction == "Stock" ? "active" : "")">
+                           class="pm-sidebar-link @(currentController == "Reports" && currentAction == "Stock" ? "pm-active" : "")">
 
-                            <span class="nav-icon">▥</span>
+                            <span class="pm-nav-icon">▥</span>
                             <span>Stock Report</span>
 
                         </a>
@@ -216,15 +222,15 @@
 
                     @if (User.IsInRole("Admin"))
                     {
-                        <div class="sidebar-section mt-3">
+                        <div class="pm-sidebar-section mt-3">
                             <span>ADMINISTRATION</span>
                         </div>
 
                         <a asp-controller="Users"
                            asp-action="Index"
-                           class="sidebar-link @(currentController == "Users" ? "active" : "")">
+                           class="pm-sidebar-link @(currentController == "Users" ? "pm-active" : "")">
 
-                            <span class="nav-icon">♙</span>
+                            <span class="pm-nav-icon">♙</span>
                             <span>Users</span>
 
                         </a>
@@ -232,9 +238,9 @@
 
                         <a asp-controller="AuditLogs"
                            asp-action="Index"
-                           class="sidebar-link @(currentController == "AuditLogs" ? "active" : "")">
+                           class="pm-sidebar-link @(currentController == "AuditLogs" ? "pm-active" : "")">
 
-                            <span class="nav-icon">▤</span>
+                            <span class="pm-nav-icon">▤</span>
                             <span>Audit Logs</span>
 
                         </a>
@@ -245,7 +251,7 @@
 
                 <!-- SIDEBAR FOOTER -->
 
-                <div class="sidebar-footer">
+                <div class="pm-sidebar-footer">
 
                     <form asp-controller="Account"
                           asp-action="Logout"
@@ -254,9 +260,9 @@
                         @Html.AntiForgeryToken()
 
                         <button type="submit"
-                                class="logout-link">
+                                class="pm-logout-link">
 
-                            <span class="nav-icon">←</span>
+                            <span class="pm-nav-icon">←</span>
 
                             <span>
                                 Logout
@@ -275,19 +281,19 @@
             <!-- MAIN AREA -->
             <!-- ========================= -->
 
-            <div class="main-area">
+            <div class="pm-main-area">
 
                 <!-- TOPBAR -->
 
-                <header class="topbar">
+                <header class="pm-topbar">
 
                     <button type="button"
-                            class="sidebar-toggle"
+                            class="pm-sidebar-toggle"
                             id="sidebarToggle">
                         ☰
                     </button>
 
-                    <div class="topbar-title">
+                    <div class="pm-topbar-title">
 
                         <span>
                             @ViewData["Title"]
@@ -296,13 +302,13 @@
                     </div>
 
 
-                    <div class="topbar-user">
+                    <div class="pm-topbar-user">
 
-                        <div class="topbar-avatar">
-                            @displayName.Substring(0, 1).ToUpper()
+                        <div class="pm-topbar-avatar">
+                            @displayInitial
                         </div>
 
-                        <div class="topbar-user-info">
+                        <div class="pm-topbar-user-info">
 
                             <strong>
                                 @displayName
@@ -321,11 +327,11 @@
 
                 <!-- PAGE -->
 
-                <main class="page-content">
+                <main class="pm-page-content">
 
                     @if (TempData["Success"] is string message)
                     {
-                        <div class="alert alert-success custom-alert alert-dismissible fade show"
+                        <div class="alert alert-success pm-custom-alert alert-dismissible fade show"
                              role="alert">
 
                             <span class="alert-icon">✓</span>
@@ -345,7 +351,7 @@
 
                     @if (TempData["Error"] is string errorMessage)
                     {
-                        <div class="alert alert-danger custom-alert alert-dismissible fade show"
+                        <div class="alert alert-danger pm-custom-alert alert-dismissible fade show"
                              role="alert">
 
                             <span class="alert-icon">!</span>
@@ -368,7 +374,7 @@
                 </main>
 
 
-                <footer class="app-footer">
+                <footer class="pm-app-footer">
 
                     <span>
                         © @DateTime.Now.Year Pharmacy Management System
@@ -388,7 +394,7 @@
     {
         <!-- ACCOUNT PAGES -->
 
-        <main class="account-layout">
+        <main class="pm-account-layout">
 
             @if (TempData["Success"] is string message)
             {
@@ -441,6 +447,8 @@
             const sidebarClose =
                 document.getElementById("sidebarClose");
 
+            const sidebarNav =
+                document.querySelector(".pm-sidebar-nav");
 
             if (sidebarToggle) {
 
@@ -448,7 +456,7 @@
                     "click",
                     function() {
 
-                        sidebar.classList.add("show");
+                        sidebar.classList.add("pm-sidebar-open");
 
                     });
 
@@ -461,7 +469,7 @@
                     "click",
                     function() {
 
-                        sidebar.classList.remove("show");
+                        sidebar.classList.remove("pm-sidebar-open");
 
                     });
 
@@ -475,17 +483,40 @@
                     if (
                         window.innerWidth <= 992 &&
                         sidebar &&
-                        sidebar.classList.contains("show") &&
+                        sidebar.classList.contains("pm-sidebar-open") &&
                         !sidebar.contains(event.target) &&
                         event.target !== sidebarToggle
                     ) {
 
-                        sidebar.classList.remove("show");
+                        sidebar.classList.remove("pm-sidebar-open");
 
                     }
 
                 });
+            // =========================================
+            // SIDEBAR SCROLLBAR
+            // Show only while sidebar is scrolling
+            // =========================================
 
+            if (sidebarNav) {
+
+                let sidebarScrollTimer;
+
+                sidebarNav.addEventListener("scroll", function() {
+
+                    sidebarNav.classList.add("is-scrolling");
+
+                    clearTimeout(sidebarScrollTimer);
+
+                    sidebarScrollTimer = setTimeout(function() {
+
+                        sidebarNav.classList.remove("is-scrolling");
+
+                    }, 700);
+
+                });
+
+            }
     </script>
 
 

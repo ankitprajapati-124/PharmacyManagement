@@ -1,18 +1,18 @@
-﻿@model PharmacyManagement.Models.Purchase
+@model PharmacyManagement.Models.Purchase
 
 @{
     ViewData["Title"] = "Purchase Details";
 }
 
-<div class="purchase-details-page">
+<div class="pm-purchase-details-page">
 
-    <div class="page-header-card mb-4">
+    <div class="pm-page-header-card mb-4">
 
         <div>
 
             <div class="d-flex align-items-center gap-2 mb-2">
 
-                <span class="page-header-icon">
+                <span class="pm-page-header-icon">
                     #
                 </span>
 
@@ -56,9 +56,9 @@
 
     <!-- Purchase Header -->
 
-    <div class="purchase-invoice-card mb-4">
+    <div class="pm-purchase-invoice-card mb-4">
 
-        <div class="purchase-invoice-top">
+        <div class="pm-purchase-invoice-top">
 
             <div>
 
@@ -72,7 +72,7 @@
 
             </div>
 
-            <div class="purchase-total-box">
+            <div class="pm-purchase-total-box">
 
                 <span>
                     Grand Total
@@ -87,7 +87,7 @@
         </div>
 
 
-        <div class="purchase-info-grid">
+        <div class="pm-purchase-info-grid">
 
             <div>
 
@@ -147,9 +147,9 @@
 
     <!-- Items -->
 
-    <div class="purchase-invoice-card">
+    <div class="pm-purchase-invoice-card">
 
-        <div class="purchase-section-header">
+        <div class="pm-purchase-section-header">
 
             <div>
 
@@ -176,9 +176,9 @@
         }
         else
         {
-            <div class="purchase-details-scroll">
+            <div class="pm-purchase-details-scroll">
 
-                <table class="table purchase-details-table">
+                <table class="table pm-purchase-details-table">
 
                     <thead>
 
@@ -258,7 +258,7 @@
 
                             </th>
 
-                            <th class="text-end purchase-grand-value">
+                            <th class="text-end pm-purchase-grand-value">
 
                                 ₹@Model.TotalAmount.ToString("N2")
 

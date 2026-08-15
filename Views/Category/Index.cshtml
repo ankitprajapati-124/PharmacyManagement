@@ -1,71 +1,382 @@
-﻿@model IEnumerable<PharmacyManagement.Models.Category>
+@model IEnumerable<PharmacyManagement.Models.Category>
 
 @{
     ViewData["Title"] = "Categories";
+    var categories = Model?.ToList() ?? new List<PharmacyManagement.Models.Category>();
 }
 
-<div class="container mt-4">
+<div class="pm-catui-page">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h1>Categories</h1>
-            <p class="text-muted">
-                Medicine category management
-            </p>
+    <!-- PAGE HEADER -->
+    <div class="pm-catui-header">
+
+        <div class="pm-catui-header-content">
+
+            <div class="pm-catui-header-icon">
+                ◇
+            </div>
+
+            <div>
+                <div class="pm-catui-eyebrow">
+                    MASTER DATA
+                </div>
+
+                <h1>Categories</h1>
+
+                <p>
+                    Organize and manage your medicine categories.
+                </p>
+            </div>
+
         </div>
 
-        <a asp-action="Create"
-           class="btn btn-primary">
-            + Add Category
+        <a asp-action="Create" class="pm-catui-primary-btn">
+            <span class="pm-catui-btn-icon">+</span>
+            Add Category
         </a>
+
     </div>
 
+
+    <!-- SUCCESS MESSAGE -->
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success">
-            @TempData["Success"]
+        <div class="pm-catui-alert pm-catui-alert-success">
+
+            <div class="pm-catui-alert-icon">
+                ✓
+            </div>
+
+            <div>
+                <strong>Success</strong>
+                <p>@TempData["Success"]</p>
+            </div>
+
         </div>
     }
 
-    <table class="table table-bordered table-hover">
 
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Category Name</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
+    <!-- STATISTICS -->
+    <div class="pm-catui-stats">
 
-        <tbody>
+        <div class="pm-catui-stat">
 
-            @foreach (var category in Model)
-            {
-                <tr>
-                    <td>@category.CategoryId</td>
+            <div class="pm-catui-stat-icon pm-blue">
+                #
+            </div>
 
-                    <td>@category.CategoryName</td>
+            <div class="pm-catui-stat-content">
+                <span>Total Categories</span>
+                <strong>@categories.Count</strong>
+            </div>
 
-                    <td>
+        </div>
 
-                        <a asp-action="Edit"
-                           asp-route-id="@category.CategoryId"
-                           class="btn btn-sm btn-outline-primary">
-                            Edit
-                        </a>
 
-                        <a asp-action="Delete"
-                           asp-route-id="@category.CategoryId"
-                           class="btn btn-sm btn-outline-danger">
-                            Delete
-                        </a>
+        <div class="pm-catui-stat">
 
-                    </td>
-                </tr>
-            }
+            <div class="pm-catui-stat-icon pm-green">
+                ✓
+            </div>
 
-        </tbody>
+            <div class="pm-catui-stat-content">
+                <span>Available</span>
+                <strong>@categories.Count</strong>
+            </div>
 
-    </table>
+        </div>
+
+
+        <div class="pm-catui-stat">
+
+            <div class="pm-catui-stat-icon pm-orange">
+                ◇
+            </div>
+
+            <div class="pm-catui-stat-content">
+                <span>Classification</span>
+                <strong>Active</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CATEGORY CARD -->
+    <div class="pm-catui-card">
+
+        <!-- CARD HEADER -->
+        <div class="pm-catui-card-header">
+
+            <div>
+                <h2>Category List</h2>
+
+                <p>
+                    Manage the categories used throughout the pharmacy.
+                </p>
+            </div>
+
+            <div class="pm-catui-count">
+                @categories.Count
+                @(categories.Count == 1 ? "category" : "categories")
+            </div>
+
+        </div>
+
+
+        <!-- SEARCH BAR -->
+        <div class="pm-catui-toolbar">
+
+            <div class="pm-catui-search">
+
+                <span class="pm-catui-search-icon">
+                    ⌕
+                </span>
+
+                <input type="text"
+                       id="catuiSearch"
+                       placeholder="Search categories..."
+                       autocomplete="off" />
+
+            </div>
+
+        </div>
+
+
+        <!-- TABLE -->
+        <div class="pm-catui-table-scroll">
+
+            <table class="pm-catui-table">
+
+                <thead>
+                    <tr>
+
+                        <th class="pm-catui-col-id">
+                            ID
+                        </th>
+
+                        <th>
+                            Category
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th class="pm-catui-col-actions">
+                            Actions
+                        </th>
+
+                    </tr>
+                </thead>
+
+                <tbody id="catuiTableBody">
+
+                    @if (!categories.Any())
+                    {
+                        <tr>
+
+                            <td colspan="4">
+
+                                <div class="pm-catui-empty">
+
+                                    <div class="pm-catui-empty-icon">
+                                        ◇
+                                    </div>
+
+                                    <h3>No categories found</h3>
+
+                                    <p>
+                                        Start by adding your first medicine category.
+                                    </p>
+
+                                    <a asp-action="Create"
+                                       class="pm-catui-primary-btn">
+                                        <span class="pm-catui-btn-icon">+</span>
+                                        Add Category
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var category in categories)
+                        {
+                            var initial =
+                                string.IsNullOrWhiteSpace(category.CategoryName)
+                                    ? "?"
+                                    : category.CategoryName.Substring(0, 1).ToUpper();
+
+                            <tr class="pm-catui-row"
+                                data-name="@category.CategoryName">
+
+                                <!-- ID -->
+                                <td>
+
+                                    <span class="pm-catui-id">
+                                        #@category.CategoryId
+                                    </span>
+
+                                </td>
+
+
+                                <!-- CATEGORY -->
+                                <td>
+
+                                    <div class="pm-catui-category">
+
+                                        <div class="pm-catui-avatar">
+                                            @initial
+                                        </div>
+
+                                        <div class="pm-catui-category-text">
+
+                                            <strong>
+                                                @category.CategoryName
+                                            </strong>
+
+                                            <small>
+                                                Medicine Category
+                                            </small>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- STATUS -->
+                                <td>
+
+                                    <span class="pm-catui-status">
+                                        <span class="pm-catui-status-dot"></span>
+                                        Active
+                                    </span>
+
+                                </td>
+
+
+                                <!-- ACTIONS -->
+                                <td>
+
+                                    <div class="pm-catui-actions">
+
+                                        <a asp-action="Edit"
+                                           asp-route-id="@category.CategoryId"
+                                           class="pm-catui-action pm-catui-edit">
+                                            ✎
+                                            <span>Edit</span>
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@category.CategoryId"
+                                           class="pm-catui-action pm-catui-delete">
+                                            ×
+                                            <span>Delete</span>
+                                        </a>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- NO SEARCH RESULT -->
+        <div id="catuiNoResult"
+             class="pm-catui-no-result">
+
+            <div class="pm-catui-no-result-icon">
+                ⌕
+            </div>
+
+            <strong>No categories found</strong>
+
+            <span>
+                Try searching with another category name.
+            </span>
+
+        </div>
+
+    </div>
 
 </div>
+
+
+@section Scripts {
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const search =
+                document.getElementById("catuiSearch");
+
+            const rows =
+                document.querySelectorAll(".catui-row");
+
+            const noResult =
+                document.getElementById("catuiNoResult");
+
+            if (!search) {
+                return;
+            }
+
+            search.addEventListener("input", function() {
+
+                const value =
+                    this.value
+                        .trim()
+                        .toLowerCase();
+
+                let visible = 0;
+
+                rows.forEach(function(row) {
+
+                    const name =
+                        (row.dataset.name || "")
+                            .toLowerCase();
+
+                    if (name.includes(value)) {
+
+                        row.style.display = "";
+                        visible++;
+
+                    } else {
+
+                        row.style.display = "none";
+
+                    }
+
+                });
+
+                if (noResult) {
+
+                    noResult.style.display =
+                        value.length > 0 && visible === 0
+                            ? "flex"
+                            : "none";
+
+                }
+
+            });
+
+        });
+
+    </script>
+
+}
